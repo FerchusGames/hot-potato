@@ -3,21 +3,24 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
 using HotPotato.Player;
-using HotPotato.Utils;
 
 namespace HotPotato.Managers
 {
-    public class GameManager : NetworkSingleton<GameManager>
+    public class GameManager : NetworkBehaviour
     {
-        public static event Action OnTurnChanged;
+        public event Action OnTurnChanged;
         
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
         private List<PlayerController> _players = new();
+        
+        public override void OnStartNetwork()
+        {
+            base.NetworkManager.RegisterInstance(this);
+        }
 
         public override void OnStartServer()
         {
-            base.OnStartServer();
             _players.Clear();
         }
         
