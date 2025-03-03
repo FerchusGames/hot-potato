@@ -114,7 +114,6 @@ GameObject:
   - component: {fileID: 5966435908232110368}
   - component: {fileID: 2367957464484472379}
   - component: {fileID: 5954312122343557396}
-  - component: {fileID: 1285970819735708760}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Untagged
@@ -131,7 +130,7 @@ Transform:
   m_GameObject: {fileID: 883970706459938549}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.1166395, y: 0.005161273, z: 0.06162693}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -162,7 +161,7 @@ MonoBehaviour:
   RuntimeParentNetworkBehaviour: {fileID: 0}
   RuntimeChildNetworkBehaviours: []
   _isNetworked: 1
-  _isSpawnable: 1
+  _isSpawnable: 0
   _isGlobal: 0
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
@@ -245,23 +244,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98a1b41716ae11d48a68d226b1fa340d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _initialTime: 10
-  _text: {fileID: 1069447025152228205}
---- !u!114 &1285970819735708760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 883970706459938549}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5728c93ba6534241a38bfc09cd004b31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 5966435908232110368}
   _networkObjectCache: {fileID: 0}
+  _initialTime: 10
+  _text: {fileID: 1069447025152228205}
 --- !u!1 &4703740488790596946
 GameObject:
   m_ObjectHideFlags: 0
