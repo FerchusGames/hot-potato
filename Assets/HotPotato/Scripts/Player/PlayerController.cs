@@ -6,7 +6,7 @@ namespace HotPotato.Player
 {
     public class PlayerController : NetworkBehaviour
     {
-        private bool _isMyTurn = false; // Local turn flag
+        private bool _isMyTurn = false;
 
         public override void OnStartClient()
         {
@@ -33,10 +33,7 @@ namespace HotPotato.Player
             _isMyTurn = false;
             GameManager.Instance.EndTurnServerRpc();
         }
-
-        /// <summary>
-        /// Called on all clients to notify the current player.
-        /// </summary>
+        
         [ObserversRpc]
         public void StartTurnObserversRpc()
         {

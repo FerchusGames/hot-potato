@@ -11,7 +11,7 @@ namespace HotPotato.Managers
     {
         public static event Action OnTurnChanged;
         
-        private readonly SyncVar<int> _currentPlayerIndex = new(); // Tracks the active player
+        private readonly SyncVar<int> _currentPlayerIndex = new();
 
         private List<PlayerController> _players = new();
 
@@ -20,10 +20,7 @@ namespace HotPotato.Managers
             base.OnStartServer();
             _players.Clear();
         }
-
-        /// <summary>
-        /// Registers a player when they join.
-        /// </summary>
+        
         public void RegisterPlayer(PlayerController player)
         {
             if (!IsServerStarted) return;
@@ -33,14 +30,11 @@ namespace HotPotato.Managers
                 _players.Add(player);
                 if (_players.Count == 1)
                 {
-                    StartTurn(); // Start turn when first player joins
+                    StartTurn();
                 }
             }
         }
-
-        /// <summary>
-        /// Called when a player ends their turn (Server Only).
-        /// </summary>
+        
         [ServerRpc(RequireOwnership = false)]
         public void EndTurnServerRpc()
         {
@@ -49,10 +43,7 @@ namespace HotPotato.Managers
             _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _players.Count;
             StartTurn();
         }
-
-        /// <summary>
-        /// Starts the turn for the current player.
-        /// </summary>
+        
         private void StartTurn()
         {
             if (!IsServerStarted) return;

@@ -7,14 +7,14 @@ using HotPotato.Managers;
 public class BombTimer : NetworkBehaviour
 {
     [SerializeField]
-    private int _initialTime = 10; // Initial countdown time in seconds
+    private int _initialTime = 10; 
 
     [SerializeField]
-    private TextMeshProUGUI _text; // UI element for displaying time
+    private TextMeshProUGUI _text; 
+    
+    private readonly SyncVar<float> _currentTime = new();
 
-    private readonly SyncVar<float> _currentTime = new(); // Synced countdown time
-
-    private float _lastClientUpdateTime = 0f; // Last time the client updated
+    private float _lastClientUpdateTime = 0f;
 
     public override void OnStartClient()
     {
@@ -46,14 +46,12 @@ public class BombTimer : NetworkBehaviour
         }
         else if (IsClientStarted)
         {
-            // Client-side approximation (interpolation)
             _lastClientUpdateTime -= Time.deltaTime;
             _text.text = _lastClientUpdateTime.ToString("F2");
-
-            // If client gets too far behind the server, force a correction
+            
             if (Mathf.Abs(_currentTime.Value - _lastClientUpdateTime) > 0.5f)
             {
-                _lastClientUpdateTime = _currentTime.Value; // Hard sync correction
+                _lastClientUpdateTime = _currentTime.Value;
             }
         }
         if (_currentTime.Value <= 0)
@@ -64,7 +62,7 @@ public class BombTimer : NetworkBehaviour
 
     private void OnTimerChanged(float prev, float next, bool asServer)
     {
-        _lastClientUpdateTime = next; // Keep client in sync with the server
+        _lastClientUpdateTime = next;
         _text.text = next.ToString("F2");
     }
 
