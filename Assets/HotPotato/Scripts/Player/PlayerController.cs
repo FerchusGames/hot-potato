@@ -15,8 +15,7 @@ namespace HotPotato.Player
         public override void OnStartClient()
         {
             base.OnStartClient();
-            
-            WaitForGameManager().Forget();
+            GetInstancesFromNetworkManager().Forget();
             
             if (IsServerInitialized)
             {
@@ -24,15 +23,13 @@ namespace HotPotato.Player
             }
         }
         
-        private async UniTaskVoid WaitForGameManager()
+        private async UniTaskVoid GetInstancesFromNetworkManager()
         {
-            _gameManager = base.NetworkManager.GetInstance<GameManager>();
-            
-            while (_gameManager == null)
+            do
             {
-                await UniTask.Yield();
                 _gameManager = base.NetworkManager.GetInstance<GameManager>();
-            }
+                await UniTask.Yield();
+            } while (_gameManager == null);
         }
 
         private void Update()
