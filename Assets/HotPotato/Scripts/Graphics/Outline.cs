@@ -56,6 +56,7 @@ public class Outline
 
     private void SetOutline(bool enable)
     {
+        Debug.Log("Setting outline to " + enable);
         foreach (var rend in renderers)
         {
             rend.renderingLayerMask = enable ? originalLayer | outlineLayer : originalLayer;
