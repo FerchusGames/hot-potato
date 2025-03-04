@@ -15,6 +15,13 @@ public class BombTimer : NetworkBehaviour
     private readonly SyncVar<float> _currentTime = new();
 
     private float _lastClientUpdateTime = 0f;
+    
+    private GameManager _gameManager;
+
+    public override void OnStartNetwork()
+    {
+        _gameManager = base.NetworkManager.GetInstance<GameManager>();
+    }
 
     public override void OnStartClient()
     {
@@ -30,12 +37,12 @@ public class BombTimer : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        GameManager.OnTurnChanged += ResetTimer;
+        _gameManager.OnTurnChanged += ResetTimer;
     }
 
     public override void OnStopServer()
     {
-        GameManager.OnTurnChanged -= ResetTimer;
+        _gameManager.OnTurnChanged -= ResetTimer;
     }
 
     private void Update()

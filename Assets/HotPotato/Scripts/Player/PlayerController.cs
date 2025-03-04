@@ -6,14 +6,22 @@ namespace HotPotato.Player
 {
     public class PlayerController : NetworkBehaviour
     {
+        private GameManager _gameManager;
+        
         private bool _isMyTurn = false;
 
+        public override void OnStartNetwork()
+        {
+            _gameManager = base.NetworkManager.GetInstance<GameManager>();
+        }
+        
         public override void OnStartClient()
         {
             base.OnStartClient();
+            
             if (IsServer)
             {
-                GameManager.Instance.RegisterPlayer(this);
+                _gameManager.RegisterPlayer(this);
             }
         }
 
@@ -31,7 +39,7 @@ namespace HotPotato.Player
         {
             if (!IsOwner) return;
             _isMyTurn = false;
-            GameManager.Instance.EndTurnServerRpc();
+            _gameManager.EndTurnServerRpc();
         }
         
         [ObserversRpc]
