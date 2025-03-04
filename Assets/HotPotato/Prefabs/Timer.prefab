@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 2367957464484472379}
   - component: {fileID: 5954312122343557396}
   m_Layer: 0
-  m_Name: Bomb
+  m_Name: Timer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 11798531793729755174
+  <AssetPathHash>k__BackingField: 11987575289921739526
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: -0.1166395, y: 0.005161273, z: 0.06162693}
