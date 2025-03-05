@@ -5,8 +5,7 @@ using UnityEngine.EventSystems;
 public class Outline
     : MonoBehaviour,
         IPointerEnterHandler,
-        IPointerExitHandler,
-        IPointerClickHandler
+        IPointerExitHandler
 {
     [SerializeField, DrawWithUnity]
     private RenderingLayerMask outlineLayer;
@@ -45,15 +44,7 @@ public class Outline
             return;
         SetOutline(false);
     }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (activate != Activate.OnClick)
-            return;
-        isOutlineActive = !isOutlineActive;
-        SetOutline(isOutlineActive);
-    }
-
+    
     private void SetOutline(bool enable)
     {
         foreach (var rend in renderers)

@@ -1,22 +1,23 @@
 ﻿using FishNet.Object;
-using Sirenix.OdinInspector;
-using Unity.VisualScripting;
-using UnityEngine;
+using HotPotato.Managers;
+using HotPotato.Player;
+using UnityEngine.EventSystems;
 
 namespace HotPotato.Bomb
 {
-    public class BombModuleType : NetworkBehaviour
+    public class BombModuleType : NetworkBehaviour, IPointerClickHandler
     {
-        [SerializeField, Required] private Outline _outline;
-
-        private void Activate()
+        private GameManager _gameManager;
+        
+        public override void OnStartClient()
         {
-            _outline.enabled = true;
+            _gameManager = base.NetworkManager.GetInstance<GameManager>();
         }
         
-        private void Deactivate()
+        public void OnPointerClick(PointerEventData eventData)
         {
-            _outline.enabled = false;
+            _gameManager.EndTurnServerRpc();
+            OwnedPlayerManager.Instance.DisableModuleInteractivity();
         }
     }
 }

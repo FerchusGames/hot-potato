@@ -31,6 +31,11 @@ namespace HotPotato.Player
             SetModuleInteractivity(IsMyTurn);
         }
 
+        public void DisableModuleInteractivity()
+        {
+            SetModuleInteractivity(false);
+        }
+        
         private void SetModuleInteractivity(bool interactive)
         {
             if (interactive)

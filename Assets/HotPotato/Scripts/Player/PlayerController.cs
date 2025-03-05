@@ -1,7 +1,6 @@
 ﻿using Cysharp.Threading.Tasks;
 using FishNet.Object;
 using HotPotato.Managers;
-using UnityEngine;
 
 namespace HotPotato.Player
 {
@@ -31,31 +30,11 @@ namespace HotPotato.Player
                 await UniTask.Yield();
             } while (_gameManager == null);
         }
-
-        private void Update()
-        {
-            if (!_isMyTurn) return;
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                EndTurn();
-            }
-        }
-
-        private void EndTurn()
-        {
-            if (!IsOwner) return;
-            _isMyTurn = false;
-            _isCurrentPlayer = false;
-            _gameManager.EndTurnServerRpc();
-        }
         
         [ObserversRpc]
         public void StartTurnObserversRpc()
         {
-            _isCurrentPlayer = true;
-            _isMyTurn = IsOwner;
-            OwnedPlayerManager.Instance.UpdateIsMyTurn(_isMyTurn);
+            OwnedPlayerManager.Instance.UpdateIsMyTurn(IsOwner);
         }
     }
 }
