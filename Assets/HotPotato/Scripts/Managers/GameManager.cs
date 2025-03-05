@@ -2,6 +2,7 @@ using System;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
+using HotPotato.Bomb;
 using HotPotato.Player;
 
 namespace HotPotato.Managers
@@ -39,10 +40,11 @@ namespace HotPotato.Managers
         }
         
         [ServerRpc(RequireOwnership = false)]
-        public void EndTurnServerRpc()
+        public void InteractWithModuleServerRpc(BombModuleType module)
         {
             if (!IsServerStarted) return;
-
+        
+            module.Despawn();
             _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _players.Count;
             StartTurn();
         }

@@ -1,6 +1,6 @@
-﻿using FishNet.Object;
+﻿using Cysharp.Threading.Tasks;
+using FishNet.Object;
 using HotPotato.Managers;
-using UnityEngine;
 
 namespace HotPotato.Player
 {
@@ -8,50 +8,33 @@ namespace HotPotato.Player
     {
         private GameManager _gameManager;
         
+        private bool _isCurrentPlayer = false;
         private bool _isMyTurn = false;
-
-        public override void OnStartNetwork()
-        {
-            _gameManager = base.NetworkManager.GetInstance<GameManager>();
-        }
         
         public override void OnStartClient()
         {
             base.OnStartClient();
+            GetInstancesFromNetworkManager().Forget();
             
-            if (IsServer)
+            if (IsServerInitialized)
             {
                 _gameManager.RegisterPlayer(this);
             }
         }
-
-        private void Update()
+        
+        private async UniTaskVoid GetInstancesFromNetworkManager()
         {
-            if (!_isMyTurn || !IsOwner) return;
-
-            if (Input.GetKeyDown(KeyCode.Space))
+            do
             {
-                EndTurn();
-            }
-        }
-
-        private void EndTurn()
-        {
-            if (!IsOwner) return;
-            _isMyTurn = false;
-            _gameManager.EndTurnServerRpc();
+                _gameManager = base.NetworkManager.GetInstance<GameManager>();
+                await UniTask.Yield();
+            } while (_gameManager == null);
         }
         
         [ObserversRpc]
         public void StartTurnObserversRpc()
         {
-            _isMyTurn = IsOwner;
-            if (_isMyTurn)
-            {
-                Debug.Log("It's my turn!");
-                return;
-            }
-            Debug.Log("It's not my turn.");
+            OwnedPlayerManager.Instance.UpdateIsMyTurn(IsOwner);
         }
     }
 }
