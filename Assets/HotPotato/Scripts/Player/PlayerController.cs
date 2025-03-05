@@ -55,7 +55,7 @@ namespace HotPotato.Player
         {
             _isCurrentPlayer = true;
             _isMyTurn = IsOwner;
-            UIManager.Instance.TriggerIsMyOwnerChanged(_isMyTurn);
+            OwnedPlayerManager.Instance.UpdateIsMyTurn(_isMyTurn);
         }
     }
 }

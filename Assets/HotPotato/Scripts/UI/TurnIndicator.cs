@@ -1,4 +1,4 @@
-﻿using HotPotato.Managers;
+﻿using HotPotato.Player;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,16 +11,17 @@ namespace HotPotato.UI
 
         private void Start()
         {
-            UIManager.Instance.OnTurnOwnerChanged += SetTurnOwner;
+            OwnedPlayerManager.Instance.OnIsMyTurnUpdate += SetTurnOwner;
         }
         
         private void OnDestroy()
         {
-            UIManager.Instance.OnTurnOwnerChanged -= SetTurnOwner;
+            OwnedPlayerManager.Instance.OnIsMyTurnUpdate -= SetTurnOwner;
         }
 
         private void SetTurnOwner(bool isOwner)
         {
+            Debug.Log(isOwner);
             _image.color = isOwner ? Color.green : Color.red;
         }
     }
