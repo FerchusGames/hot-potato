@@ -16,7 +16,7 @@ namespace HotPotato.Bomb
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            _gameManager.EndTurnServerRpc();
+            _gameManager.InteractWithModuleServerRpc(this);
             OwnedPlayerManager.Instance.DisableModuleInteractivity();
         }
     }
