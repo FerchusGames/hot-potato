@@ -26,32 +26,38 @@ namespace HotPotato.Bomb
         [Server]
         private void SpawnModuleGrid()
         {
-           for (int i = 0; i < _gridSize; i++)
+           for (int column = 0; column < _gridSize; column++)
            {
-               for (int j = 0; j < _gridSize; j++)
+               for (int row = 0; row < _gridSize; row++)
                {
-                   Vector3 position = new Vector3(
-                       GetFirstPositionOffset() + i * GetOffsetBetweenModules(),
-                       0,
-                       GetFirstPositionOffset() + j * GetOffsetBetweenModules()
-                   );
-        
                    GameObject bombModule = Instantiate(
-                       _bombModulePrefabs[Random.Range(0, _bombModulePrefabs.Length)].gameObject,
-                       position,
+                       GetRandomModule(),
+                       GetModulePosition(column, row),
                        Quaternion.identity
                    );
                    
                    bombModule.transform.localScale = new Vector3(GetModuleScale(), 1, GetModuleScale());
-                   
                    base.Spawn(bombModule);
-                   
-                   BombModuleSettings settings = GetRandomSetting();
-                   bombModule.GetComponent<BombModule>().SetSettings(settings);
+                   bombModule.GetComponent<BombModule>().SetSettings(GetRandomSetting());
                }
            }
         }
-        
+
+        private GameObject GetRandomModule()
+        {
+            return _bombModulePrefabs[Random.Range(0, _bombModulePrefabs.Length)].gameObject;
+        }
+
+        private Vector3 GetModulePosition(int row, int column)
+        {
+            Vector3 position = new Vector3(
+                GetFirstPositionOffset() + row * GetOffsetBetweenModules(),
+                0,
+                GetFirstPositionOffset() + column * GetOffsetBetweenModules()
+            );
+            return position;
+        }
+
         private float GetFirstPositionOffset()
         {
             return -GetOffsetBetweenModules() * 0.5f * (_gridSize - 1);

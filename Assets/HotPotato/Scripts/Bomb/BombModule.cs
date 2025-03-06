@@ -11,7 +11,7 @@ namespace HotPotato.Bomb
 {
     public class BombModule : NetworkBehaviour, IPointerClickHandler
     {
-        private readonly SyncVar<BombModuleSettings> _settings = new SyncVar<BombModuleSettings>();
+        private readonly SyncVar<BombModuleSettings> _settings = new();
         
         [FormerlySerializedAs("_material")] [SerializeField] private MeshRenderer _meshRenderer;
         [SerializeField] private TextMeshProUGUI _text;
@@ -44,8 +44,8 @@ namespace HotPotato.Bomb
             _gameManager.InteractWithModuleServerRpc(this);
             OwnedPlayerManager.Instance.DisableModuleInteractivity();
         }
-        
-        public void ApplySettings(BombModuleSettings settings)
+
+        private void ApplySettings(BombModuleSettings settings)
         {
             _meshRenderer.material.color = _bombColors[settings.ColorIndex];
             _text.text = GetModuleText(settings);
