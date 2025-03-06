@@ -1,4 +1,5 @@
 ﻿using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using HotPotato.Managers;
 using HotPotato.Player;
 using TMPro;
@@ -10,6 +11,8 @@ namespace HotPotato.Bomb
 {
     public class BombModule : NetworkBehaviour, IPointerClickHandler
     {
+        private readonly SyncVar<BombModuleSettings> _settings = new SyncVar<BombModuleSettings>();
+        
         [FormerlySerializedAs("_material")] [SerializeField] private MeshRenderer _meshRenderer;
         [SerializeField] private TextMeshProUGUI _text;
             
@@ -27,6 +30,13 @@ namespace HotPotato.Bomb
         public override void OnStartClient()
         {
             _gameManager = base.NetworkManager.GetInstance<GameManager>();
+            ApplySettings(_settings.Value);
+        }
+
+        [Server]
+        public void SetSettings(BombModuleSettings settings)
+        {
+            _settings.Value = settings;
         }
         
         public void OnPointerClick(PointerEventData eventData)

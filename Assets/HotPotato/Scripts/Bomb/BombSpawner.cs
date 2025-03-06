@@ -43,12 +43,11 @@ namespace HotPotato.Bomb
                    );
                    
                    bombModule.transform.localScale = new Vector3(GetModuleScale(), 1, GetModuleScale());
-
-                   BombModuleSettings settings = GetRandomSetting();
-                   
-                   bombModule.GetComponent<BombModule>().ApplySettings(settings);
                    
                    base.Spawn(bombModule);
+                   
+                   BombModuleSettings settings = GetRandomSetting();
+                   bombModule.GetComponent<BombModule>().SetSettings(settings);
                }
            }
         }
