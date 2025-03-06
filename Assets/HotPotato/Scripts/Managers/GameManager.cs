@@ -40,7 +40,7 @@ namespace HotPotato.Managers
         }
         
         [ServerRpc(RequireOwnership = false)]
-        public void InteractWithModuleServerRpc(BombModuleType module)
+        public void InteractWithModuleServerRpc(BombModule module)
         {
             if (!IsServerStarted) return;
         
