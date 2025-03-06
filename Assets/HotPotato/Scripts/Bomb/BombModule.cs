@@ -2,10 +2,10 @@
 using FishNet.Object.Synchronizing;
 using HotPotato.Managers;
 using HotPotato.Player;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
 namespace HotPotato.Bomb
 {
@@ -13,10 +13,12 @@ namespace HotPotato.Bomb
     {
         private readonly SyncVar<BombModuleSettings> _settings = new();
         
-        [FormerlySerializedAs("_material")] [SerializeField] private MeshRenderer _meshRenderer;
-        [SerializeField] private TextMeshProUGUI _text;
-            
+        [SerializeField, Required] private MeshRenderer _meshRenderer;
+        [SerializeField, Required] private TextMeshProUGUI _text;
+        
         private GameManager _gameManager;
+        
+        [ShowInInspector, ReadOnly] private bool _isTrap = false;
         
         private static Color[] _bombColors = 
         {
@@ -49,6 +51,7 @@ namespace HotPotato.Bomb
         {
             _meshRenderer.material.color = _bombColors[settings.ColorIndex];
             _text.text = GetModuleText(settings);
+            _isTrap = settings.IsTrap;
         }
         
         private string GetModuleText(BombModuleSettings settings)
