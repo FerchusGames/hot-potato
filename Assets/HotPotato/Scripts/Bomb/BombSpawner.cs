@@ -7,7 +7,7 @@ namespace HotPotato.Bomb
     public class BombSpawner : NetworkBehaviour
     {
         [BoxGroup("Bomb Modules"), Tooltip("List of bomb module prefabs to spawn.")]
-        [Required, SerializeField] private BombModuleType[] _bombModulePrefabs;
+        [Required, SerializeField] private BombModule[] _bombModulePrefabs;
         
         [BoxGroup("Grid Settings"), Tooltip("Defines the size of the module grid (between 2 and 10).")]
         [Range(2, 10), SerializeField] private int _gridSize = 5;
@@ -43,6 +43,10 @@ namespace HotPotato.Bomb
                    );
                    
                    bombModule.transform.localScale = new Vector3(GetModuleScale(), 1, GetModuleScale());
+
+                   BombModuleSettings settings = GetRandomSetting();
+                   
+                   bombModule.GetComponent<BombModule>().ApplySettings(settings);
                    
                    base.Spawn(bombModule);
                }
@@ -63,5 +67,27 @@ namespace HotPotato.Bomb
         {
             return _unitaryScale / _gridSize;
         }
+
+        private BombModuleSettings GetRandomSetting()
+        {
+            return new BombModuleSettings
+            {
+                ColorIndex = GetRandomSettingIndex(),
+                NumberIndex = GetRandomSettingIndex(),
+                LetterIndex = GetRandomSettingIndex()
+            };
+        }
+
+        private int GetRandomSettingIndex()
+        {
+            return Random.Range(0, 5);
+        }
+    }
+
+    public struct BombModuleSettings
+    {
+        public int ColorIndex;
+        public int NumberIndex;
+        public int LetterIndex;
     }
 }
