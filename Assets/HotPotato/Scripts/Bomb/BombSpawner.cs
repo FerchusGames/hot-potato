@@ -34,8 +34,10 @@ namespace HotPotato.Bomb
 
         [Server]
         private void SpawnModuleGrid()
-        { 
-            _trapIndexes = GetTrapIndexes();
+        {
+            ClampTrapAmount();
+            InitializeTrapIndexes();
+            
             var currentModule = 0;
             
             for (var column = 0; column < _gridSize; column++) 
@@ -58,6 +60,11 @@ namespace HotPotato.Bomb
                    currentModule++;
                }
             }
+        }
+
+        private void ClampTrapAmount()
+        { 
+            _trapAmount = Mathf.Min(_trapAmount, GetModuleCount());
         }
 
         private GameObject GetRandomModule()
@@ -89,6 +96,11 @@ namespace HotPotato.Bomb
         {
             return _unitaryScale / _gridSize;
         }
+        
+        private int GetModuleCount()
+        {
+            return _gridSize * _gridSize;
+        }
 
         private BombModuleSettings GetSettings(int currentModuleIndex)
         {
@@ -106,14 +118,13 @@ namespace HotPotato.Bomb
             return Random.Range(0, 5);
         }
         
-        private HashSet<int> GetTrapIndexes()
+        private void InitializeTrapIndexes()
         {
-            var trapIndexes = new HashSet<int>();
-            while (trapIndexes.Count < _trapAmount)
+            _trapIndexes = new HashSet<int>();
+            while (_trapIndexes.Count < _trapAmount)
             {
-                trapIndexes.Add(Random.Range(0, _gridSize * _gridSize));
+                _trapIndexes.Add(Random.Range(0, _gridSize * _gridSize));
             }
-            return trapIndexes;
         }
     }
 
