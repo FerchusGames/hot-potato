@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3685944583005754244}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -106,7 +106,8 @@ MonoBehaviour:
   - {fileID: 1264964065695350997, guid: 1f9973d8b947a6d47beb4f8fee4dab59, type: 3}
   - {fileID: 3209531811150487972, guid: 7d193a6f41eb7be468cff91c6981d4f9, type: 3}
   - {fileID: 5470247859747079131, guid: 5d85cd8d149b17e4b9debffc8a5b8775, type: 3}
-  _gridSize: 10
+  _bombModuleParent: {fileID: 786856326019156455}
+  _gridSize: 5
   _unitaryScale: 10
   _caseSize: 0.5
 --- !u!1 &3776343953288897028

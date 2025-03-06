@@ -6,11 +6,14 @@ namespace HotPotato.Bomb
 {
     public class BombSpawner : NetworkBehaviour
     {
-        [BoxGroup("Bomb Modules"), Tooltip("List of bomb module prefabs to spawn.")]
-        [Required, SerializeField] private BombModule[] _bombModulePrefabs;
+        [BoxGroup("Bomb Modules"), Tooltip("List of bomb module prefabs to spawn."), Required, AssetsOnly]
+        [SerializeField] private BombModule[] _bombModulePrefabs;
+
+        [BoxGroup("Bomb Modules"), Tooltip("GameObject the modules will spawn in."), Required, SceneObjectsOnly]
+        [SerializeField] private Transform _bombModuleParent;
         
         [BoxGroup("Grid Settings"), Tooltip("Defines the size of the module grid (between 2 and 10).")]
-        [Range(2, 10), SerializeField] private int _gridSize = 5;
+        [SerializeField, Range(2, 10)] private int _gridSize = 5;
 
         [BoxGroup("Grid Settings"), Tooltip("Determines the scale of each module.")]
         [SerializeField] private float _unitaryScale = 10f;
@@ -33,10 +36,12 @@ namespace HotPotato.Bomb
                    GameObject bombModule = Instantiate(
                        GetRandomModule(),
                        GetModulePosition(column, row),
-                       Quaternion.identity
+                       Quaternion.identity,
+                       _bombModuleParent
                    );
                    
                    bombModule.transform.localScale = new Vector3(GetModuleScale(), 1, GetModuleScale());
+                   bombModule.name = $"Bomb Module {column} {row}";
                    base.Spawn(bombModule);
                    bombModule.GetComponent<BombModule>().SetSettings(GetRandomSetting());
                }
