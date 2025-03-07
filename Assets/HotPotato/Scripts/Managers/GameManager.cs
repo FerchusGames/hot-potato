@@ -3,6 +3,7 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
 using HotPotato.Bomb;
+using HotPotato.Clues;
 using HotPotato.Player;
 
 namespace HotPotato.Managers
@@ -14,6 +15,9 @@ namespace HotPotato.Managers
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
         private List<PlayerController> _players = new();
+        private List<BombModuleSettings> _bombModuleSettingsList = new();
+        
+        private ClueData _clueData;
         
         public override void OnStartNetwork()
         {
@@ -47,6 +51,13 @@ namespace HotPotato.Managers
             module.Despawn();
             _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _players.Count;
             StartTurn();
+        }
+
+        [ServerRpc]
+        public void SetCurrentRoundModuleSettings(List<BombModuleSettings> settingsList)
+        {
+            _bombModuleSettingsList = settingsList;
+            _clueData = new ClueData(settingsList, false); // TODO: Add option to count traps
         }
         
         private void StartTurn()
