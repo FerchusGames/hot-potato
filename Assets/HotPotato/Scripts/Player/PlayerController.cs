@@ -22,7 +22,7 @@ namespace HotPotato.Player
             }
         }
         
-        private async UniTaskVoid GetInstancesFromNetworkManager()
+        private async UniTaskVoid GetInstancesFromNetworkManager() // TODO: Remove and initialize in joining scene
         {
             do
             {

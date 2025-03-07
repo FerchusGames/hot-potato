@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
+using UnityEngine;
 
 namespace HotPotato.Managers
 {
@@ -52,12 +53,12 @@ namespace HotPotato.Managers
             _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _players.Count;
             StartTurn();
         }
-
-        [ServerRpc]
+        
+        [Server]
         public void SetCurrentRoundModuleSettings(List<BombModuleSettings> settingsList)
         {
             _bombModuleSettingsList = settingsList;
-            _clueData = new ClueData(settingsList, false); // TODO: Add option to count traps
+            _clueData = new ClueData(settingsList, false);
         }
         
         private void StartTurn()

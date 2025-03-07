@@ -21,7 +21,6 @@ namespace HotPotato.UI
 
         private void SetTurnOwner(bool isOwner)
         {
-            Debug.Log(isOwner);
             _image.color = isOwner ? Color.green : Color.red;
         }
     }
