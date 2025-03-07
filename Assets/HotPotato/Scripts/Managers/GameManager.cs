@@ -59,6 +59,7 @@ namespace HotPotato.Managers
         {
             _bombModuleSettingsList = settingsList;
             _clueData = new ClueData(settingsList, false);
+            Debug.Log(_clueData.GetDebugString());
         }
         
         private void StartTurn()

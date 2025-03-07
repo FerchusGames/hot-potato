@@ -30,6 +30,33 @@ namespace HotPotato.Clues
             if (!dictionary.TryAdd(key, 1))
                 dictionary[key]++;
         }
+
+        public string GetDebugString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Clue Data Debug Info:");
+            AppendDictionaryContents(sb, "Module Type Count", _moduleTypeData);
+            AppendDictionaryContents(sb, "Module Color Count", _moduleColorData);
+            AppendDictionaryContents(sb, "Module Number Count", _moduleNumberData);
+            AppendDictionaryContents(sb, "Module Letter Count", _moduleLetterData);
+
+            return sb.ToString();
+        }
+
+        private static void AppendDictionaryContents(StringBuilder sb, string title, Dictionary<int, int> dictionary)
+        {
+            sb.AppendLine($"- {title}:");
+            if (dictionary.Count == 0)
+            {
+                sb.AppendLine("  (Empty)");
+                return;
+            }
+            foreach (var kvp in dictionary)
+            {
+                sb.AppendLine($"  Index {kvp.Key}: {kvp.Value}");
+            }
+        }
         
         public Dictionary<int, int> GetModuleTypeData => _moduleTypeData;
         public Dictionary<int, int> GetModuleColorData => _moduleColorData;
