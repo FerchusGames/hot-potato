@@ -1,6 +1,6 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using HotPotato.Accessibility;
+using HotPotato.ApplicationLifecycle;
 using HotPotato.Managers;
 using HotPotato.Player;
 using Sirenix.OdinInspector;
@@ -41,11 +41,16 @@ namespace HotPotato.Bomb
 
         private void ApplySettings(BombModuleSettings settings)
         {
-            _meshRenderer.material.color = AccessibilitySettings.BombColors[settings.ColorIndex];
+            _meshRenderer.material.color = GetModuleColor(settings);
             _text.text = GetModuleText(settings);
             _isTrap = settings.IsTrap;
         }
-        
+
+        private static Color GetModuleColor(BombModuleSettings settings)
+        {
+            return ApplicationController.Instance.ColorScheme[settings.ColorIndex];
+        }
+
         private string GetModuleText(BombModuleSettings settings)
         {
             return GetNumberStringFromIndex(settings.NumberIndex) + GetLetterStringFromIndex(settings.LetterIndex);

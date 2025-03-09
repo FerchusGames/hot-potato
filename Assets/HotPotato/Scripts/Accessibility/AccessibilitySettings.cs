@@ -4,7 +4,7 @@ namespace HotPotato.Accessibility
 {
     public abstract class AccessibilitySettings
     {
-        public static readonly Color[] BombColors = 
+        public static readonly Color[] DefaultColors = 
         {
             Color.red,
             Color.blue,
