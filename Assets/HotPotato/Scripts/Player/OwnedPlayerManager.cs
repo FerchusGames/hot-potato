@@ -2,7 +2,6 @@
 using HotPotato.Utilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
 namespace HotPotato.Player
 {
