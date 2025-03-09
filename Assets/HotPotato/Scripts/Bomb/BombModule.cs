@@ -66,4 +66,13 @@ namespace HotPotato.Bomb
             return ((char)('A' + index)).ToString();
         }
     }
+    
+    public struct BombModuleSettings
+    {
+        public int ModuleTypeIndex;
+        public int ColorIndex;
+        public int NumberIndex;
+        public int LetterIndex;
+        public bool IsTrap;
+    }
 }
