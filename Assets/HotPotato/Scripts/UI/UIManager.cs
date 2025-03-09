@@ -24,10 +24,10 @@ namespace HotPotato.UI
         {
             _clueTypeData = new Dictionary<BombClueType, Dictionary<int, int>>
             {
-                { BombClueType.Number, clueData.GetModuleNumberData },
-                { BombClueType.Color, clueData.GetModuleColorData },
-                { BombClueType.Type, clueData.GetModuleTypeData },
-                { BombClueType.Letter, clueData.GetModuleLetterData }
+                { BombClueType.Number, clueData.ModuleNumberData },
+                { BombClueType.Color, clueData.ModuleColorData },
+                { BombClueType.Type, clueData.ModuleTypeData },
+                { BombClueType.Letter, clueData.ModuleLetterData }
             };
         }
 
