@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HotPotato.ApplicationLifecycle
 {
-    public class ApplicationController : Singleton<ApplicationController>
+    public class ApplicationManager : Singleton<ApplicationManager>
     {
         public Color[] ColorScheme { get; private set; } = AccessibilitySettings.DefaultColors;
     }
