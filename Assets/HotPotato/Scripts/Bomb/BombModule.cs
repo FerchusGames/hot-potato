@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using HotPotato.Accessibility;
 using HotPotato.Managers;
 using HotPotato.Player;
 using Sirenix.OdinInspector;
@@ -19,15 +20,6 @@ namespace HotPotato.Bomb
         private GameManager _gameManager;
         
         [ShowInInspector, ReadOnly] private bool _isTrap = false;
-        
-        private static Color[] _bombColors = 
-        {
-            Color.red,
-            Color.blue,
-            Color.green,
-            Color.yellow,
-            Color.white
-        };
         
         public override void OnStartClient()
         {
@@ -49,7 +41,7 @@ namespace HotPotato.Bomb
 
         private void ApplySettings(BombModuleSettings settings)
         {
-            _meshRenderer.material.color = _bombColors[settings.ColorIndex];
+            _meshRenderer.material.color = AccessibilitySettings.BombColors[settings.ColorIndex];
             _text.text = GetModuleText(settings);
             _isTrap = settings.IsTrap;
         }

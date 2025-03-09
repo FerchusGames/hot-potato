@@ -2,8 +2,13 @@ using System;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using HotPotato.Bomb;
+using HotPotato.Clues;
 using HotPotato.Player;
+using HotPotato.UI;
+using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace HotPotato.Managers
 {
@@ -14,6 +19,9 @@ namespace HotPotato.Managers
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
         private List<PlayerController> _players = new();
+        private List<BombModuleSettings> _bombModuleSettingsList = new();
+        
+        private ClueData _clueData;
         
         public override void OnStartNetwork()
         {
@@ -49,6 +57,25 @@ namespace HotPotato.Managers
             StartTurn();
         }
         
+        [Server]
+        public void SetCurrentRoundModuleSettings(List<BombModuleSettings> settingsList)
+        {
+            _bombModuleSettingsList = settingsList;
+            _clueData = new ClueData(settingsList, false);
+            SetClueDataAsync(_clueData).Forget();
+        }
+
+        [Server]
+        private async UniTaskVoid SetClueDataAsync(ClueData clueData)
+        {
+            while (base.NetworkManager.GetInstance<UIManager>() == null)
+            {
+                await UniTask.Yield();
+            }
+
+            base.NetworkManager.GetInstance<UIManager>().SetClueData(_clueData);
+        }
+   
         private void StartTurn()
         {
             if (!IsServerStarted) return;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FishNet.Object;
+using HotPotato.Managers;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -25,8 +26,15 @@ namespace HotPotato.Bomb
         [BoxGroup("Grid Settings"), Tooltip("Determines the spacing between modules.")]
         [SerializeField] private float _caseSize = 0.5f;
         
+        private GameManager _gameManager;
         private HashSet<int> _trapIndexes;
-        
+        private List<BombModuleSettings> _settings;
+
+        public override void OnStartNetwork()
+        {
+            _gameManager = base.NetworkManager.GetInstance<GameManager>();
+        }
+
         public override void OnStartServer()
         {
             SpawnModuleGrid();
@@ -39,13 +47,17 @@ namespace HotPotato.Bomb
             InitializeTrapIndexes();
             
             var currentModule = 0;
+
+            _settings = new List<BombModuleSettings>();
             
             for (var column = 0; column < _gridSize; column++) 
             {
                for (var row = 0; row < _gridSize; row++)
                {
+                   int moduleTypeIndex = GetRandomModuleTypeIndex();
+                   
                    GameObject bombModule = Instantiate(
-                       GetRandomModule(),
+                       _bombModulePrefabs[moduleTypeIndex].gameObject,
                        GetModulePosition(column, row),
                        Quaternion.identity,
                        _bombModuleParent
@@ -54,12 +66,18 @@ namespace HotPotato.Bomb
                    bombModule.transform.localScale = new Vector3(GetModuleScale(), 1, GetModuleScale());
                    bombModule.name = $"Bomb Module {column} {row}";
                    base.Spawn(bombModule);
+
+                   BombModuleSettings currentSettings = GetSettings(currentModule);
+                   currentSettings.ModuleTypeIndex = moduleTypeIndex;
                    
-                   bombModule.GetComponent<BombModule>().SetSettings(GetSettings(currentModule));
+                   bombModule.GetComponent<BombModule>().SetSettings(currentSettings);
+                   _settings.Add(currentSettings);
                    
                    currentModule++;
                }
             }
+            
+            _gameManager.SetCurrentRoundModuleSettings(_settings);
         }
 
         private void ClampTrapAmount()
@@ -67,9 +85,9 @@ namespace HotPotato.Bomb
             _trapAmount = Mathf.Min(_trapAmount, GetModuleCount());
         }
 
-        private GameObject GetRandomModule()
+        private int GetRandomModuleTypeIndex()
         {
-            return _bombModulePrefabs[Random.Range(0, _bombModulePrefabs.Length)].gameObject;
+            return Random.Range(0, _bombModulePrefabs.Length);
         }
 
         private Vector3 GetModulePosition(int row, int column)
@@ -130,6 +148,7 @@ namespace HotPotato.Bomb
 
     public struct BombModuleSettings
     {
+        public int ModuleTypeIndex;
         public int ColorIndex;
         public int NumberIndex;
         public int LetterIndex;
