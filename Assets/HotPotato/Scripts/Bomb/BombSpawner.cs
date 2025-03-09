@@ -10,13 +10,13 @@ namespace HotPotato.Bomb
     {
         [BoxGroup("Bomb Settings"), Tooltip("Number of modules to mark as traps."), MinValue(3)]
         [SerializeField] private int _trapAmount = 3;
-        
+
         [BoxGroup("Bomb Modules"), Tooltip("List of bomb module prefabs to spawn."), Required, AssetsOnly]
         [SerializeField] private BombModule[] _bombModulePrefabs;
 
         [BoxGroup("Bomb Modules"), Tooltip("GameObject the modules will spawn in."), Required, SceneObjectsOnly]
         [SerializeField] private Transform _bombModuleParent;
-        
+
         [BoxGroup("Grid Settings"), Tooltip("Defines the size of the module grid (between 2 and 10).")]
         [SerializeField, Range(2, 10)] private int _gridSize = 5;
 
@@ -25,10 +25,15 @@ namespace HotPotato.Bomb
 
         [BoxGroup("Grid Settings"), Tooltip("Determines the spacing between modules.")]
         [SerializeField] private float _caseSize = 0.5f;
-        
+
         private GameManager _gameManager;
-        private HashSet<int> _trapIndexes;
-        private List<BombModuleSettings> _settings;
+        private HashSet<int> _trapIndexes = new();
+        private List<BombModuleSettings> _settingsList = new();
+
+        private int TotalModulesCount => _gridSize * _gridSize;
+        private float ModuleScale => _unitaryScale / _gridSize;
+        private float OffsetBetweenModules => _caseSize / _gridSize;
+        private float FirstPositionOffset => -OffsetBetweenModules * 0.5f * (_gridSize - 1);
 
         public override void OnStartNetwork()
         {
@@ -45,113 +50,80 @@ namespace HotPotato.Bomb
         {
             ClampTrapAmount();
             InitializeTrapIndexes();
-            
-            var currentModule = 0;
+            _settingsList.Clear();
 
-            _settings = new List<BombModuleSettings>();
-            
-            for (var column = 0; column < _gridSize; column++) 
+            for (var column = 0; column < _gridSize; column++)
             {
-               for (var row = 0; row < _gridSize; row++)
-               {
-                   int moduleTypeIndex = GetRandomModuleTypeIndex();
-                   
-                   GameObject bombModule = Instantiate(
-                       _bombModulePrefabs[moduleTypeIndex].gameObject,
-                       GetModulePosition(column, row),
-                       Quaternion.identity,
-                       _bombModuleParent
-                   );
-                   
-                   bombModule.transform.localScale = new Vector3(GetModuleScale(), 1, GetModuleScale());
-                   bombModule.name = $"Bomb Module {column} {row}";
-                   base.Spawn(bombModule);
-
-                   BombModuleSettings currentSettings = GetSettings(currentModule);
-                   currentSettings.ModuleTypeIndex = moduleTypeIndex;
-                   
-                   bombModule.GetComponent<BombModule>().SetSettings(currentSettings);
-                   _settings.Add(currentSettings);
-                   
-                   currentModule++;
-               }
+                for (var row = 0; row < _gridSize; row++)
+                {
+                    SpawnAndConfigureModule(column, row);
+                }
             }
-            
-            _gameManager.SetCurrentRoundModuleSettings(_settings);
+
+            _gameManager.SetCurrentRoundModuleSettings(_settingsList);
         }
 
-        private void ClampTrapAmount()
-        { 
-            _trapAmount = Mathf.Min(_trapAmount, GetModuleCount());
-        }
-
-        private int GetRandomModuleTypeIndex()
+        private void SpawnAndConfigureModule(int column, int row)
         {
-            return Random.Range(0, _bombModulePrefabs.Length);
+            int moduleTypeIndex = GetRandomModulePropertyIndex();
+            Vector3 position = GetModulePosition(column, row);
+            GameObject bombModule = InstantiateBombModule(moduleTypeIndex, position);
+
+            ConfigureBombModule(bombModule, moduleTypeIndex);
         }
 
-        private Vector3 GetModulePosition(int row, int column)
+        private void ConfigureBombModule(GameObject bombModule, int moduleTypeIndex)
         {
-            var position = new Vector3(
-                GetFirstPositionOffset() + row * GetOffsetBetweenModules(),
-                0,
-                GetFirstPositionOffset() + column * GetOffsetBetweenModules()
+            BombModuleSettings currentSettings = GenerateSettings(_settingsList.Count, moduleTypeIndex);
+            bombModule.GetComponent<BombModule>().SetSettings(currentSettings);
+            _settingsList.Add(currentSettings);
+        }
+
+        private GameObject InstantiateBombModule(int moduleTypeIndex, Vector3 position)
+        {
+            GameObject bombModule = Instantiate(
+                _bombModulePrefabs[moduleTypeIndex].gameObject,
+                position,
+                Quaternion.identity,
+                _bombModuleParent
             );
-            return position;
+
+            bombModule.transform.localScale = new Vector3(ModuleScale, 1, ModuleScale);
+            bombModule.name = $"Bomb Module {position.x} {position.z}";
+            base.Spawn(bombModule);
+
+            return bombModule;
         }
 
-        private float GetFirstPositionOffset()
+        private BombModuleSettings GenerateSettings(int currentModuleIndex, int moduleTypeIndex) => new()
         {
-            return -GetOffsetBetweenModules() * 0.5f * (_gridSize - 1);
-        }
+            ModuleTypeIndex = moduleTypeIndex,
+            ColorIndex = GetRandomModulePropertyIndex(),
+            NumberIndex = GetRandomModulePropertyIndex(),
+            LetterIndex = GetRandomModulePropertyIndex(),
+            IsTrap = _trapIndexes.Contains(currentModuleIndex)
+        };
 
-        private float GetOffsetBetweenModules()
-        {
-            return _caseSize / _gridSize;
-        }
-        
-        private float GetModuleScale()
-        {
-            return _unitaryScale / _gridSize;
-        }
-        
-        private int GetModuleCount()
-        {
-            return _gridSize * _gridSize;
-        }
-
-        private BombModuleSettings GetSettings(int currentModuleIndex)
-        {
-            return new BombModuleSettings
-            {
-                ColorIndex = GetRandomSettingIndex(),
-                NumberIndex = GetRandomSettingIndex(),
-                LetterIndex = GetRandomSettingIndex(),
-                IsTrap = _trapIndexes.Contains(currentModuleIndex)
-            };
-        }
-
-        private int GetRandomSettingIndex()
-        {
-            return Random.Range(0, 5);
-        }
-        
         private void InitializeTrapIndexes()
         {
             _trapIndexes = new HashSet<int>();
             while (_trapIndexes.Count < _trapAmount)
             {
-                _trapIndexes.Add(Random.Range(0, _gridSize * _gridSize));
+                _trapIndexes.Add(Random.Range(0, TotalModulesCount));
             }
         }
-    }
 
-    public struct BombModuleSettings
-    {
-        public int ModuleTypeIndex;
-        public int ColorIndex;
-        public int NumberIndex;
-        public int LetterIndex;
-        public bool IsTrap;
+        private void ClampTrapAmount()
+        {
+            _trapAmount = Mathf.Min(_trapAmount, TotalModulesCount);
+        }
+
+        private int GetRandomModulePropertyIndex() => Random.Range(0, _bombModulePrefabs.Length);
+
+        private Vector3 GetModulePosition(int row, int column) => new(
+            FirstPositionOffset + row * OffsetBetweenModules,
+            0,
+            FirstPositionOffset + column * OffsetBetweenModules
+        );
     }
 }

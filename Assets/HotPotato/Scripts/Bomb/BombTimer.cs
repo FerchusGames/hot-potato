@@ -7,14 +7,12 @@ using HotPotato.Managers;
 public class BombTimer : NetworkBehaviour
 {
     [SerializeField]
-    private int _initialTime = 10; 
+    private int _initialTime = 10;
 
     [SerializeField]
-    private TextMeshProUGUI _text; 
+    private TextMeshProUGUI _text;
     
-    private readonly SyncVar<float> _currentTime = new();
-
-    private float _lastClientUpdateTime = 0f;
+    private readonly SyncTimer _timer = new();
     
     private GameManager _gameManager;
 
@@ -22,21 +20,9 @@ public class BombTimer : NetworkBehaviour
     {
         _gameManager = base.NetworkManager.GetInstance<GameManager>();
     }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        _currentTime.OnChange += OnTimerChanged;
-    }
-
-    public override void OnStopClient()
-    {
-        _currentTime.OnChange -= OnTimerChanged;
-    }
-
+    
     public override void OnStartServer()
     {
-        base.OnStartServer();
         _gameManager.OnTurnChanged += ResetTimer;
     }
 
@@ -47,38 +33,17 @@ public class BombTimer : NetworkBehaviour
 
     private void Update()
     {
-        if (IsServerStarted)
+        _timer.Update();
+        
+        if (IsClientStarted)
         {
-            _currentTime.Value -= Time.deltaTime;
-        }
-        else if (IsClientStarted)
-        {
-            _lastClientUpdateTime -= Time.deltaTime;
-            _text.text = _lastClientUpdateTime.ToString("F2");
-            
-            if (Mathf.Abs(_currentTime.Value - _lastClientUpdateTime) > 0.5f)
-            {
-                _lastClientUpdateTime = _currentTime.Value;
-            }
-        }
-        if (_currentTime.Value <= 0)
-        {
-            _text.text = "BOOM!";
+            _text.text = _timer.Remaining > 0 ? _timer.Remaining.ToString("F2") : "BOOM!";
         }
     }
-
-    private void OnTimerChanged(float prev, float next, bool asServer)
-    {
-        _lastClientUpdateTime = next;
-        _text.text = next.ToString("F2");
-    }
-
+    
+    [Server]
     private void ResetTimer()
     {
-        if (IsServerStarted)
-        {
-            _currentTime.Value = _initialTime;
-            enabled = true;
-        }
+        _timer.StartTimer(_initialTime);
     }
 }

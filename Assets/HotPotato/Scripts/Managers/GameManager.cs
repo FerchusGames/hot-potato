@@ -7,8 +7,6 @@ using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
 using HotPotato.UI;
-using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace HotPotato.Managers
 {
