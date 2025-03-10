@@ -1,3 +1,4 @@
+using System;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
@@ -6,8 +7,10 @@ using HotPotato.Managers;
 
 public class BombTimer : NetworkBehaviour
 {
+    public event Action OnTimerExpired; // TODO: Change this to event bus
+    
     [SerializeField]
-    private int _initialTime = 10;
+    private int _initialTime = 20;
 
     [SerializeField]
     private TextMeshProUGUI _text;
@@ -38,6 +41,11 @@ public class BombTimer : NetworkBehaviour
         if (IsClientStarted)
         {
             _text.text = _timer.Remaining > 0 ? _timer.Remaining.ToString("F2") : "BOOM!";
+            
+            if (_timer.Remaining <= 0)
+            {
+                OnTimerExpired?.Invoke();
+            }
         }
     }
     
