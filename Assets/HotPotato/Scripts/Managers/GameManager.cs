@@ -49,9 +49,19 @@ namespace HotPotato.Managers
         public void InteractWithModuleServerRpc(BombModule module)
         {
             if (!IsServerStarted) return;
-        
+            
+            if (module.IsTrap)
+            {
+                module.ExplodeObserversRpc();
+                _players.RemoveAt(_currentPlayerIndex.Value);
+                _currentPlayerIndex.Value %= _players.Count;
+            }
+            else
+            {
+                _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _players.Count;
+            }
+            
             module.Despawn();
-            _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _players.Count;
             StartTurn();
         }
         

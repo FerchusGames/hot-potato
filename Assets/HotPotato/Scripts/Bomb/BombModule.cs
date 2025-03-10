@@ -18,9 +18,9 @@ namespace HotPotato.Bomb
         [SerializeField, Required] private TextMeshProUGUI _text;
         
         private GameManager _gameManager;
-        
-        [ShowInInspector, ReadOnly] private bool _isTrap = false;
-        
+
+        [ShowInInspector, ReadOnly] public bool IsTrap { get; private set; } = false;
+
         public override void OnStartClient()
         {
             _gameManager = base.NetworkManager.GetInstance<GameManager>();
@@ -43,9 +43,15 @@ namespace HotPotato.Bomb
         {
             _meshRenderer.material.color = GetModuleColor(settings);
             _text.text = GetModuleText(settings);
-            _isTrap = settings.IsTrap;
+            if (IsServerInitialized) IsTrap = settings.IsTrap;
         }
 
+        [ObserversRpc]
+        public void ExplodeObserversRpc()
+        {
+            Debug.Log("This module just exploded!");
+        }
+        
         private static Color GetModuleColor(BombModuleSettings settings)
         {
             return ApplicationManager.Instance.ColorScheme[settings.ColorIndex];
