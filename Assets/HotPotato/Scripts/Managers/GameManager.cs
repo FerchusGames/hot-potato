@@ -53,6 +53,8 @@ namespace HotPotato.Managers
             if (module.IsTrap)
             {
                 module.ExplodeObserversRpc();
+                
+                _players[_currentPlayerIndex.Value].LoseObserversRpc();
                 _players.RemoveAt(_currentPlayerIndex.Value);
                 _currentPlayerIndex.Value %= _players.Count;
             }

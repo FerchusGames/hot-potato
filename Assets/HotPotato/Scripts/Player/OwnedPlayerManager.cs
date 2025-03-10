@@ -10,7 +10,10 @@ namespace HotPotato.Player
         [SerializeField] private LayerMask _notOnTurnEventMask;
         
         public event Action<bool> OnIsMyTurnUpdate;
-        public bool IsMyTurn { get; private set; } = false;
+        public event Action OnLose;
+        
+        private bool _isMyTurn = false;
+        private bool _hasLost = false;
         
         private PhysicsRaycaster _physicsRaycaster = null;
         private static readonly LayerMask EverythingMask = ~0;
@@ -25,9 +28,18 @@ namespace HotPotato.Player
 
         public void UpdateIsMyTurn(bool turnOwner)
         {
-            IsMyTurn = turnOwner;
+            if (_hasLost) return;
+            
+            _isMyTurn = turnOwner;
             OnIsMyTurnUpdate?.Invoke(turnOwner);
-            SetModuleInteractivity(IsMyTurn);
+            SetModuleInteractivity(_isMyTurn);
+        }
+
+        public void Lose()
+        {
+            _hasLost = true;
+            OnLose?.Invoke();
+            SetModuleInteractivity(false);
         }
 
         public void DisableModuleInteractivity()
@@ -45,5 +57,7 @@ namespace HotPotato.Player
 
             _physicsRaycaster.eventMask = _notOnTurnEventMask;
         }
+        
+        
     }
 }

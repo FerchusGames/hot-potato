@@ -36,5 +36,14 @@ namespace HotPotato.Player
         {
             OwnedPlayerManager.Instance.UpdateIsMyTurn(IsOwner);
         }
+        
+        [ObserversRpc]
+        public void LoseObserversRpc()
+        {
+            if (IsOwner)
+            {
+                OwnedPlayerManager.Instance.Lose();
+            }
+        }
     }
 }
