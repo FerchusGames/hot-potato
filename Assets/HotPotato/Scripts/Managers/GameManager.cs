@@ -7,12 +7,15 @@ using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
 using HotPotato.UI;
+using UnityEngine;
 
 namespace HotPotato.Managers
 {
     public class GameManager : NetworkBehaviour
     {
         public event Action OnTurnChanged;
+        
+        [SerializeField] private BombTimer _bombTimer;
         
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
@@ -29,8 +32,14 @@ namespace HotPotato.Managers
         public override void OnStartServer()
         {
             _players.Clear();
+            _bombTimer.OnTimerExpired += TimerExpiredEvent;
         }
-        
+
+        public override void OnStopServer()
+        {
+            _bombTimer.OnTimerExpired -= TimerExpiredEvent;
+        }
+
         public void RegisterPlayer(PlayerController player)
         {
             if (!IsServerStarted) return;
@@ -54,9 +63,7 @@ namespace HotPotato.Managers
             {
                 module.ExplodeObserversRpc();
                 
-                _players[_currentPlayerIndex.Value].LoseObserversRpc();
-                _players.RemoveAt(_currentPlayerIndex.Value);
-                _currentPlayerIndex.Value %= _players.Count;
+                ExplodeBomb();
             }
             else
             {
@@ -66,7 +73,21 @@ namespace HotPotato.Managers
             module.Despawn();
             StartTurn();
         }
+
+        [Server]
+        private void ExplodeBomb()
+        {
+            _players[_currentPlayerIndex.Value].LoseObserversRpc();
+            _players.RemoveAt(_currentPlayerIndex.Value);
+            _currentPlayerIndex.Value %= _players.Count;
+        }
         
+        private void TimerExpiredEvent()
+        {
+            ExplodeBomb();
+            StartTurn();
+        }
+
         [Server]
         public void SetCurrentRoundModuleSettings(List<BombModuleSettings> settingsList)
         {

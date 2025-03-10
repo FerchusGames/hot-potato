@@ -600,6 +600,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Timer
       objectReference: {fileID: 0}
+    - target: {fileID: 5954312122343557396, guid: 1888ceb2d7f2a94498b6e593ab8d5b0f, type: 3}
+      propertyPath: _initialTime
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 5966435908232110368, guid: 1888ceb2d7f2a94498b6e593ab8d5b0f, type: 3}
       propertyPath: <SceneId>k__BackingField
       value: 1600100838
@@ -818,6 +822,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _image: {fileID: 1110447744}
+--- !u!114 &1237868125 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5954312122343557396, guid: 1888ceb2d7f2a94498b6e593ab8d5b0f, type: 3}
+  m_PrefabInstance: {fileID: 956752042}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a1b41716ae11d48a68d226b1fa340d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1362170222
 GameObject:
   m_ObjectHideFlags: 0
@@ -1299,6 +1314,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9092673325910937743, guid: e2f7865116df3bd43a9cad5102a99934, type: 3}
+      propertyPath: _bombTimer
+      value: 
+      objectReference: {fileID: 1237868125}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
