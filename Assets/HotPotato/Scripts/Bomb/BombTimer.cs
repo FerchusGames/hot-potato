@@ -54,4 +54,10 @@ public class BombTimer : NetworkBehaviour
     {
         _timer.StartTimer(_initialTime);
     }
+
+    [Server]
+    private void StopTimer()
+    {
+        _timer.StopTimer();
+    }
 }

@@ -14,6 +14,7 @@ namespace HotPotato.Managers
     public class GameManager : NetworkBehaviour
     {
         public event Action OnTurnChanged;
+        public event Action OnRoundEnded;
         
         [SerializeField] private BombTimer _bombTimer;
         
@@ -49,7 +50,7 @@ namespace HotPotato.Managers
                 _players.Add(player);
                 if (_players.Count == 1)
                 {
-                    StartTurn();
+                    StartNextTurn();
                 }
             }
         }
@@ -71,7 +72,7 @@ namespace HotPotato.Managers
             }
             
             module.Despawn();
-            StartTurn();
+            CheckForNextTurn();
         }
 
         [Server]
@@ -85,7 +86,7 @@ namespace HotPotato.Managers
         private void TimerExpiredEvent()
         {
             ExplodeBomb();
-            StartTurn();
+            CheckForNextTurn();
         }
 
         [Server]
@@ -107,16 +108,30 @@ namespace HotPotato.Managers
             base.NetworkManager.GetInstance<UIManager>().SetClueData(_clueData);
         }
    
-        private void StartTurn()
+        private void CheckForNextTurn()
         {
             if (!IsServerStarted) return;
 
-            if (_players.Count > 0)
+            if (_players.Count > 1)
             {
-                PlayerController currentPlayer = _players[_currentPlayerIndex.Value];
-                currentPlayer.StartTurnObserversRpc();
+                StartNextTurn();
             }
-            
+            else
+            {
+                EndRound();
+            }
+        }
+
+        private void EndRound()
+        {
+            OnRoundEnded?.Invoke();
+            _players[0].WinObserversRpc();
+        }
+
+        private void StartNextTurn()
+        {
+            PlayerController currentPlayer = _players[_currentPlayerIndex.Value];
+            currentPlayer.StartTurnObserversRpc();
             OnTurnChanged?.Invoke();
         }
     }
