@@ -83,7 +83,7 @@ namespace HotPotato.Managers
             _currentPlayerIndex.Value %= _players.Count;
         }
         
-        [Server]
+        [ServerRpc(RequireOwnership = false)]
         private void TimerExpiredEvent()
         {
             ExplodeBomb();
@@ -132,9 +132,9 @@ namespace HotPotato.Managers
 
         private void StartNextTurn()
         {
+            OnTurnChanged?.Invoke();
             PlayerController currentPlayer = _players[_currentPlayerIndex.Value];
             currentPlayer.StartTurnObserversRpc();
-            OnTurnChanged?.Invoke();
         }
     }
 }

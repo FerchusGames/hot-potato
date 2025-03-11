@@ -19,7 +19,9 @@ public class BombTimer : NetworkBehaviour
     private readonly SyncVar<bool> _isRunning = new(true);
     
     private GameManager _gameManager;
-
+    
+    private bool _timerExpired = false;
+    
     public override void OnStartNetwork()
     {
         _gameManager = base.NetworkManager.GetInstance<GameManager>();
@@ -48,17 +50,25 @@ public class BombTimer : NetworkBehaviour
         if (IsClientStarted)
         {
             _text.text = _timer.Remaining > 0 ? _timer.Remaining.ToString("F2") : "BOOM!";
-
-            if (_timer.Remaining <= 0)
-            {
-                OnTimerExpired?.Invoke();
-            }
+        }
+        
+        CheckTimer();
+    }
+    
+    [Server]
+    private void CheckTimer()
+    {
+        if (_timer.Remaining <= 0 && !_timerExpired)
+        {
+            _timerExpired = true;
+            OnTimerExpired?.Invoke();
         }
     }
     
     [Server]
     private void ResetTimer()
     {
+        _timerExpired = false;
         _timer.StartTimer(_initialTime);
     }
     
