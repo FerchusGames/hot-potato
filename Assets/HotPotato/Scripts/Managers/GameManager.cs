@@ -83,7 +83,7 @@ namespace HotPotato.Managers
             _currentPlayerIndex.Value %= _players.Count;
         }
         
-        [ServerRpc(RequireOwnership = false)]
+        [Server]
         private void TimerExpiredEvent()
         {
             ExplodeBomb();
@@ -109,6 +109,7 @@ namespace HotPotato.Managers
             base.NetworkManager.GetInstance<UIManager>().SetClueData(_clueData);
         }
    
+        [Server]
         private void CheckForNextTurn()
         {
             if (!IsServerStarted) return;
@@ -123,6 +124,7 @@ namespace HotPotato.Managers
             }
         }
 
+        [Server]
         private void EndRound()
         {
             OnRoundEnded?.Invoke();
@@ -130,6 +132,7 @@ namespace HotPotato.Managers
             _players[0].WinObserversRpc();
         }
 
+        [Server]
         private void StartNextTurn()
         {
             OnTurnChanged?.Invoke();
