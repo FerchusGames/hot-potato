@@ -14,6 +14,7 @@ namespace HotPotato.Managers
     public class GameManager : NetworkBehaviour
     {
         public event Action OnTurnChanged;
+        public event Action OnRoundEnded;
         
         [SerializeField] private BombTimer _bombTimer;
         
@@ -49,7 +50,7 @@ namespace HotPotato.Managers
                 _players.Add(player);
                 if (_players.Count == 1)
                 {
-                    StartTurn();
+                    StartNextTurn();
                 }
             }
         }
@@ -71,7 +72,7 @@ namespace HotPotato.Managers
             }
             
             module.Despawn();
-            StartTurn();
+            CheckForNextTurn();
         }
 
         [Server]
@@ -82,10 +83,11 @@ namespace HotPotato.Managers
             _currentPlayerIndex.Value %= _players.Count;
         }
         
+        [Server]
         private void TimerExpiredEvent()
         {
             ExplodeBomb();
-            StartTurn();
+            CheckForNextTurn();
         }
 
         [Server]
@@ -107,17 +109,35 @@ namespace HotPotato.Managers
             base.NetworkManager.GetInstance<UIManager>().SetClueData(_clueData);
         }
    
-        private void StartTurn()
+        [Server]
+        private void CheckForNextTurn()
         {
             if (!IsServerStarted) return;
 
-            if (_players.Count > 0)
+            if (_players.Count > 1)
             {
-                PlayerController currentPlayer = _players[_currentPlayerIndex.Value];
-                currentPlayer.StartTurnObserversRpc();
+                StartNextTurn();
             }
-            
+            else
+            {
+                EndRound();
+            }
+        }
+
+        [Server]
+        private void EndRound()
+        {
+            OnRoundEnded?.Invoke();
+            _bombTimer.StopTimerObserversRpc();
+            _players[0].WinObserversRpc();
+        }
+
+        [Server]
+        private void StartNextTurn()
+        {
             OnTurnChanged?.Invoke();
+            PlayerController currentPlayer = _players[_currentPlayerIndex.Value];
+            currentPlayer.StartTurnObserversRpc();
         }
     }
 }

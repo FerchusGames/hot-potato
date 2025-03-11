@@ -16,9 +16,12 @@ public class BombTimer : NetworkBehaviour
     private TextMeshProUGUI _text;
     
     private readonly SyncTimer _timer = new();
+    private readonly SyncVar<bool> _isRunning = new(true);
     
     private GameManager _gameManager;
-
+    
+    private bool _timerExpired = false;
+    
     public override void OnStartNetwork()
     {
         _gameManager = base.NetworkManager.GetInstance<GameManager>();
@@ -36,22 +39,56 @@ public class BombTimer : NetworkBehaviour
 
     private void Update()
     {
+        if (!_isRunning.Value) 
+        {
+            _text.text = "END";
+            return;
+        }
+
         _timer.Update();
-        
+    
         if (IsClientStarted)
         {
             _text.text = _timer.Remaining > 0 ? _timer.Remaining.ToString("F2") : "BOOM!";
-            
-            if (_timer.Remaining <= 0)
-            {
-                OnTimerExpired?.Invoke();
-            }
+        }
+        
+        CheckTimer();
+    }
+    
+    [Server]
+    private void CheckTimer()
+    {
+        if (_timer.Remaining <= 0 && !_timerExpired)
+        {
+            _timerExpired = true;
+            OnTimerExpired?.Invoke();
         }
     }
     
     [Server]
     private void ResetTimer()
     {
+        _timerExpired = false;
         _timer.StartTimer(_initialTime);
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void StopTimerObserversRpc()
+    {
+        StopTimer();
+        StopTimerClientRpc();
+    }
+
+    [Server]
+    private void StopTimer()
+    {
+        _isRunning.Value = false;
+        _timer.StopTimer();
+    }
+
+    [ObserversRpc]
+    private void StopTimerClientRpc()
+    {
+        _isRunning.Value = false;
     }
 }

@@ -45,5 +45,14 @@ namespace HotPotato.Player
                 OwnedPlayerManager.Instance.Lose();
             }
         }
+
+        [ObserversRpc]
+        public void WinObserversRpc()
+        {
+            if (IsOwner)
+            {
+                OwnedPlayerManager.Instance.Win();
+            }
+        }
     }
 }
