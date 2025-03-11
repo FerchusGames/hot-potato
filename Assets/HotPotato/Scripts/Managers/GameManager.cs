@@ -83,6 +83,7 @@ namespace HotPotato.Managers
             _currentPlayerIndex.Value %= _players.Count;
         }
         
+        [Server]
         private void TimerExpiredEvent()
         {
             ExplodeBomb();
@@ -125,6 +126,7 @@ namespace HotPotato.Managers
         private void EndRound()
         {
             OnRoundEnded?.Invoke();
+            _bombTimer.StopTimerObserversRpc();
             _players[0].WinObserversRpc();
         }
 
