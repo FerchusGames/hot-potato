@@ -9,32 +9,25 @@ public class BombTimer : NetworkBehaviour
 {
     public event Action OnTimerExpired; // TODO: Change this to event bus
     
-    [SerializeField]
-    private int _initialTime = 20;
+    [SerializeField] private int _initialTime = 20;
 
-    [SerializeField]
-    private TextMeshProUGUI _text;
+    [SerializeField] private TextMeshProUGUI _text;
     
     private readonly SyncTimer _timer = new();
     private readonly SyncVar<bool> _isRunning = new(true);
     
-    private GameManager _gameManager;
+    private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
     
     private bool _timerExpired = false;
     
-    public override void OnStartNetwork()
-    {
-        _gameManager = base.NetworkManager.GetInstance<GameManager>();
-    }
-    
     public override void OnStartServer()
     {
-        _gameManager.OnTurnChanged += ResetTimer;
+        GameManager.OnTurnChanged += ResetTimer;
     }
 
     public override void OnStopServer()
     {
-        _gameManager.OnTurnChanged -= ResetTimer;
+        GameManager.OnTurnChanged -= ResetTimer;
     }
 
     private void Update()
@@ -68,6 +61,7 @@ public class BombTimer : NetworkBehaviour
     [Server]
     private void ResetTimer()
     {
+        _isRunning.Value = true;
         _timerExpired = false;
         _timer.StartTimer(_initialTime);
     }

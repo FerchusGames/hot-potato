@@ -26,23 +26,24 @@ namespace HotPotato.Bomb
         [BoxGroup("Grid Settings"), Tooltip("Determines the spacing between modules.")]
         [SerializeField] private float _caseSize = 0.5f;
 
-        private GameManager _gameManager;
         private HashSet<int> _trapIndexes = new();
         private List<BombModuleSettings> _settingsList = new();
-
+        
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+        
         private int TotalModulesCount => _gridSize * _gridSize;
         private float ModuleScale => _unitaryScale / _gridSize;
         private float OffsetBetweenModules => _caseSize / _gridSize;
         private float FirstPositionOffset => -OffsetBetweenModules * 0.5f * (_gridSize - 1);
 
-        public override void OnStartNetwork()
-        {
-            _gameManager = base.NetworkManager.GetInstance<GameManager>();
-        }
-
         public override void OnStartServer()
         {
-            SpawnModuleGrid();
+            GameManager.OnRoundStarted += SpawnModuleGrid;
+        }
+
+        public override void OnStopServer()
+        {
+            GameManager.OnRoundStarted -= SpawnModuleGrid;
         }
 
         [Server]
@@ -60,7 +61,7 @@ namespace HotPotato.Bomb
                 }
             }
 
-            _gameManager.SetCurrentRoundModuleSettings(_settingsList);
+            GameManager.SetCurrentRoundModuleSettings(_settingsList);
         }
 
         private void SpawnAndConfigureModule(int column, int row)

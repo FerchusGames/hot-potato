@@ -1,34 +1,31 @@
-﻿using Cysharp.Threading.Tasks;
-using FishNet.Object;
+﻿using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using HotPotato.Managers;
+using UnityEngine;
 
 namespace HotPotato.Player
 {
     public class PlayerController : NetworkBehaviour
     {
-        private GameManager _gameManager;
+        private readonly SyncVar<int> _winCount = new();
         
         private bool _isCurrentPlayer = false;
         private bool _isMyTurn = false;
         
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+        
         public override void OnStartClient()
-        {
-            base.OnStartClient();
-            GetInstancesFromNetworkManager().Forget();
-            
+        { 
             if (IsServerInitialized)
             {
-                _gameManager.RegisterPlayer(this);
+                GameManager.RegisterPlayer(this);
             }
         }
         
-        private async UniTaskVoid GetInstancesFromNetworkManager() // TODO: Remove and initialize in joining scene
+        [ObserversRpc]
+        public void StartRoundObserversRpc()
         {
-            do
-            {
-                _gameManager = base.NetworkManager.GetInstance<GameManager>();
-                await UniTask.Yield();
-            } while (_gameManager == null);
+            OwnedPlayerManager.Instance.StartRound();
         }
         
         [ObserversRpc]
@@ -45,13 +42,20 @@ namespace HotPotato.Player
                 OwnedPlayerManager.Instance.Lose();
             }
         }
-
+        
+        [Server]
+        public void Win()
+        {
+            _winCount.Value++;
+            WinObserversRpc(_winCount.Value);
+        }
+        
         [ObserversRpc]
-        public void WinObserversRpc()
+        private void WinObserversRpc(int winCount)
         {
             if (IsOwner)
             {
-                OwnedPlayerManager.Instance.Win();
+                OwnedPlayerManager.Instance.Win(winCount);
             }
         }
     }

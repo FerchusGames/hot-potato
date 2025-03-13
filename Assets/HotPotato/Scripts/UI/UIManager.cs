@@ -4,8 +4,10 @@ using Cysharp.Threading.Tasks;
 using FishNet.Connection;
 using FishNet.Object;
 using HotPotato.Clues;
+using HotPotato.Managers;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace HotPotato.UI
 {
@@ -16,8 +18,39 @@ namespace HotPotato.UI
         
         [Required, SceneObjectsOnly]
         [SerializeField] private Transform _clueFieldParent;
+
+        [Required, SceneObjectsOnly] 
+        [SerializeField] private Button _nextRoundButton;
         
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
+        private List<ClueFieldUI> _clueFieldUIList = new();
+
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+
+        public override void OnStartNetwork()
+        {
+            base.NetworkManager.RegisterInstance(this);
+        }
+
+        public override void OnStartServer()
+        {
+            GameManager.OnRoundEnded += ClearClueTypeData;
+            GameManager.OnRoundEnded += ShowNextRoundButton;
+            GameManager.OnRoundStarted += ShowNextRoundClues;
+        }
+        
+        public override void OnStopServer()
+        {
+            GameManager.OnRoundEnded -= ClearClueTypeData;
+            GameManager.OnRoundEnded -= ShowNextRoundButton;
+            GameManager.OnRoundStarted -= ShowNextRoundClues;
+        }
+
+        public override void OnStartClient()
+        {
+            if (IsHostInitialized) return;
+            RequestClueTypeData(LocalConnection); // TODO: Prevent this from being called multiple times when rejoining
+        }
 
         [Server]
         public void SetClueData(ClueData clueData)
@@ -30,17 +63,25 @@ namespace HotPotato.UI
                 { BombClueType.Letter, clueData.ModuleLetterData }
             };
         }
-
-        public override void OnStartNetwork()
+        
+        [Server]
+        private void ClearClueTypeData()
         {
-            base.NetworkManager.RegisterInstance(this);
+            _clueTypeData = null;
         }
-
-        public override void OnStartClient()
+        
+        [ObserversRpc]
+        private void ShowNextRoundClues()
         {
-            RequestClueTypeData(LocalConnection); // TODO: Prevent this from being called multiple times when rejoining
+            foreach (var clueFieldUI in _clueFieldUIList)
+            {
+                Destroy(clueFieldUI.gameObject);
+            }
+            
+            _clueFieldUIList.Clear();
+            RequestClueTypeData(LocalConnection);
         }
-
+        
         [ServerRpc(RequireOwnership = false)]
         private void RequestClueTypeData(NetworkConnection requestingClient)
         {
@@ -64,10 +105,9 @@ namespace HotPotato.UI
             InstantiateCluesUI(requestingClient, clueType, clueTypeDictionary);
         }
         
-        [ObserversRpc]
-        private void DebugLogObserversRpc()
+        private void ShowNextRoundButton()
         {
-            Debug.Log("ObserversRpc called");
+            if (IsHostInitialized) _nextRoundButton.gameObject.SetActive(true);
         }
         
         [TargetRpc]
@@ -82,6 +122,7 @@ namespace HotPotato.UI
                     _clueFieldParent
                     ).GetComponent<ClueFieldUI>();
                 
+                _clueFieldUIList.Add(clueFieldUI);
                 clueFieldUI.Initialize(clueType, clue);
             }
         }

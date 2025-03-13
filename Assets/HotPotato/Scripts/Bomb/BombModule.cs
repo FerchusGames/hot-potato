@@ -17,14 +17,29 @@ namespace HotPotato.Bomb
         [SerializeField, Required] private MeshRenderer _meshRenderer;
         [SerializeField, Required] private TextMeshProUGUI _text;
         
-        private GameManager _gameManager;
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
 
         [ShowInInspector, ReadOnly] public bool IsTrap { get; private set; } = false;
 
-        public override void OnStartClient()
+        public override void OnStartServer()
         {
-            _gameManager = base.NetworkManager.GetInstance<GameManager>();
+            GameManager.OnRoundStarted += Despawn;
+        }
+
+        public override void OnStopServer()
+        {
+            GameManager.OnRoundStarted -= Despawn;
+        }
+
+        private void Start()
+        {
             ApplySettings(_settings.Value);
+        }
+
+        [Server]
+        private void Despawn()
+        {
+            base.Despawn();
         }
 
         [Server]
@@ -35,7 +50,7 @@ namespace HotPotato.Bomb
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            _gameManager.InteractWithModuleServerRpc(this);
+            GameManager.InteractWithModuleServerRpc(this);
             OwnedPlayerManager.Instance.DisableModuleInteractivity();
         }
 
