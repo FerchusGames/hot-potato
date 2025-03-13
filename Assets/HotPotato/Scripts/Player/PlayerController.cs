@@ -1,10 +1,14 @@
 ﻿using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using HotPotato.Managers;
+using UnityEngine;
 
 namespace HotPotato.Player
 {
     public class PlayerController : NetworkBehaviour
     {
+        private readonly SyncVar<int> _winCount = new();
+        
         private bool _isCurrentPlayer = false;
         private bool _isMyTurn = false;
         
@@ -38,13 +42,20 @@ namespace HotPotato.Player
                 OwnedPlayerManager.Instance.Lose();
             }
         }
-
+        
+        [Server]
+        public void Win()
+        {
+            _winCount.Value++;
+            WinObserversRpc(_winCount.Value);
+        }
+        
         [ObserversRpc]
-        public void WinObserversRpc()
+        private void WinObserversRpc(int winCount)
         {
             if (IsOwner)
             {
-                OwnedPlayerManager.Instance.Win();
+                OwnedPlayerManager.Instance.Win(winCount);
             }
         }
     }

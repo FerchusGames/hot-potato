@@ -123,7 +123,7 @@ namespace HotPotato.Managers
         {
             OnRoundEnded?.Invoke();
             _bombTimer.StopTimerObserversRpc();
-            _remainingPlayers[0].WinObserversRpc();
+            _remainingPlayers[0].Win();
         }
         
         [ServerRpc(RequireOwnership = false)]

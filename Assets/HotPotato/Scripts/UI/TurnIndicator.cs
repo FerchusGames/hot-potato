@@ -33,7 +33,7 @@ namespace HotPotato.UI
             _image.color = Color.black;
         }
 
-        private void Win()
+        private void Win(int winCount)
         {
             _image.color = Color.yellow;
         }
