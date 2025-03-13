@@ -1,34 +1,23 @@
-﻿using Cysharp.Threading.Tasks;
-using FishNet.Object;
+﻿using FishNet.Object;
 using HotPotato.Managers;
 
 namespace HotPotato.Player
 {
     public class PlayerController : NetworkBehaviour
     {
-        private GameManager _gameManager;
-        
         private bool _isCurrentPlayer = false;
         private bool _isMyTurn = false;
+        
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
         
         public override void OnStartClient()
         {
             base.OnStartClient();
-            GetInstancesFromNetworkManager().Forget();
             
             if (IsServerInitialized)
             {
-                _gameManager.RegisterPlayer(this);
+                GameManager.RegisterPlayer(this);
             }
-        }
-        
-        private async UniTaskVoid GetInstancesFromNetworkManager() // TODO: Remove and initialize in joining scene
-        {
-            do
-            {
-                _gameManager = base.NetworkManager.GetInstance<GameManager>();
-                await UniTask.Yield();
-            } while (_gameManager == null);
         }
         
         [ObserversRpc]

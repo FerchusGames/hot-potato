@@ -1,6 +1,4 @@
-﻿using System;
-using FishNet.Connection;
-using FishNet.Object;
+﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using HotPotato.ApplicationLifecycle;
 using HotPotato.Managers;
@@ -19,19 +17,18 @@ namespace HotPotato.Bomb
         [SerializeField, Required] private MeshRenderer _meshRenderer;
         [SerializeField, Required] private TextMeshProUGUI _text;
         
-        private GameManager _gameManager;
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
 
         [ShowInInspector, ReadOnly] public bool IsTrap { get; private set; } = false;
 
-        public override void OnStartNetwork()
+        public override void OnStartServer()
         {
-            _gameManager = base.NetworkManager.GetInstance<GameManager>();
-            _gameManager.OnRoundStarted += Despawn;
+            GameManager.OnRoundStarted += Despawn;
         }
 
-        public override void OnStopNetwork()
+        public override void OnStopServer()
         {
-            _gameManager.OnRoundStarted -= Despawn;
+            GameManager.OnRoundStarted -= Despawn;
         }
 
         private void Start()
@@ -53,7 +50,7 @@ namespace HotPotato.Bomb
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            _gameManager.InteractWithModuleServerRpc(this);
+            GameManager.InteractWithModuleServerRpc(this);
             OwnedPlayerManager.Instance.DisableModuleInteractivity();
         }
 

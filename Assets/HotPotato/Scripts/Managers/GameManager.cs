@@ -2,7 +2,6 @@ using System;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
@@ -26,6 +25,8 @@ namespace HotPotato.Managers
         private List<BombModuleSettings> _bombModuleSettingsList = new();
         
         private ClueData _clueData;
+        
+        private UIManager UIManager => base.NetworkManager.GetInstance<UIManager>();
         
         public override void OnStartNetwork()
         {
@@ -99,18 +100,7 @@ namespace HotPotato.Managers
         {
             _bombModuleSettingsList = settingsList;
             _clueData = new ClueData(settingsList, false);
-            SetClueDataAsync(_clueData).Forget();
-        }
-
-        [Server]
-        private async UniTaskVoid SetClueDataAsync(ClueData clueData)
-        {
-            while (base.NetworkManager.GetInstance<UIManager>() == null)
-            {
-                await UniTask.Yield();
-            }
-
-            base.NetworkManager.GetInstance<UIManager>().SetClueData(_clueData);
+            UIManager.SetClueData(_clueData);
         }
    
         [Server]

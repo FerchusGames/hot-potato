@@ -24,7 +24,7 @@ namespace HotPotato.UI
         
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
 
-        private GameManager _gameManager;
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
 
         public override void OnStartNetwork()
         {
@@ -33,13 +33,12 @@ namespace HotPotato.UI
 
         public override void OnStartServer()
         {
-            _gameManager = base.NetworkManager.GetInstance<GameManager>();
-            _gameManager.OnRoundEnded += ShowNextRoundButton;
+            GameManager.OnRoundEnded += ShowNextRoundButton;
         }
         
         public override void OnStopServer()
         {
-            _gameManager.OnRoundEnded -= ShowNextRoundButton;
+            GameManager.OnRoundEnded -= ShowNextRoundButton;
         }
 
         public override void OnStartClient()

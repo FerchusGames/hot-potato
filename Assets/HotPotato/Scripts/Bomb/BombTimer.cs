@@ -18,23 +18,18 @@ public class BombTimer : NetworkBehaviour
     private readonly SyncTimer _timer = new();
     private readonly SyncVar<bool> _isRunning = new(true);
     
-    private GameManager _gameManager;
+    private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
     
     private bool _timerExpired = false;
     
-    public override void OnStartNetwork()
-    {
-        _gameManager = base.NetworkManager.GetInstance<GameManager>();
-    }
-    
     public override void OnStartServer()
     {
-        _gameManager.OnTurnChanged += ResetTimer;
+        GameManager.OnTurnChanged += ResetTimer;
     }
 
     public override void OnStopServer()
     {
-        _gameManager.OnTurnChanged -= ResetTimer;
+        GameManager.OnTurnChanged -= ResetTimer;
     }
 
     private void Update()
