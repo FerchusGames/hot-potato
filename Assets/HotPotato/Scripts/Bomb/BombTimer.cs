@@ -9,11 +9,9 @@ public class BombTimer : NetworkBehaviour
 {
     public event Action OnTimerExpired; // TODO: Change this to event bus
     
-    [SerializeField]
-    private int _initialTime = 20;
+    [SerializeField] private int _initialTime = 20;
 
-    [SerializeField]
-    private TextMeshProUGUI _text;
+    [SerializeField] private TextMeshProUGUI _text;
     
     private readonly SyncTimer _timer = new();
     private readonly SyncVar<bool> _isRunning = new(true);

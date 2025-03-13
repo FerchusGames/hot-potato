@@ -48,7 +48,7 @@ namespace HotPotato.Managers
         {
             if (!IsServerStarted) return;
 
-            if (!_remainingPlayers.Contains(player))
+            if (!_matchPlayers.Contains(player))
             {
                 _matchPlayers.Add(player);
                 _remainingPlayers.Add(player);

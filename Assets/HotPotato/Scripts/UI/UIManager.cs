@@ -23,6 +23,7 @@ namespace HotPotato.UI
         [SerializeField] private Button _nextRoundButton;
         
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
+        private List<ClueFieldUI> _clueFieldUIList = new();
 
         private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
 
@@ -33,12 +34,16 @@ namespace HotPotato.UI
 
         public override void OnStartServer()
         {
+            GameManager.OnRoundEnded += ClearClueTypeData;
             GameManager.OnRoundEnded += ShowNextRoundButton;
+            GameManager.OnRoundStarted += ShowNextRoundClues;
         }
         
         public override void OnStopServer()
         {
+            GameManager.OnRoundEnded -= ClearClueTypeData;
             GameManager.OnRoundEnded -= ShowNextRoundButton;
+            GameManager.OnRoundStarted -= ShowNextRoundClues;
         }
 
         public override void OnStartClient()
@@ -56,6 +61,24 @@ namespace HotPotato.UI
                 { BombClueType.Type, clueData.ModuleTypeData },
                 { BombClueType.Letter, clueData.ModuleLetterData }
             };
+        }
+        
+        [Server]
+        private void ClearClueTypeData()
+        {
+            _clueTypeData = null;
+        }
+        
+        [ObserversRpc]
+        private void ShowNextRoundClues()
+        {
+            foreach (var clueFieldUI in _clueFieldUIList)
+            {
+                Destroy(clueFieldUI.gameObject);
+            }
+            
+            _clueFieldUIList.Clear();
+            RequestClueTypeData(LocalConnection);
         }
         
         [ServerRpc(RequireOwnership = false)]
@@ -98,6 +121,7 @@ namespace HotPotato.UI
                     _clueFieldParent
                     ).GetComponent<ClueFieldUI>();
                 
+                _clueFieldUIList.Add(clueFieldUI);
                 clueFieldUI.Initialize(clueType, clue);
             }
         }

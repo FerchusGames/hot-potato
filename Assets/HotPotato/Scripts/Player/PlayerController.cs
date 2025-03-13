@@ -11,9 +11,7 @@ namespace HotPotato.Player
         private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
         
         public override void OnStartClient()
-        {
-            base.OnStartClient();
-            
+        { 
             if (IsServerInitialized)
             {
                 GameManager.RegisterPlayer(this);
