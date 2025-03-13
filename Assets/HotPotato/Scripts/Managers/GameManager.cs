@@ -139,10 +139,17 @@ namespace HotPotato.Managers
         [ServerRpc(RequireOwnership = false)]
         public void StartNextRoundServerRpc()
         {
-            OnRoundStarted?.Invoke();
             _remainingPlayers.Clear();
             _remainingPlayers.AddRange(_matchPlayers);
             _currentPlayerIndex.Value = 0;
+            OnRoundStarted?.Invoke();
+
+            foreach (var player in _remainingPlayers)
+            {
+                player.StartRoundObserversRpc();
+            }
+            
+            StartNextTurn();
         }
         
         [Server]

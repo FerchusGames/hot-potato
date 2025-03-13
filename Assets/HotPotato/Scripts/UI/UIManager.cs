@@ -36,7 +36,7 @@ namespace HotPotato.UI
             _gameManager = base.NetworkManager.GetInstance<GameManager>();
             _gameManager.OnRoundEnded += ShowNextRoundButton;
         }
-
+        
         public override void OnStopServer()
         {
             _gameManager.OnRoundEnded -= ShowNextRoundButton;

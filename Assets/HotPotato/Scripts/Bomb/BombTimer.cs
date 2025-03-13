@@ -68,6 +68,7 @@ public class BombTimer : NetworkBehaviour
     [Server]
     private void ResetTimer()
     {
+        _isRunning.Value = true;
         _timerExpired = false;
         _timer.StartTimer(_initialTime);
     }

@@ -32,6 +32,12 @@ namespace HotPotato.Player
         }
         
         [ObserversRpc]
+        public void StartRoundObserversRpc()
+        {
+            OwnedPlayerManager.Instance.StartRound();
+        }
+        
+        [ObserversRpc]
         public void StartTurnObserversRpc()
         {
             OwnedPlayerManager.Instance.UpdateIsMyTurn(IsOwner);
