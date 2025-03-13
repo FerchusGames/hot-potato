@@ -48,6 +48,7 @@ namespace HotPotato.UI
 
         public override void OnStartClient()
         {
+            if (IsHostInitialized) return;
             RequestClueTypeData(LocalConnection); // TODO: Prevent this from being called multiple times when rejoining
         }
 
