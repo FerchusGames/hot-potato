@@ -15,12 +15,14 @@ namespace HotPotato.Managers
     {
         public event Action OnTurnChanged;
         public event Action OnRoundEnded;
+        public event Action OnRoundStarted;
         
         [SerializeField] private BombTimer _bombTimer;
         
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
-        private List<PlayerController> _players = new();
+        private List<PlayerController> _matchPlayers = new();
+        private List<PlayerController> _remainingPlayers = new();
         private List<BombModuleSettings> _bombModuleSettingsList = new();
         
         private ClueData _clueData;
@@ -32,7 +34,7 @@ namespace HotPotato.Managers
 
         public override void OnStartServer()
         {
-            _players.Clear();
+            _remainingPlayers.Clear();
             _bombTimer.OnTimerExpired += TimerExpiredEvent;
         }
 
@@ -45,11 +47,13 @@ namespace HotPotato.Managers
         {
             if (!IsServerStarted) return;
 
-            if (!_players.Contains(player))
+            if (!_remainingPlayers.Contains(player))
             {
-                _players.Add(player);
-                if (_players.Count == 1)
+                _matchPlayers.Add(player);
+                _remainingPlayers.Add(player);
+                if (_remainingPlayers.Count == 1)
                 {
+                    OnRoundStarted?.Invoke();
                     StartNextTurn();
                 }
             }
@@ -68,7 +72,7 @@ namespace HotPotato.Managers
             }
             else
             {
-                _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _players.Count;
+                _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _remainingPlayers.Count;
             }
             
             module.Despawn();
@@ -78,9 +82,9 @@ namespace HotPotato.Managers
         [Server]
         private void ExplodeBomb()
         {
-            _players[_currentPlayerIndex.Value].LoseObserversRpc();
-            _players.RemoveAt(_currentPlayerIndex.Value);
-            _currentPlayerIndex.Value %= _players.Count;
+            _remainingPlayers[_currentPlayerIndex.Value].LoseObserversRpc();
+            _remainingPlayers.RemoveAt(_currentPlayerIndex.Value);
+            _currentPlayerIndex.Value %= _remainingPlayers.Count;
         }
         
         [Server]
@@ -114,7 +118,7 @@ namespace HotPotato.Managers
         {
             if (!IsServerStarted) return;
 
-            if (_players.Count > 1)
+            if (_remainingPlayers.Count > 1)
             {
                 StartNextTurn();
             }
@@ -129,14 +133,23 @@ namespace HotPotato.Managers
         {
             OnRoundEnded?.Invoke();
             _bombTimer.StopTimerObserversRpc();
-            _players[0].WinObserversRpc();
+            _remainingPlayers[0].WinObserversRpc();
+            StartNextRound();
         }
 
+        private void StartNextRound()
+        {
+            OnRoundStarted?.Invoke();
+            _remainingPlayers.Clear();
+            _remainingPlayers.AddRange(_matchPlayers);
+            _currentPlayerIndex.Value = 0;
+        }
+        
         [Server]
         private void StartNextTurn()
         {
             OnTurnChanged?.Invoke();
-            PlayerController currentPlayer = _players[_currentPlayerIndex.Value];
+            PlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
             currentPlayer.StartTurnObserversRpc();
         }
     }

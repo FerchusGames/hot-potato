@@ -38,11 +38,12 @@ namespace HotPotato.Bomb
         public override void OnStartNetwork()
         {
             _gameManager = base.NetworkManager.GetInstance<GameManager>();
+            _gameManager.OnRoundStarted += SpawnModuleGrid;
         }
 
-        public override void OnStartServer()
+        public override void OnStopNetwork()
         {
-            SpawnModuleGrid();
+            _gameManager.OnRoundStarted -= SpawnModuleGrid;
         }
 
         [Server]

@@ -1,4 +1,6 @@
-﻿using FishNet.Object;
+﻿using System;
+using FishNet.Connection;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using HotPotato.ApplicationLifecycle;
 using HotPotato.Managers;
@@ -21,10 +23,26 @@ namespace HotPotato.Bomb
 
         [ShowInInspector, ReadOnly] public bool IsTrap { get; private set; } = false;
 
-        public override void OnStartClient()
+        public override void OnStartNetwork()
         {
             _gameManager = base.NetworkManager.GetInstance<GameManager>();
+            _gameManager.OnRoundStarted += Despawn;
+        }
+
+        public override void OnStopNetwork()
+        {
+            _gameManager.OnRoundStarted -= Despawn;
+        }
+
+        private void Start()
+        {
             ApplySettings(_settings.Value);
+        }
+
+        [Server]
+        private void Despawn()
+        {
+            base.Despawn();
         }
 
         [Server]
