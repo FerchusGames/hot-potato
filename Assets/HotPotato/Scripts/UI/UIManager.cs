@@ -4,8 +4,10 @@ using Cysharp.Threading.Tasks;
 using FishNet.Connection;
 using FishNet.Object;
 using HotPotato.Clues;
+using HotPotato.Managers;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace HotPotato.UI
 {
@@ -16,8 +18,34 @@ namespace HotPotato.UI
         
         [Required, SceneObjectsOnly]
         [SerializeField] private Transform _clueFieldParent;
+
+        [Required, SceneObjectsOnly] 
+        [SerializeField] private Button _nextRoundButton;
         
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
+
+        private GameManager _gameManager;
+
+        public override void OnStartNetwork()
+        {
+            base.NetworkManager.RegisterInstance(this);
+        }
+
+        public override void OnStartServer()
+        {
+            _gameManager = base.NetworkManager.GetInstance<GameManager>();
+            _gameManager.OnRoundEnded += ShowNextRoundButton;
+        }
+
+        public override void OnStopServer()
+        {
+            _gameManager.OnRoundEnded -= ShowNextRoundButton;
+        }
+
+        public override void OnStartClient()
+        {
+            RequestClueTypeData(LocalConnection); // TODO: Prevent this from being called multiple times when rejoining
+        }
 
         [Server]
         public void SetClueData(ClueData clueData)
@@ -30,17 +58,7 @@ namespace HotPotato.UI
                 { BombClueType.Letter, clueData.ModuleLetterData }
             };
         }
-
-        public override void OnStartNetwork()
-        {
-            base.NetworkManager.RegisterInstance(this);
-        }
-
-        public override void OnStartClient()
-        {
-            RequestClueTypeData(LocalConnection); // TODO: Prevent this from being called multiple times when rejoining
-        }
-
+        
         [ServerRpc(RequireOwnership = false)]
         private void RequestClueTypeData(NetworkConnection requestingClient)
         {
@@ -64,10 +82,9 @@ namespace HotPotato.UI
             InstantiateCluesUI(requestingClient, clueType, clueTypeDictionary);
         }
         
-        [ObserversRpc]
-        private void DebugLogObserversRpc()
+        private void ShowNextRoundButton()
         {
-            Debug.Log("ObserversRpc called");
+            if (IsHostInitialized) _nextRoundButton.gameObject.SetActive(true);
         }
         
         [TargetRpc]

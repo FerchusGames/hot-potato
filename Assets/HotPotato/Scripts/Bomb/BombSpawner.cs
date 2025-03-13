@@ -35,13 +35,13 @@ namespace HotPotato.Bomb
         private float OffsetBetweenModules => _caseSize / _gridSize;
         private float FirstPositionOffset => -OffsetBetweenModules * 0.5f * (_gridSize - 1);
 
-        public override void OnStartNetwork()
+        public override void OnStartServer()
         {
             _gameManager = base.NetworkManager.GetInstance<GameManager>();
             _gameManager.OnRoundStarted += SpawnModuleGrid;
         }
 
-        public override void OnStopNetwork()
+        public override void OnStopServer()
         {
             _gameManager.OnRoundStarted -= SpawnModuleGrid;
         }

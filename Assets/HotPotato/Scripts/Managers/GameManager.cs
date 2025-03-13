@@ -134,10 +134,10 @@ namespace HotPotato.Managers
             OnRoundEnded?.Invoke();
             _bombTimer.StopTimerObserversRpc();
             _remainingPlayers[0].WinObserversRpc();
-            StartNextRound();
         }
-
-        private void StartNextRound()
+        
+        [ServerRpc(RequireOwnership = false)]
+        public void StartNextRoundServerRpc()
         {
             OnRoundStarted?.Invoke();
             _remainingPlayers.Clear();
