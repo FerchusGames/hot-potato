@@ -14,17 +14,24 @@ namespace HotPotato.UI
         {
             OwnedPlayerManager.Instance.OnWinRound += UpdateWinRoundCount;
             OwnedPlayerManager.Instance.OnWinMatch += UpdateWinRoundCount;
+            OwnedPlayerManager.Instance.OnResetMatchStats += ResetWinRoundCount;
         }
 
         private void OnDestroy()
         {
             OwnedPlayerManager.Instance.OnWinRound -= UpdateWinRoundCount;
             OwnedPlayerManager.Instance.OnWinMatch -= UpdateWinRoundCount;
+            OwnedPlayerManager.Instance.OnResetMatchStats -= ResetWinRoundCount;
         }
 
         private void UpdateWinRoundCount(int winCount)
         {
             _text.text = winCount.ToString();
+        }
+        
+        private void ResetWinRoundCount()
+        {
+            _text.text = "0";
         }
     }
 }

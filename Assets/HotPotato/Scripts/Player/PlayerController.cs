@@ -18,15 +18,28 @@ namespace HotPotato.Player
 
         public override void OnStartClient()
         {
-            if (IsServerInitialized)
-            {
-                GameManager.RegisterPlayer(this);
-            }
+            if (!IsServerInitialized) return;
+            GameManager.RegisterPlayer(this);
         }
 
+        [Server]
+        public void ResetMatchStats()
+        {
+            _winCount.Value = 0;
+            ResetMatchStatsObserversRpc();
+        }
+        
+        [ObserversRpc]
+        private void ResetMatchStatsObserversRpc()
+        {
+            if (!IsOwner) return;
+            OwnedPlayerManager.Instance.ResetMatchStats();
+        }
+        
         [ObserversRpc]
         public void StartRoundObserversRpc()
         {
+            if (!IsOwner) return;
             OwnedPlayerManager.Instance.StartRound();
         }
 
@@ -39,10 +52,8 @@ namespace HotPotato.Player
         [ObserversRpc]
         public void LoseObserversRpc()
         {
-            if (IsOwner)
-            {
-                OwnedPlayerManager.Instance.Lose();
-            }
+            if (!IsOwner) return;
+            OwnedPlayerManager.Instance.Lose();
         }
 
         [Server]

@@ -15,6 +15,7 @@ namespace HotPotato.Player
         public event Action<int> OnWinMatch;
         public event Action OnLoseMatch;
         public event Action OnRoundStarted;
+        public event Action OnResetMatchStats;
         
         private bool _isMyTurn = false;
         private bool _isStillPlaying = true;
@@ -43,6 +44,12 @@ namespace HotPotato.Player
         {
             _isStillPlaying = true;
             OnRoundStarted?.Invoke();
+        }
+        
+        
+        public void ResetMatchStats()
+        {
+            OnResetMatchStats?.Invoke();
         }
         
         public void Lose()

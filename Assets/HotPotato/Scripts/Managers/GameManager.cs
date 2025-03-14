@@ -143,9 +143,7 @@ namespace HotPotato.Managers
         [ServerRpc(RequireOwnership = false)]
         public void StartNextRoundServerRpc()
         {
-            _remainingPlayers.Clear();
-            _remainingPlayers.AddRange(_matchPlayers);
-            _currentPlayerIndex.Value = 0;
+            ResetPlayers();
             OnRoundStarted?.Invoke();
 
             foreach (var player in _remainingPlayers)
@@ -154,6 +152,28 @@ namespace HotPotato.Managers
             }
             
             StartNextTurn();
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        public void StartNextMatchServerRpc()
+        {
+            ResetPlayers();
+            OnRoundStarted?.Invoke();
+
+            foreach (var player in _remainingPlayers)
+            {
+                player.ResetMatchStats();
+                player.StartRoundObserversRpc();
+            }
+            
+            StartNextTurn();
+        }
+
+        private void ResetPlayers()
+        {
+            _remainingPlayers.Clear();
+            _remainingPlayers.AddRange(_matchPlayers);
+            _currentPlayerIndex.Value = 0;
         }
         
         [Server]
