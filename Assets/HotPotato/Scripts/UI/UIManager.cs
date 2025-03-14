@@ -22,6 +22,9 @@ namespace HotPotato.UI
         [Required, SceneObjectsOnly] 
         [SerializeField] private Button _nextRoundButton;
         
+        [Required, SceneObjectsOnly] 
+        [SerializeField] private Button _newMatchButton;
+        
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
         private List<ClueFieldUI> _clueFieldUIList = new();
 
@@ -37,6 +40,7 @@ namespace HotPotato.UI
             GameManager.OnRoundEnded += ClearClueTypeData;
             GameManager.OnRoundEnded += ShowNextRoundButton;
             GameManager.OnRoundStarted += ShowNextRoundClues;
+            GameManager.OnMatchEnded += ShowNextMatchButton;
         }
         
         public override void OnStopServer()
@@ -44,6 +48,7 @@ namespace HotPotato.UI
             GameManager.OnRoundEnded -= ClearClueTypeData;
             GameManager.OnRoundEnded -= ShowNextRoundButton;
             GameManager.OnRoundStarted -= ShowNextRoundClues;
+            GameManager.OnMatchEnded -= ShowNextMatchButton;
         }
 
         public override void OnStartClient()
@@ -108,6 +113,11 @@ namespace HotPotato.UI
         private void ShowNextRoundButton()
         {
             if (IsHostInitialized) _nextRoundButton.gameObject.SetActive(true);
+        }
+        
+        private void ShowNextMatchButton()
+        {
+            if (IsHostInitialized) _newMatchButton.gameObject.SetActive(true);
         }
         
         [TargetRpc]

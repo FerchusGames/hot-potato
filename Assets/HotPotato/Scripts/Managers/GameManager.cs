@@ -15,8 +15,10 @@ namespace HotPotato.Managers
         public event Action OnTurnChanged;
         public event Action OnRoundEnded;
         public event Action OnRoundStarted;
+        public event Action OnMatchEnded;
         
         [SerializeField] private BombTimer _bombTimer;
+        [SerializeField] private int _roundsToWin = 3;
         
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
@@ -112,6 +114,10 @@ namespace HotPotato.Managers
             {
                 StartNextTurn();
             }
+            else if (_remainingPlayers[0].WinCount + 1 >= _roundsToWin)
+            {
+                EndMatch();
+            }
             else
             {
                 EndRound();
@@ -123,15 +129,21 @@ namespace HotPotato.Managers
         {
             OnRoundEnded?.Invoke();
             _bombTimer.StopTimerObserversRpc();
-            _remainingPlayers[0].Win();
+            _remainingPlayers[0].WinRound();
+        }
+        
+        [Server]
+        private void EndMatch()
+        {
+            OnMatchEnded?.Invoke();
+            _bombTimer.StopTimerObserversRpc();
+            _remainingPlayers[0].WinMatch();
         }
         
         [ServerRpc(RequireOwnership = false)]
         public void StartNextRoundServerRpc()
         {
-            _remainingPlayers.Clear();
-            _remainingPlayers.AddRange(_matchPlayers);
-            _currentPlayerIndex.Value = 0;
+            ResetPlayers();
             OnRoundStarted?.Invoke();
 
             foreach (var player in _remainingPlayers)
@@ -140,6 +152,28 @@ namespace HotPotato.Managers
             }
             
             StartNextTurn();
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        public void StartNextMatchServerRpc()
+        {
+            ResetPlayers();
+            OnRoundStarted?.Invoke();
+
+            foreach (var player in _remainingPlayers)
+            {
+                player.ResetMatchStats();
+                player.StartRoundObserversRpc();
+            }
+            
+            StartNextTurn();
+        }
+
+        private void ResetPlayers()
+        {
+            _remainingPlayers.Clear();
+            _remainingPlayers.AddRange(_matchPlayers);
+            _currentPlayerIndex.Value = 0;
         }
         
         [Server]
