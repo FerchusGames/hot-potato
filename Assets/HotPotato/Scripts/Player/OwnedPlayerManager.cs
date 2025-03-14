@@ -11,7 +11,9 @@ namespace HotPotato.Player
         
         public event Action<bool> OnIsMyTurnUpdate;
         public event Action OnLose;
-        public event Action<int> OnWin;
+        public event Action<int> OnWinRound;
+        public event Action<int> OnWinMatch;
+        public event Action OnLoseMatch;
         public event Action OnRoundStarted;
         
         private bool _isMyTurn = false;
@@ -50,11 +52,23 @@ namespace HotPotato.Player
             SetModuleInteractivity(false);
         }
 
-        public void Win(int winCount)
+        public void WinRound(int winCount)
         {
             _isStillPlaying = false;
-            OnWin?.Invoke(winCount);
+            OnWinRound?.Invoke(winCount);
             SetModuleInteractivity(false);
+        }
+        
+        public void WinMatch(int winCount)
+        {
+            _isStillPlaying = false;
+            OnWinMatch?.Invoke(winCount);
+            SetModuleInteractivity(false);
+        }
+        
+        public void LoseMatch()
+        {
+            OnLoseMatch?.Invoke();
         }
         
         public void DisableModuleInteractivity()

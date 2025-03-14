@@ -13,14 +13,14 @@ namespace HotPotato.UI
         {
             OwnedPlayerManager.Instance.OnIsMyTurnUpdate += SetTurnOwner;
             OwnedPlayerManager.Instance.OnLose += Lose;
-            OwnedPlayerManager.Instance.OnWin += Win;
+            OwnedPlayerManager.Instance.OnWinRound += WinRound;
         }
         
         private void OnDestroy()
         {
             OwnedPlayerManager.Instance.OnIsMyTurnUpdate -= SetTurnOwner;
             OwnedPlayerManager.Instance.OnLose -= Lose;
-            OwnedPlayerManager.Instance.OnWin -= Win;
+            OwnedPlayerManager.Instance.OnWinRound -= WinRound;
         }
 
         private void SetTurnOwner(bool isOwner)
@@ -33,7 +33,7 @@ namespace HotPotato.UI
             _image.color = Color.black;
         }
 
-        private void Win(int winCount)
+        private void WinRound(int winCount)
         {
             _image.color = Color.yellow;
         }
