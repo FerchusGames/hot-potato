@@ -1,16 +1,14 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace HotPotato.Accessibility
 {
-    public abstract class AccessibilitySettings
+    [CreateAssetMenu(fileName = "AccessibilitySettings", menuName = "HotPotato/Accessibility/Settings")]
+    public class AccessibilitySettings : ScriptableObject
     {
-        public static readonly Color[] DefaultColors = 
-        {
-            Color.red,
-            Color.blue,
-            Color.green,
-            Color.yellow,
-            Color.white
-        };
+        [Required, InlineEditor] 
+        [SerializeField] private ColorScheme _colorScheme;
+        
+        public ColorScheme ColorScheme => _colorScheme;
     }
 }

@@ -69,7 +69,7 @@ namespace HotPotato.Bomb
         
         private static Color GetModuleColor(BombModuleSettings settings)
         {
-            return ApplicationManager.Instance.ColorScheme[settings.ColorIndex];
+            return ApplicationManager.Instance.ColorScheme.GetColor(settings.ColorIndex);
         }
 
         private string GetModuleText(BombModuleSettings settings)

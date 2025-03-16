@@ -802,6 +802,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isPersistent: 1
+  _accessibilitySettings: {fileID: 0}
 --- !u!114 &414593660 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9092673325910937743, guid: e2f7865116df3bd43a9cad5102a99934, type: 3}
