@@ -1,0 +1,1093 @@
+﻿using UnityEngine;
+
+namespace HotPotato.Accessibility
+{
+    public abstract class AccessibilitySettings
+    {
+        public static readonly Color[] DefaultColors = 
+        {
+            Color.red,
+            Color.blue,
+            Color.green,
+            Color.yellow,
+            Color.white
+        };
+    }
+}﻿using HotPotato.Accessibility;
+
+namespace HotPotato.ApplicationLifecycle
+{
+    public class ApplicationManager : Singleton<ApplicationManager>
+    {
+        public Color[] ColorScheme { get; private set; } = AccessibilitySettings.DefaultColors;
+    }
+}﻿using FishNet.Object;
+
+namespace HotPotato.Bomb
+{
+    public class BombModule : NetworkBehaviour, IPointerClickHandler
+    {
+        private readonly SyncVar<BombModuleSettings> _settings = new();
+        
+        [SerializeField, Required] private MeshRenderer _meshRenderer;
+        [SerializeField, Required] private TextMeshProUGUI _text;
+        
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+
+        [ShowInInspector, ReadOnly] public bool IsTrap { get; private set; } = false;
+
+        public override void OnStartServer()
+        {
+            GameManager.OnRoundStarted += Despawn;
+        }
+
+        public override void OnStopServer()
+        {
+            GameManager.OnRoundStarted -= Despawn;
+        }
+
+        private void Start()
+        {
+            ApplySettings(_settings.Value);
+        }
+
+        [Server]
+        private void Despawn()
+        {
+            base.Despawn();
+        }
+
+        [Server]
+        public void SetSettings(BombModuleSettings settings)
+        {
+            _settings.Value = settings;
+        }
+        
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            GameManager.InteractWithModuleServerRpc(this);
+            OwnedPlayerManager.Instance.DisableModuleInteractivity();
+        }
+
+        private void ApplySettings(BombModuleSettings settings)
+        {
+            _meshRenderer.material.color = GetModuleColor(settings);
+            _text.text = GetModuleText(settings);
+            if (IsServerInitialized) IsTrap = settings.IsTrap;
+        }
+
+        [ObserversRpc]
+        public void ExplodeObserversRpc()
+        {
+            Debug.Log("This module just exploded!");
+        }
+        
+        private static Color GetModuleColor(BombModuleSettings settings)
+        {
+            return ApplicationManager.Instance.ColorScheme[settings.ColorIndex];
+        }
+
+        private string GetModuleText(BombModuleSettings settings)
+        {
+            return GetNumberStringFromIndex(settings.NumberIndex) + GetLetterStringFromIndex(settings.LetterIndex);
+        }
+        
+        private string GetNumberStringFromIndex(int index)
+        {
+            return (index + 1).ToString();
+        }
+        
+        private string GetLetterStringFromIndex(int index)
+        {
+            return ((char)('A' + index)).ToString();
+        }
+    }
+    
+    public struct BombModuleSettings
+    {
+        public int ModuleTypeIndex;
+        public int ColorIndex;
+        public int NumberIndex;
+        public int LetterIndex;
+        public bool IsTrap;
+    }
+}﻿using System.Collections.Generic;
+
+namespace HotPotato.Bomb
+{
+    public class BombSpawner : NetworkBehaviour
+    {
+        [BoxGroup("Bomb Settings"), Tooltip("Number of modules to mark as traps."), MinValue(3)]
+        [SerializeField] private int _trapAmount = 3;
+
+        [BoxGroup("Bomb Modules"), Tooltip("List of bomb module prefabs to spawn."), Required, AssetsOnly]
+        [SerializeField] private BombModule[] _bombModulePrefabs;
+
+        [BoxGroup("Bomb Modules"), Tooltip("GameObject the modules will spawn in."), Required, SceneObjectsOnly]
+        [SerializeField] private Transform _bombModuleParent;
+
+        [BoxGroup("Grid Settings"), Tooltip("Defines the size of the module grid (between 2 and 10).")]
+        [SerializeField, Range(2, 10)] private int _gridSize = 5;
+
+        [BoxGroup("Grid Settings"), Tooltip("Determines the scale of each module.")]
+        [SerializeField] private float _unitaryScale = 10f;
+
+        [BoxGroup("Grid Settings"), Tooltip("Determines the spacing between modules.")]
+        [SerializeField] private float _caseSize = 0.5f;
+
+        private HashSet<int> _trapIndexes = new();
+        private List<BombModuleSettings> _settingsList = new();
+        
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+        
+        private int TotalModulesCount => _gridSize * _gridSize;
+        private float ModuleScale => _unitaryScale / _gridSize;
+        private float OffsetBetweenModules => _caseSize / _gridSize;
+        private float FirstPositionOffset => -OffsetBetweenModules * 0.5f * (_gridSize - 1);
+
+        public override void OnStartServer()
+        {
+            GameManager.OnRoundStarted += SpawnModuleGrid;
+        }
+
+        public override void OnStopServer()
+        {
+            GameManager.OnRoundStarted -= SpawnModuleGrid;
+        }
+
+        [Server]
+        private void SpawnModuleGrid()
+        {
+            ClampTrapAmount();
+            InitializeTrapIndexes();
+            _settingsList.Clear();
+
+            for (var column = 0; column < _gridSize; column++)
+            {
+                for (var row = 0; row < _gridSize; row++)
+                {
+                    SpawnAndConfigureModule(column, row);
+                }
+            }
+
+            GameManager.SetCurrentRoundModuleSettings(_settingsList);
+        }
+
+        private void SpawnAndConfigureModule(int column, int row)
+        {
+            int moduleTypeIndex = GetRandomModulePropertyIndex();
+            Vector3 position = GetModulePosition(column, row);
+            GameObject bombModule = InstantiateBombModule(moduleTypeIndex, position);
+
+            ConfigureBombModule(bombModule, moduleTypeIndex);
+        }
+
+        private void ConfigureBombModule(GameObject bombModule, int moduleTypeIndex)
+        {
+            BombModuleSettings currentSettings = GenerateSettings(_settingsList.Count, moduleTypeIndex);
+            bombModule.GetComponent<BombModule>().SetSettings(currentSettings);
+            _settingsList.Add(currentSettings);
+        }
+
+        private GameObject InstantiateBombModule(int moduleTypeIndex, Vector3 position)
+        {
+            GameObject bombModule = Instantiate(
+                _bombModulePrefabs[moduleTypeIndex].gameObject,
+                position,
+                Quaternion.identity,
+                _bombModuleParent
+            );
+
+            bombModule.transform.localScale = new Vector3(ModuleScale, 1, ModuleScale);
+            bombModule.name = $"Bomb Module {position.x} {position.z}";
+            base.Spawn(bombModule);
+
+            return bombModule;
+        }
+
+        private BombModuleSettings GenerateSettings(int currentModuleIndex, int moduleTypeIndex) => new()
+        {
+            ModuleTypeIndex = moduleTypeIndex,
+            ColorIndex = GetRandomModulePropertyIndex(),
+            NumberIndex = GetRandomModulePropertyIndex(),
+            LetterIndex = GetRandomModulePropertyIndex(),
+            IsTrap = _trapIndexes.Contains(currentModuleIndex)
+        };
+
+        private void InitializeTrapIndexes()
+        {
+            _trapIndexes = new HashSet<int>();
+            while (_trapIndexes.Count < _trapAmount)
+            {
+                _trapIndexes.Add(Random.Range(0, TotalModulesCount));
+            }
+        }
+
+        private void ClampTrapAmount()
+        {
+            _trapAmount = Mathf.Min(_trapAmount, TotalModulesCount);
+        }
+
+        private int GetRandomModulePropertyIndex() => Random.Range(0, _bombModulePrefabs.Length);
+
+        private Vector3 GetModulePosition(int row, int column) => new(
+            FirstPositionOffset + row * OffsetBetweenModules,
+            0,
+            FirstPositionOffset + column * OffsetBetweenModules
+        );
+    }
+}
+public class BombTimer : NetworkBehaviour
+{
+    public event Action OnTimerExpired; // TODO: Change this to event bus
+    
+    [SerializeField] private int _initialTime = 20;
+
+    [SerializeField] private TextMeshProUGUI _text;
+    
+    private readonly SyncTimer _timer = new();
+    private readonly SyncVar<bool> _isRunning = new(true);
+    
+    private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+    
+    private bool _timerExpired = false;
+    
+    public override void OnStartServer()
+    {
+        GameManager.OnTurnChanged += ResetTimer;
+    }
+
+    public override void OnStopServer()
+    {
+        GameManager.OnTurnChanged -= ResetTimer;
+    }
+
+    private void Update()
+    {
+        if (!_isRunning.Value) 
+        {
+            _text.text = "END";
+            return;
+        }
+
+        _timer.Update();
+    
+        if (IsClientStarted)
+        {
+            _text.text = _timer.Remaining > 0 ? _timer.Remaining.ToString("F2") : "BOOM!";
+        }
+        
+        CheckTimer();
+    }
+    
+    [Server]
+    private void CheckTimer()
+    {
+        if (_timer.Remaining <= 0 && !_timerExpired)
+        {
+            _timerExpired = true;
+            OnTimerExpired?.Invoke();
+        }
+    }
+    
+    [Server]
+    private void ResetTimer()
+    {
+        _isRunning.Value = true;
+        _timerExpired = false;
+        _timer.StartTimer(_initialTime);
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void StopTimerObserversRpc()
+    {
+        StopTimer();
+        StopTimerClientRpc();
+    }
+
+    [Server]
+    private void StopTimer()
+    {
+        _isRunning.Value = false;
+        _timer.StopTimer();
+    }
+
+    [ObserversRpc]
+    private void StopTimerClientRpc()
+    {
+        _isRunning.Value = false;
+    }
+}
+namespace HotPotato.Clues
+{
+    public class ClueData
+    {
+        public Dictionary<int, int> ModuleTypeData { get; } = new();
+        public Dictionary<int, int> ModuleColorData { get; } = new();
+        public Dictionary<int, int> ModuleNumberData { get; } = new();
+        public Dictionary<int, int> ModuleLetterData { get; } = new();
+        
+        public ClueData(List<BombModuleSettings> moduleSettings, bool isCountingTraps)
+        {
+            var filteredModules = moduleSettings.Where(m => m.IsTrap == isCountingTraps);
+            
+            foreach (var module in filteredModules)
+            {
+                IncrementCount(ModuleTypeData, module.ModuleTypeIndex);
+                IncrementCount(ModuleColorData, module.ColorIndex);
+                IncrementCount(ModuleNumberData, module.NumberIndex);
+                IncrementCount(ModuleLetterData, module.LetterIndex);
+            }
+        }
+
+        private void IncrementCount(Dictionary<int, int> dictionary, int key)
+        {
+            if (!dictionary.TryAdd(key, 1))
+                dictionary[key]++;
+        }
+    }
+}
+
+public class Outline : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler
+{
+    [SerializeField, DrawWithUnity]
+    private RenderingLayerMask outlineLayer;
+
+    private Renderer[] renderers;
+    private uint originalLayer;
+    private bool isOutlineActive;
+
+    private void Start()
+    {
+        renderers = TryGetComponent<Renderer>(out var meshRenderer)
+            ? new[] { meshRenderer }
+            : GetComponentsInChildren<Renderer>();
+        originalLayer = renderers[0].renderingLayerMask;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        ApplyOutline(true);
+        RequestOutlineChange(true);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        ApplyOutline(false);
+        RequestOutlineChange(false);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestOutlineChange(bool enable, NetworkConnection requestingClient = null)
+    {
+        RpcUpdateOutline(enable, requestingClient);
+    }
+
+    [ObserversRpc]
+    private void RpcUpdateOutline(bool enable, NetworkConnection requestingClient)
+    {
+        if (requestingClient == LocalConnection)
+            return;
+
+        ApplyOutline(enable);
+    }
+
+    private void ApplyOutline(bool enable)
+    {
+        foreach (var rend in renderers)
+        {
+            rend.renderingLayerMask = enable ? originalLayer | outlineLayer : originalLayer;
+        }
+    }
+}
+namespace HotPotato.Managers
+{
+    public class GameManager : NetworkBehaviour
+    {
+        public event Action OnTurnChanged;
+        public event Action OnRoundEnded;
+        public event Action OnRoundStarted;
+        public event Action OnMatchEnded;
+        
+        [SerializeField] private BombTimer _bombTimer;
+        [SerializeField] private int _roundsToWin = 3;
+        
+        private readonly SyncVar<int> _currentPlayerIndex = new();
+
+        private List<PlayerController> _matchPlayers = new();
+        private List<PlayerController> _remainingPlayers = new();
+        private List<BombModuleSettings> _bombModuleSettingsList = new();
+        
+        private ClueData _clueData;
+        
+        private UIManager UIManager => base.NetworkManager.GetInstance<UIManager>();
+        
+        public override void OnStartNetwork()
+        {
+            base.NetworkManager.RegisterInstance(this);
+        }
+
+        public override void OnStartServer()
+        {
+            _remainingPlayers.Clear();
+            _bombTimer.OnTimerExpired += TimerExpiredEvent;
+        }
+
+        public override void OnStopServer()
+        {
+            _bombTimer.OnTimerExpired -= TimerExpiredEvent;
+        }
+
+        public void RegisterPlayer(PlayerController player)
+        {
+            if (!IsServerStarted) return;
+
+            if (!_matchPlayers.Contains(player))
+            {
+                _matchPlayers.Add(player);
+                _remainingPlayers.Add(player);
+                if (_remainingPlayers.Count == 1)
+                {
+                    OnRoundStarted?.Invoke();
+                    StartNextTurn();
+                }
+            }
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        public void InteractWithModuleServerRpc(BombModule module)
+        {
+            if (!IsServerStarted) return;
+            
+            if (module.IsTrap)
+            {
+                module.ExplodeObserversRpc();
+                
+                ExplodeBomb();
+            }
+            else
+            {
+                _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _remainingPlayers.Count;
+            }
+            
+            module.Despawn();
+            CheckForNextTurn();
+        }
+
+        [Server]
+        private void ExplodeBomb()
+        {
+            _remainingPlayers[_currentPlayerIndex.Value].LoseObserversRpc();
+            _remainingPlayers.RemoveAt(_currentPlayerIndex.Value);
+            _currentPlayerIndex.Value %= _remainingPlayers.Count;
+        }
+        
+        [Server]
+        private void TimerExpiredEvent()
+        {
+            ExplodeBomb();
+            CheckForNextTurn();
+        }
+
+        [Server]
+        public void SetCurrentRoundModuleSettings(List<BombModuleSettings> settingsList)
+        {
+            _bombModuleSettingsList = settingsList;
+            _clueData = new ClueData(settingsList, false);
+            UIManager.SetClueData(_clueData);
+        }
+   
+        [Server]
+        private void CheckForNextTurn()
+        {
+            if (!IsServerStarted) return;
+
+            if (_remainingPlayers.Count > 1)
+            {
+                StartNextTurn();
+            }
+            else if (_remainingPlayers[0].WinCount + 1 >= _roundsToWin)
+            {
+                EndMatch();
+            }
+            else
+            {
+                EndRound();
+            }
+        }
+
+        [Server]
+        private void EndRound()
+        {
+            OnRoundEnded?.Invoke();
+            _bombTimer.StopTimerObserversRpc();
+            _remainingPlayers[0].WinRound();
+        }
+        
+        [Server]
+        private void EndMatch()
+        {
+            OnMatchEnded?.Invoke();
+            _bombTimer.StopTimerObserversRpc();
+            _remainingPlayers[0].WinMatch();
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        public void StartNextRoundServerRpc()
+        {
+            ResetPlayers();
+            OnRoundStarted?.Invoke();
+
+            foreach (var player in _remainingPlayers)
+            {
+                player.StartRoundObserversRpc();
+            }
+            
+            StartNextTurn();
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        public void StartNextMatchServerRpc()
+        {
+            ResetPlayers();
+            OnRoundStarted?.Invoke();
+
+            foreach (var player in _remainingPlayers)
+            {
+                player.ResetMatchStats();
+                player.StartRoundObserversRpc();
+            }
+            
+            StartNextTurn();
+        }
+
+        private void ResetPlayers()
+        {
+            _remainingPlayers.Clear();
+            _remainingPlayers.AddRange(_matchPlayers);
+            _currentPlayerIndex.Value = 0;
+        }
+        
+        [Server]
+        private void StartNextTurn()
+        {
+            OnTurnChanged?.Invoke();
+            PlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
+            currentPlayer.StartTurnObserversRpc();
+        }
+    }
+}﻿using System;
+
+namespace HotPotato.Player
+{
+    public class OwnedPlayerManager : Singleton<OwnedPlayerManager>
+    {
+        [SerializeField] private LayerMask _notOnTurnEventMask;
+        
+        public event Action<bool> OnIsMyTurnUpdate;
+        public event Action OnLose;
+        public event Action<int> OnWinRound;
+        public event Action<int> OnWinMatch;
+        public event Action OnLoseMatch;
+        public event Action OnRoundStarted;
+        public event Action OnResetMatchStats;
+        
+        private bool _isMyTurn = false;
+        private bool _isStillPlaying = true;
+        
+        private PhysicsRaycaster _physicsRaycaster = null;
+        private static readonly LayerMask EverythingMask = ~0;
+            
+        protected override void Awake()
+        {   
+            base.Awake();
+            
+            _physicsRaycaster = Camera.main.GetComponent<PhysicsRaycaster>();
+            _physicsRaycaster.eventMask = _notOnTurnEventMask;
+        }
+
+        public void UpdateIsMyTurn(bool turnOwner)
+        {
+            if (!_isStillPlaying) return;
+            
+            _isMyTurn = turnOwner;
+            OnIsMyTurnUpdate?.Invoke(turnOwner);
+            SetModuleInteractivity(_isMyTurn);
+        }
+
+        public void StartRound()
+        {
+            _isStillPlaying = true;
+            OnRoundStarted?.Invoke();
+        }
+        
+        
+        public void ResetMatchStats()
+        {
+            OnResetMatchStats?.Invoke();
+        }
+        
+        public void Lose()
+        {
+            _isStillPlaying = false;
+            OnLose?.Invoke();
+            SetModuleInteractivity(false);
+        }
+
+        public void WinRound(int winCount)
+        {
+            _isStillPlaying = false;
+            OnWinRound?.Invoke(winCount);
+            SetModuleInteractivity(false);
+        }
+        
+        public void WinMatch(int winCount)
+        {
+            _isStillPlaying = false;
+            OnWinMatch?.Invoke(winCount);
+            SetModuleInteractivity(false);
+        }
+        
+        public void LoseMatch()
+        {
+            OnLoseMatch?.Invoke();
+        }
+        
+        public void DisableModuleInteractivity()
+        {
+            SetModuleInteractivity(false);
+        }
+        
+        private void SetModuleInteractivity(bool interactive)
+        {
+            if (interactive)
+            {
+                _physicsRaycaster.eventMask = EverythingMask; 
+                return;
+            }
+
+            _physicsRaycaster.eventMask = _notOnTurnEventMask;
+        }
+    }
+}﻿using FishNet.Object;
+
+namespace HotPotato.Player
+{
+    public class PlayerController : NetworkBehaviour
+    {
+        public int WinCount => _winCount.Value;
+
+        private readonly SyncVar<int> _winCount = new();
+
+        private bool _isCurrentPlayer = false;
+        private bool _isMyTurn = false;
+
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+
+        public override void OnStartClient()
+        {
+            if (!IsServerInitialized) return;
+            GameManager.RegisterPlayer(this);
+        }
+
+        [Server]
+        public void ResetMatchStats()
+        {
+            _winCount.Value = 0;
+            ResetMatchStatsObserversRpc();
+        }
+        
+        [ObserversRpc]
+        private void ResetMatchStatsObserversRpc()
+        {
+            if (!IsOwner) return;
+            OwnedPlayerManager.Instance.ResetMatchStats();
+        }
+        
+        [ObserversRpc]
+        public void StartRoundObserversRpc()
+        {
+            if (!IsOwner) return;
+            OwnedPlayerManager.Instance.StartRound();
+        }
+
+        [ObserversRpc]
+        public void StartTurnObserversRpc()
+        {
+            OwnedPlayerManager.Instance.UpdateIsMyTurn(IsOwner);
+        }
+
+        [ObserversRpc]
+        public void LoseObserversRpc()
+        {
+            if (!IsOwner) return;
+            OwnedPlayerManager.Instance.Lose();
+        }
+
+        [Server]
+        public void WinRound()
+        {
+            _winCount.Value++;
+            WinRoundObserversRpc(_winCount.Value);
+        }
+
+        [ObserversRpc]
+        private void WinRoundObserversRpc(int winCount)
+        {
+            if (IsOwner)
+            {
+                OwnedPlayerManager.Instance.WinRound(winCount);
+            }
+        }
+
+        [Server]
+        public void WinMatch()
+        {
+            _winCount.Value++;
+            WinMatchObserversRpc(_winCount.Value);
+        }
+        
+        [ObserversRpc]
+        private void WinMatchObserversRpc(int winCount)
+        {
+            if (IsOwner)
+            {
+                OwnedPlayerManager.Instance.WinMatch(winCount);
+                return;
+            }
+            
+            OwnedPlayerManager.Instance.LoseMatch();
+        }
+    }
+}﻿using System.Collections.Generic;
+
+namespace HotPotato.UI
+{
+    public class ClueFieldUI : MonoBehaviour
+    {
+        [SerializeField, Required] private TextMeshProUGUI _fieldNameText;
+        [SerializeField, Required] private TextMeshProUGUI _fieldCountText;
+        [SerializeField, Required] private string[] _moduleTypes;
+
+        public void Initialize(BombClueType clueType, KeyValuePair<int, int> clue)
+        {
+            _fieldNameText.text = GetFieldName(clueType, clue.Key);
+            _fieldCountText.text = GetFieldCount(clue);
+        }
+        
+        private string GetFieldName(BombClueType clueType, int index)
+        {
+            switch (clueType)
+            {
+                case BombClueType.Number:
+                    return (index + 1).ToString();
+                case BombClueType.Color: // TODO: Change this to showing color instead of names
+                    switch (index)
+                    {
+                        case 0:
+                            return "Red";
+                        case 1:
+                            return "Green";
+                        case 2:
+                            return "Blue";
+                        case 3:
+                            return "Yellow";
+                        case 4:
+                            return "White";
+                    }
+                    break;
+                case BombClueType.Type:
+                    return _moduleTypes[index];
+                case BombClueType.Letter:
+                    return ((char)('A' + index)).ToString();
+            }
+
+            return "NOT FOUND";
+        }
+        
+        private string GetFieldCount(KeyValuePair<int, int> clue)
+        {
+            return clue.Value.ToString();
+        }
+    }
+}
+namespace HotPotato.UI
+{
+    public class MatchResultUI : MonoBehaviour
+    {
+        [Required]
+        [SerializeField] private Image _background;
+        
+        [Required]
+        [SerializeField] private TextMeshProUGUI _resultText;
+
+        private void Start()
+        {
+            OwnedPlayerManager.Instance.OnWinMatch += ShowWinResult;
+            OwnedPlayerManager.Instance.OnLoseMatch += ShowLoseResult;
+            OwnedPlayerManager.Instance.OnRoundStarted += HideResult;
+            HideResult();
+        }
+        
+        private void OnDestroy()
+        {
+            OwnedPlayerManager.Instance.OnWinMatch -= ShowWinResult;
+            OwnedPlayerManager.Instance.OnLoseMatch -= ShowLoseResult;
+            OwnedPlayerManager.Instance.OnRoundStarted -= HideResult;
+        }
+
+        private void ShowWinResult(int winCount)
+        {
+            gameObject.SetActive(true);
+            _background.color = Color.yellow;
+            _resultText.text = "You've won the match!";
+        }
+        
+        private void ShowLoseResult()
+        {
+            gameObject.SetActive(true);
+            _background.color = Color.red;
+            _resultText.text = "You've lost the match!";
+        }
+
+        private void HideResult()
+        {
+            gameObject.SetActive(false);
+        }
+    }
+}
+﻿using HotPotato.Player;
+
+namespace HotPotato.UI
+{
+    public class TurnIndicator : MonoBehaviour
+    {
+        [SerializeField, Required] private Image _image;
+
+        private void Start()
+        {
+            OwnedPlayerManager.Instance.OnIsMyTurnUpdate += SetTurnOwner;
+            OwnedPlayerManager.Instance.OnLose += Lose;
+            OwnedPlayerManager.Instance.OnWinRound += WinRound;
+        }
+        
+        private void OnDestroy()
+        {
+            OwnedPlayerManager.Instance.OnIsMyTurnUpdate -= SetTurnOwner;
+            OwnedPlayerManager.Instance.OnLose -= Lose;
+            OwnedPlayerManager.Instance.OnWinRound -= WinRound;
+        }
+
+        private void SetTurnOwner(bool isOwner)
+        {
+            _image.color = isOwner ? Color.green : Color.red;
+        }
+
+        private void Lose()
+        {
+            _image.color = Color.black;
+        }
+
+        private void WinRound(int winCount)
+        {
+            _image.color = Color.yellow;
+        }
+    }
+}﻿using System.Collections.Generic;
+
+namespace HotPotato.UI
+{
+    public class UIManager : NetworkBehaviour
+    {
+        [Required, AssetsOnly]
+        [SerializeField] private ClueFieldUI _clueFieldUIPrefab;
+        
+        [Required, SceneObjectsOnly]
+        [SerializeField] private Transform _clueFieldParent;
+
+        [Required, SceneObjectsOnly] 
+        [SerializeField] private Button _nextRoundButton;
+        
+        [Required, SceneObjectsOnly] 
+        [SerializeField] private Button _newMatchButton;
+        
+        private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
+        private List<ClueFieldUI> _clueFieldUIList = new();
+
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+
+        public override void OnStartNetwork()
+        {
+            base.NetworkManager.RegisterInstance(this);
+        }
+
+        public override void OnStartServer()
+        {
+            GameManager.OnRoundEnded += ClearClueTypeData;
+            GameManager.OnRoundEnded += ShowNextRoundButton;
+            GameManager.OnRoundStarted += ShowNextRoundClues;
+            GameManager.OnMatchEnded += ShowNextMatchButton;
+        }
+        
+        public override void OnStopServer()
+        {
+            GameManager.OnRoundEnded -= ClearClueTypeData;
+            GameManager.OnRoundEnded -= ShowNextRoundButton;
+            GameManager.OnRoundStarted -= ShowNextRoundClues;
+            GameManager.OnMatchEnded -= ShowNextMatchButton;
+        }
+
+        public override void OnStartClient()
+        {
+            if (IsHostInitialized) return;
+            RequestClueTypeData(LocalConnection); // TODO: Prevent this from being called multiple times when rejoining
+        }
+
+        [Server]
+        public void SetClueData(ClueData clueData)
+        {
+            _clueTypeData = new Dictionary<BombClueType, Dictionary<int, int>>
+            {
+                { BombClueType.Number, clueData.ModuleNumberData },
+                { BombClueType.Color, clueData.ModuleColorData },
+                { BombClueType.Type, clueData.ModuleTypeData },
+                { BombClueType.Letter, clueData.ModuleLetterData }
+            };
+        }
+        
+        [Server]
+        private void ClearClueTypeData()
+        {
+            _clueTypeData = null;
+        }
+        
+        [ObserversRpc]
+        private void ShowNextRoundClues()
+        {
+            foreach (var clueFieldUI in _clueFieldUIList)
+            {
+                Destroy(clueFieldUI.gameObject);
+            }
+            
+            _clueFieldUIList.Clear();
+            RequestClueTypeData(LocalConnection);
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void RequestClueTypeData(NetworkConnection requestingClient)
+        {
+            RequestClueTypeDataAsync(requestingClient).Forget();
+        }
+
+        [Server]
+        private async UniTaskVoid RequestClueTypeDataAsync(NetworkConnection requestingClient)
+        {
+            while (_clueTypeData == null)
+            {
+                await UniTask.Yield();
+            }
+            
+            var availableClueTypes = _clueTypeData.Keys.ToList();
+            var clueType = availableClueTypes[Random.Range(0, availableClueTypes.Count)];
+            Dictionary<int, int> clueTypeDictionary = _clueTypeData[clueType];
+
+            _clueTypeData.Remove(clueType);
+            
+            InstantiateCluesUI(requestingClient, clueType, clueTypeDictionary);
+        }
+        
+        private void ShowNextRoundButton()
+        {
+            if (IsHostInitialized) _nextRoundButton.gameObject.SetActive(true);
+        }
+        
+        private void ShowNextMatchButton()
+        {
+            if (IsHostInitialized) _newMatchButton.gameObject.SetActive(true);
+        }
+        
+        [TargetRpc]
+        private void InstantiateCluesUI(NetworkConnection connection, BombClueType clueType, Dictionary<int, int> clueTypeData)
+        {
+            foreach (var clue in clueTypeData.OrderBy(kvp => kvp.Key))
+            {
+                var clueFieldUI = Instantiate(
+                    _clueFieldUIPrefab.gameObject, 
+                    Vector3.zero, 
+                    Quaternion.identity, 
+                    _clueFieldParent
+                    ).GetComponent<ClueFieldUI>();
+                
+                _clueFieldUIList.Add(clueFieldUI);
+                clueFieldUI.Initialize(clueType, clue);
+            }
+        }
+    }
+    
+    public enum BombClueType
+    {
+        Number,
+        Color,
+        Type,
+        Letter
+    }
+}﻿using HotPotato.Player;
+
+namespace HotPotato.UI
+{
+    public class WinCounterUI : MonoBehaviour
+    {
+        [Required]
+        [SerializeField] private TextMeshProUGUI _text;
+    
+        private void Start()
+        {
+            OwnedPlayerManager.Instance.OnWinRound += UpdateWinRoundCount;
+            OwnedPlayerManager.Instance.OnWinMatch += UpdateWinRoundCount;
+            OwnedPlayerManager.Instance.OnResetMatchStats += ResetWinRoundCount;
+        }
+
+        private void OnDestroy()
+        {
+            OwnedPlayerManager.Instance.OnWinRound -= UpdateWinRoundCount;
+            OwnedPlayerManager.Instance.OnWinMatch -= UpdateWinRoundCount;
+            OwnedPlayerManager.Instance.OnResetMatchStats -= ResetWinRoundCount;
+        }
+
+        private void UpdateWinRoundCount(int winCount)
+        {
+            _text.text = winCount.ToString();
+        }
+        
+        private void ResetWinRoundCount()
+        {
+            _text.text = "0";
+        }
+    }
+}﻿using UnityEngine;
+
+namespace HotPotato.Utilities
+{
+    public class Singleton<T> : MonoBehaviour where T : MonoBehaviour 
+    {
+        [SerializeField] private bool _isPersistent = true;
+        
+        public static T Instance { get; private set; }
+        
+        protected virtual void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
+            if (_isPersistent)
+            {
+                DontDestroyOnLoad(gameObject);
+            }
+            
+            Instance = this as T;
+        }
+    }
+}
