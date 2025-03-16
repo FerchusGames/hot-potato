@@ -1,15 +1,21 @@
 ﻿using HotPotato.Accessibility;
+using HotPotato.Infrastructure;
 using HotPotato.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace HotPotato.ApplicationLifecycle
 {
-    public class ApplicationManager : Singleton<ApplicationManager>
+    public class ApplicationManager : MonoBehaviour
     {
-        [Required]
+        [Required, InlineEditor]
         [SerializeField] private AccessibilitySettings _accessibilitySettings;
          
-        public ColorScheme ColorScheme => _accessibilitySettings.ColorScheme;
+        public AccessibilitySettings AccessibilitySettings => _accessibilitySettings;
+        
+        private void Awake()
+        {
+            GameServiceLocator.RegisterApplicationManager(this);
+        }
     }
 }
