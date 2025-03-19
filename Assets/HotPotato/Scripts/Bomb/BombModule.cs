@@ -1,7 +1,6 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using HotPotato.ApplicationLifecycle;
-using HotPotato.Infrastructure;
 using HotPotato.Managers;
 using HotPotato.Player;
 using Sirenix.OdinInspector;
@@ -70,7 +69,7 @@ namespace HotPotato.Bomb
         
         private static Color GetModuleColor(BombModuleSettings settings)
         {
-            return GameServiceLocator.GetApplicationManager().AccessibilitySettings.ColorScheme.GetColor(settings.ColorIndex);
+            return ApplicationManager.Instance.AccessibilitySettings.ColorScheme.GetColor(settings.ColorIndex);
         }
 
         private string GetModuleText(BombModuleSettings settings)
