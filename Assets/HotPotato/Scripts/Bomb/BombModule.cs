@@ -18,17 +18,19 @@ namespace HotPotato.Bomb
         [SerializeField, Required] private TextMeshProUGUI _text;
         
         private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
-
+        private EventBinding<RoundStartedEvent> _roundStartedEventBinding; 
+            
         [ShowInInspector, ReadOnly] public bool IsTrap { get; private set; } = false;
 
         public override void OnStartServer()
         {
-            GameManager.OnRoundStarted += Despawn;
+            _roundStartedEventBinding = new EventBinding<RoundStartedEvent>(Despawn);
+            EventBus<RoundStartedEvent>.Register(_roundStartedEventBinding);
         }
 
         public override void OnStopServer()
         {
-            GameManager.OnRoundStarted -= Despawn;
+            EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
         }
 
         private void Start()

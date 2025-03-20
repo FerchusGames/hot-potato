@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FishNet.Object;
-using HotPotato.Managers;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -29,7 +28,7 @@ namespace HotPotato.Bomb
         private HashSet<int> _trapIndexes = new();
         private List<BombModuleSettings> _settingsList = new();
         
-        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+        private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
         
         private int TotalModulesCount => _gridSize * _gridSize;
         private float ModuleScale => _unitaryScale / _gridSize;
@@ -38,12 +37,13 @@ namespace HotPotato.Bomb
 
         public override void OnStartServer()
         {
-            GameManager.OnRoundStarted += SpawnModuleGrid;
+            _roundStartedEventBinding = new EventBinding<RoundStartedEvent>(SpawnModuleGrid);
+            EventBus<RoundStartedEvent>.Register(_roundStartedEventBinding);
         }
 
         public override void OnStopServer()
         {
-            GameManager.OnRoundStarted -= SpawnModuleGrid;
+            EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
         }
 
         [Server]
@@ -61,7 +61,10 @@ namespace HotPotato.Bomb
                 }
             }
 
-            GameManager.SetCurrentRoundModuleSettings(_settingsList);
+            EventBus<ModulesSpawnedEvent>.Raise(new ModulesSpawnedEvent
+            {
+                settingsList = _settingsList
+            });
         }
 
         private void SpawnAndConfigureModule(int column, int row)

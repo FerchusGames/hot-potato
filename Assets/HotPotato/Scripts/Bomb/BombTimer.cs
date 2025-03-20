@@ -3,7 +3,6 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
 using TMPro;
-using HotPotato.Managers;
 
 public class BombTimer : NetworkBehaviour
 {
@@ -16,18 +15,19 @@ public class BombTimer : NetworkBehaviour
     private readonly SyncTimer _timer = new();
     private readonly SyncVar<bool> _isRunning = new(true);
     
-    private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+    private EventBinding<TurnChangedEvent> _turnChangedEventBinding;
     
     private bool _timerExpired = false;
     
     public override void OnStartServer()
     {
-        GameManager.OnTurnChanged += ResetTimer;
+        _turnChangedEventBinding = new EventBinding<TurnChangedEvent>(ResetTimer);
+        EventBus<TurnChangedEvent>.Register(_turnChangedEventBinding);
     }
 
     public override void OnStopServer()
     {
-        GameManager.OnTurnChanged -= ResetTimer;
+        EventBus<TurnChangedEvent>.Deregister(_turnChangedEventBinding);
     }
 
     private void Update()

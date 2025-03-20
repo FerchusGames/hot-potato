@@ -1,4 +1,3 @@
-using System;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
@@ -12,16 +11,13 @@ namespace HotPotato.Managers
 {
     public class GameManager : NetworkBehaviour
     {
-        public event Action OnTurnChanged;
-        public event Action OnRoundEnded;
-        public event Action OnRoundStarted;
-        public event Action OnMatchEnded;
-        
         [SerializeField] private BombTimer _bombTimer;
         [SerializeField] private int _roundsToWin = 3;
         
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
+        private EventBinding<ModulesSpawnedEvent> _modulesSpawnedEventBinding;
+        
         private List<PlayerController> _matchPlayers = new();
         private List<PlayerController> _remainingPlayers = new();
         private List<BombModuleSettings> _bombModuleSettingsList = new();
@@ -39,11 +35,16 @@ namespace HotPotato.Managers
         {
             _remainingPlayers.Clear();
             _bombTimer.OnTimerExpired += TimerExpiredEvent;
+            
+            _modulesSpawnedEventBinding = new EventBinding<ModulesSpawnedEvent>(SetCurrentRoundModuleSettings);
+            EventBus<ModulesSpawnedEvent>.Register(_modulesSpawnedEventBinding);
         }
 
         public override void OnStopServer()
         {
             _bombTimer.OnTimerExpired -= TimerExpiredEvent;
+            
+            EventBus<ModulesSpawnedEvent>.Deregister(_modulesSpawnedEventBinding);
         }
 
         public void RegisterPlayer(PlayerController player)
@@ -56,7 +57,7 @@ namespace HotPotato.Managers
                 _remainingPlayers.Add(player);
                 if (_remainingPlayers.Count == 1)
                 {
-                    OnRoundStarted?.Invoke();
+                    EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
                     StartNextTurn();
                 }
             }
@@ -98,8 +99,10 @@ namespace HotPotato.Managers
         }
 
         [Server]
-        public void SetCurrentRoundModuleSettings(List<BombModuleSettings> settingsList)
+        private void SetCurrentRoundModuleSettings(ModulesSpawnedEvent modulesSpawnedEvent)
         {
+            var settingsList = modulesSpawnedEvent.settingsList;
+            
             _bombModuleSettingsList = settingsList;
             _clueData = new ClueData(settingsList, false);
             UIManager.SetClueData(_clueData);
@@ -127,7 +130,7 @@ namespace HotPotato.Managers
         [Server]
         private void EndRound()
         {
-            OnRoundEnded?.Invoke();
+            EventBus<RoundEndedEvent>.Raise(new RoundEndedEvent());
             _bombTimer.StopTimerObserversRpc();
             _remainingPlayers[0].WinRound();
         }
@@ -135,7 +138,7 @@ namespace HotPotato.Managers
         [Server]
         private void EndMatch()
         {
-            OnMatchEnded?.Invoke();
+            EventBus<MatchEndedEvent>.Raise(new MatchEndedEvent());
             _bombTimer.StopTimerObserversRpc();
             _remainingPlayers[0].WinMatch();
         }
@@ -144,7 +147,7 @@ namespace HotPotato.Managers
         public void StartNextRoundServerRpc()
         {
             ResetPlayers();
-            OnRoundStarted?.Invoke();
+            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
 
             foreach (var player in _remainingPlayers)
             {
@@ -158,7 +161,7 @@ namespace HotPotato.Managers
         public void StartNextMatchServerRpc()
         {
             ResetPlayers();
-            OnRoundStarted?.Invoke();
+            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
 
             foreach (var player in _remainingPlayers)
             {
@@ -179,7 +182,7 @@ namespace HotPotato.Managers
         [Server]
         private void StartNextTurn()
         {
-            OnTurnChanged?.Invoke();
+            EventBus<TurnChangedEvent>.Raise(new TurnChangedEvent());
             PlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
             currentPlayer.StartTurnObserversRpc();
         }

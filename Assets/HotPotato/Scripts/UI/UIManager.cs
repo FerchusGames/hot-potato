@@ -4,7 +4,6 @@ using Cysharp.Threading.Tasks;
 using FishNet.Connection;
 using FishNet.Object;
 using HotPotato.Clues;
-using HotPotato.Managers;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,10 +24,12 @@ namespace HotPotato.UI
         [Required, SceneObjectsOnly] 
         [SerializeField] private Button _newMatchButton;
         
+        private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
+        private EventBinding<RoundEndedEvent> _roundEndedEventBinding;
+        private EventBinding<MatchEndedEvent> _matchEndedEventBinding;
+        
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
         private List<ClueFieldUI> _clueFieldUIList = new();
-
-        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
 
         public override void OnStartNetwork()
         {
@@ -37,18 +38,21 @@ namespace HotPotato.UI
 
         public override void OnStartServer()
         {
-            GameManager.OnRoundEnded += ClearClueTypeData;
-            GameManager.OnRoundEnded += ShowNextRoundButton;
-            GameManager.OnRoundStarted += ShowNextRoundClues;
-            GameManager.OnMatchEnded += ShowNextMatchButton;
+            _roundStartedEventBinding = new EventBinding<RoundStartedEvent>(ShowNextRoundClues);
+            EventBus<RoundStartedEvent>.Register(_roundStartedEventBinding);
+            
+            _roundEndedEventBinding = new EventBinding<RoundEndedEvent>(HandleRoundEndedEvent);
+            EventBus<RoundEndedEvent>.Register(_roundEndedEventBinding);
+            
+            _matchEndedEventBinding = new EventBinding<MatchEndedEvent>(ShowNextMatchButton);
+            EventBus<MatchEndedEvent>.Register(_matchEndedEventBinding);
         }
         
         public override void OnStopServer()
         {
-            GameManager.OnRoundEnded -= ClearClueTypeData;
-            GameManager.OnRoundEnded -= ShowNextRoundButton;
-            GameManager.OnRoundStarted -= ShowNextRoundClues;
-            GameManager.OnMatchEnded -= ShowNextMatchButton;
+            EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
+            EventBus<RoundEndedEvent>.Deregister(_roundEndedEventBinding);
+            EventBus<MatchEndedEvent>.Deregister(_matchEndedEventBinding);
         }
 
         public override void OnStartClient()
@@ -67,6 +71,12 @@ namespace HotPotato.UI
                 { BombClueType.Type, clueData.ModuleTypeData },
                 { BombClueType.Letter, clueData.ModuleLetterData }
             };
+        }
+        
+        private void HandleRoundEndedEvent()
+        {
+            ClearClueTypeData();
+            ShowNextRoundButton();
         }
         
         [Server]
