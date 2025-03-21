@@ -2,7 +2,6 @@
 using FishNet.Object.Synchronizing;
 using HotPotato.ApplicationLifecycle;
 using HotPotato.Managers;
-using HotPotato.Player;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -17,7 +16,6 @@ namespace HotPotato.Bomb
         [SerializeField, Required] private MeshRenderer _meshRenderer;
         [SerializeField, Required] private TextMeshProUGUI _text;
         
-        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
         private EventBinding<RoundStartedEvent> _roundStartedEventBinding; 
             
         [ShowInInspector, ReadOnly] public bool IsTrap { get; private set; } = false;
@@ -52,8 +50,10 @@ namespace HotPotato.Bomb
         
         public void OnPointerClick(PointerEventData eventData)
         {
-            GameManager.InteractWithModuleServerRpc(this);
-            EventBus<ModuleClickedEvent>.Raise(new ModuleClickedEvent());
+            EventBus<ModuleClickedEvent>.Raise(new ModuleClickedEvent
+            {
+                Module = this
+            });
         }
 
         private void ApplySettings(BombModuleSettings settings)

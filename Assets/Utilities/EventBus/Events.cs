@@ -21,7 +21,10 @@ public struct ModulesSpawnedEvent : IEvent
     public List<BombModuleSettings> SettingsList;
 }
 
-public struct ModuleClickedEvent : IEvent { }
+public struct ModuleClickedEvent : IEvent
+{
+    public BombModule Module;
+}
 
 public struct LoseRoundEvent : IEvent { }
 

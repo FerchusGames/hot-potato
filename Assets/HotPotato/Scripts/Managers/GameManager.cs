@@ -19,6 +19,7 @@ namespace HotPotato.Managers
         private EventBinding<ModulesSpawnedEvent> _modulesSpawnedEventBinding;
         private EventBinding<TimerExpiredEvent> _timerExpiredEventBinding;
         private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
+        private EventBinding<ModuleClickedEvent> _moduleClickedEventBinding;
         
         private List<PlayerController> _matchPlayers = new();
         private List<PlayerController> _remainingPlayers = new();
@@ -37,15 +38,25 @@ namespace HotPotato.Managers
         {
             _remainingPlayers.Clear();
 
-            RegisterEvents();
+            RegisterServerEvents();
         }
 
         public override void OnStopServer()
         {
-            DeregisterEvents();
+            DeregisterServerEvents();
+        }
+        
+        public override void OnStartClient()
+        {
+            RegisterClientEvents();
+        }
+        
+        public override void OnStopClient()
+        {
+            DeregisterClientEvents();
         }
 
-        private void RegisterEvents()
+        private void RegisterServerEvents()
         {
             _modulesSpawnedEventBinding = new EventBinding<ModulesSpawnedEvent>(SetCurrentRoundModuleSettings);
             EventBus<ModulesSpawnedEvent>.Register(_modulesSpawnedEventBinding);
@@ -57,13 +68,24 @@ namespace HotPotato.Managers
             EventBus<PlayerJoinedEvent>.Register(_playerJoinedEventBinding);
         }
         
-        private void DeregisterEvents()
+        private void DeregisterServerEvents()
         {
             EventBus<ModulesSpawnedEvent>.Deregister(_modulesSpawnedEventBinding);
             EventBus<TimerExpiredEvent>.Deregister(_timerExpiredEventBinding);
             EventBus<PlayerJoinedEvent>.Deregister(_playerJoinedEventBinding);
         }
 
+        private void RegisterClientEvents()
+        {
+            _moduleClickedEventBinding = new EventBinding<ModuleClickedEvent>(InteractWithModuleServerRpc);
+            EventBus<ModuleClickedEvent>.Register(_moduleClickedEventBinding);
+        }
+        
+        private void DeregisterClientEvents()
+        {
+            EventBus<ModuleClickedEvent>.Deregister(_moduleClickedEventBinding);
+        }
+        
         private void RegisterPlayer(PlayerJoinedEvent playerJoinedEvent)
         {
             if (!IsServerStarted) return;
@@ -83,9 +105,11 @@ namespace HotPotato.Managers
         }
         
         [ServerRpc(RequireOwnership = false)]
-        public void InteractWithModuleServerRpc(BombModule module)
+        private void InteractWithModuleServerRpc(ModuleClickedEvent moduleClickedEvent)
         {
             if (!IsServerStarted) return;
+            
+            var module = moduleClickedEvent.Module;
             
             if (module.IsTrap)
             {
