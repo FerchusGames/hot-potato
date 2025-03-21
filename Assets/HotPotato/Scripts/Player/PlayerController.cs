@@ -33,27 +33,30 @@ namespace HotPotato.Player
         private void ResetMatchStatsObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.ResetMatchStats();
+            EventBus<MatchResetEvent>.Raise(new MatchResetEvent());
         }
         
         [ObserversRpc]
         public void StartRoundObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.StartRound();
+            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
         }
 
         [ObserversRpc]
         public void StartTurnObserversRpc()
         {
-            OwnedPlayerManager.Instance.UpdateIsMyTurn(IsOwner);
+            EventBus<TurnOwnerChangedEvent>.Raise(new TurnOwnerChangedEvent
+            {
+                isMyTurn = IsOwner
+            });
         }
 
         [ObserversRpc]
         public void LoseObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.Lose();
+            EventBus<LoseRoundEvent>.Raise(new LoseRoundEvent());
         }
 
         [Server]
@@ -66,10 +69,11 @@ namespace HotPotato.Player
         [ObserversRpc]
         private void WinRoundObserversRpc(int winCount)
         {
-            if (IsOwner)
+            if (!IsOwner) return;
+            EventBus<WinRoundEvent>.Raise(new WinRoundEvent
             {
-                OwnedPlayerManager.Instance.WinRound(winCount);
-            }
+                winCount = winCount
+            });
         }
 
         [Server]
@@ -84,11 +88,14 @@ namespace HotPotato.Player
         {
             if (IsOwner)
             {
-                OwnedPlayerManager.Instance.WinMatch(winCount);
+                EventBus<WinMatchEvent>.Raise(new WinMatchEvent
+                {
+                    winCount = winCount
+                });
                 return;
             }
             
-            OwnedPlayerManager.Instance.LoseMatch();
+            EventBus<LoseMatchEvent>.Raise(new LoseMatchEvent());
         }
     }
 }

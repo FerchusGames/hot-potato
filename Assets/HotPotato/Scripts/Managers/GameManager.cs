@@ -182,7 +182,6 @@ namespace HotPotato.Managers
         [Server]
         private void StartNextTurn()
         {
-            EventBus<TurnChangedEvent>.Raise(new TurnChangedEvent());
             PlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
             currentPlayer.StartTurnObserversRpc();
         }

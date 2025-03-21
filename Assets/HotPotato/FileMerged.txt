@@ -68,6 +68,7 @@ namespace HotPotato.Bomb
         [SerializeField, Required] private MeshRenderer _meshRenderer;
         [SerializeField, Required] private TextMeshProUGUI _text;
         
+        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
         private EventBinding<RoundStartedEvent> _roundStartedEventBinding; 
             
         [ShowInInspector, ReadOnly] public bool IsTrap { get; private set; } = false;
@@ -103,7 +104,7 @@ namespace HotPotato.Bomb
         public void OnPointerClick(PointerEventData eventData)
         {
             GameManager.InteractWithModuleServerRpc(this);
-            OwnedPlayerManager.Instance.DisableModuleInteractivity();
+            EventBus<ModuleClickedEvent>.Raise(new ModuleClickedEvent());
         }
 
         private void ApplySettings(BombModuleSettings settings)
@@ -289,18 +290,19 @@ public class BombTimer : NetworkBehaviour
     private readonly SyncTimer _timer = new();
     private readonly SyncVar<bool> _isRunning = new(true);
     
-    private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
+    private EventBinding<TurnOwnerChangedEvent> _turnChangedEventBinding;
     
     private bool _timerExpired = false;
     
     public override void OnStartServer()
     {
-        GameManager.OnTurnChanged += ResetTimer;
+        _turnChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(ResetTimer);
+        EventBus<TurnOwnerChangedEvent>.Register(_turnChangedEventBinding);
     }
 
     public override void OnStopServer()
     {
-        GameManager.OnTurnChanged -= ResetTimer;
+        EventBus<TurnOwnerChangedEvent>.Deregister(_turnChangedEventBinding);
     }
 
     private void Update()
@@ -517,14 +519,33 @@ public static class EventBusUtil {
 
 public interface IEvent { }
 
-public struct TurnChangedEvent : IEvent { }
+public struct TurnOwnerChangedEvent : IEvent
+{
+    public bool isMyTurn;
+    public bool hasLost;
+}
 public struct RoundStartedEvent : IEvent { }
 public struct RoundEndedEvent : IEvent { }
+public struct MatchResetEvent : IEvent { }
 public struct MatchEndedEvent : IEvent { }
 public struct ModulesSpawnedEvent : IEvent
 {
     public List<BombModuleSettings> settingsList;
-}﻿using System;
+}
+
+public struct ModuleClickedEvent : IEvent { }
+
+public struct LoseRoundEvent : IEvent { }
+
+public struct WinRoundEvent : IEvent
+{
+    public int winCount;
+}
+public struct WinMatchEvent : IEvent
+{
+    public int winCount;
+}
+public struct LoseMatchEvent : IEvent { }﻿using System;
 
 /// <summary>
 /// A utility class, PredefinedAssemblyUtil, provides methods to interact with predefined assemblies.
@@ -651,7 +672,7 @@ public class Outline : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandl
             rend.renderingLayerMask = enable ? originalLayer | outlineLayer : originalLayer;
         }
     }
-}﻿
+}
 namespace HotPotato.Managers
 {
     public class GameManager : NetworkBehaviour
@@ -827,93 +848,43 @@ namespace HotPotato.Managers
         [Server]
         private void StartNextTurn()
         {
-            EventBus<TurnChangedEvent>.Raise(new TurnChangedEvent());
             PlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
             currentPlayer.StartTurnObserversRpc();
         }
     }
-}﻿using System;
+}﻿using UnityEngine;
 
 namespace HotPotato.Player
 {
-    public class OwnedPlayerManager : Singleton<OwnedPlayerManager>
+    public class InteractivityController : MonoBehaviour
     {
         [SerializeField] private LayerMask _notOnTurnEventMask;
-        
-        public event Action<bool> OnIsMyTurnUpdate;
-        public event Action OnLose;
-        public event Action<int> OnWinRound;
-        public event Action<int> OnWinMatch;
-        public event Action OnLoseMatch;
-        public event Action OnRoundStarted;
-        public event Action OnResetMatchStats;
-        
-        private bool _isMyTurn = false;
-        private bool _isStillPlaying = true;
+
+        private EventBinding<TurnOwnerChangedEvent> _turnOwnerChangedEventBinding;
+        private EventBinding<LoseRoundEvent> _loseRoundEventBinding;
+        private EventBinding<WinRoundEvent> _winRoundEventBinding;
+        private EventBinding<WinMatchEvent> _winMatchEventBinding;
+        private EventBinding<ModuleClickedEvent> _moduleClickedEventBinding;
         
         private PhysicsRaycaster _physicsRaycaster = null;
         private static readonly LayerMask EverythingMask = ~0;
-            
-        protected override void Awake()
+        
+        private void Awake()
         {   
-            base.Awake();
-            
             _physicsRaycaster = Camera.main.GetComponent<PhysicsRaycaster>();
             _physicsRaycaster.eventMask = _notOnTurnEventMask;
         }
 
-        public void UpdateIsMyTurn(bool turnOwner)
+        private void Start()
         {
-            if (!_isStillPlaying) return;
-            
-            _isMyTurn = turnOwner;
-            OnIsMyTurnUpdate?.Invoke(turnOwner);
-            SetModuleInteractivity(_isMyTurn);
+            RegisterEvents();
         }
 
-        public void StartRound()
+        private void OnDestroy()
         {
-            _isStillPlaying = true;
-            OnRoundStarted?.Invoke();
-        }
-        
-        
-        public void ResetMatchStats()
-        {
-            OnResetMatchStats?.Invoke();
-        }
-        
-        public void Lose()
-        {
-            _isStillPlaying = false;
-            OnLose?.Invoke();
-            SetModuleInteractivity(false);
+            DeregisterEvents();
         }
 
-        public void WinRound(int winCount)
-        {
-            _isStillPlaying = false;
-            OnWinRound?.Invoke(winCount);
-            SetModuleInteractivity(false);
-        }
-        
-        public void WinMatch(int winCount)
-        {
-            _isStillPlaying = false;
-            OnWinMatch?.Invoke(winCount);
-            SetModuleInteractivity(false);
-        }
-        
-        public void LoseMatch()
-        {
-            OnLoseMatch?.Invoke();
-        }
-        
-        public void DisableModuleInteractivity()
-        {
-            SetModuleInteractivity(false);
-        }
-        
         private void SetModuleInteractivity(bool interactive)
         {
             if (interactive)
@@ -923,6 +894,48 @@ namespace HotPotato.Player
             }
 
             _physicsRaycaster.eventMask = _notOnTurnEventMask;
+        }
+        
+        private void HandleTurnOwnerChangedEvent(TurnOwnerChangedEvent turnOwnerChangedEvent)
+        {
+            SetModuleInteractivity(turnOwnerChangedEvent.isMyTurn);
+        }
+        
+        private void HandleWinMatchEvent(WinMatchEvent winMatchEvent)
+        {
+            DisableModuleInteractivity();
+        }
+        
+        private void DisableModuleInteractivity()
+        {
+            SetModuleInteractivity(false);
+        }
+        
+        private void RegisterEvents()
+        {
+            _turnOwnerChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(HandleTurnOwnerChangedEvent);
+            EventBus<TurnOwnerChangedEvent>.Register(_turnOwnerChangedEventBinding);
+            
+            _loseRoundEventBinding = new EventBinding<LoseRoundEvent>(DisableModuleInteractivity);
+            EventBus<LoseRoundEvent>.Register(_loseRoundEventBinding);
+            
+            _winRoundEventBinding = new EventBinding<WinRoundEvent>(DisableModuleInteractivity);
+            EventBus<WinRoundEvent>.Register(_winRoundEventBinding);
+            
+            _winMatchEventBinding = new EventBinding<WinMatchEvent>(HandleWinMatchEvent);
+            EventBus<WinMatchEvent>.Register(_winMatchEventBinding);
+            
+            _moduleClickedEventBinding = new EventBinding<ModuleClickedEvent>(DisableModuleInteractivity);
+            EventBus<ModuleClickedEvent>.Register(_moduleClickedEventBinding);
+        }
+        
+        private void DeregisterEvents()
+        {
+            EventBus<TurnOwnerChangedEvent>.Deregister(_turnOwnerChangedEventBinding);
+            EventBus<LoseRoundEvent>.Deregister(_loseRoundEventBinding);
+            EventBus<WinRoundEvent>.Deregister(_winRoundEventBinding);
+            EventBus<WinMatchEvent>.Deregister(_winMatchEventBinding);
+            EventBus<ModuleClickedEvent>.Deregister(_moduleClickedEventBinding);
         }
     }
 }﻿using FishNet.Object;
@@ -937,6 +950,7 @@ namespace HotPotato.Player
 
         private bool _isCurrentPlayer = false;
         private bool _isMyTurn = false;
+        private bool _hasLost = false;
 
         private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
 
@@ -957,27 +971,33 @@ namespace HotPotato.Player
         private void ResetMatchStatsObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.ResetMatchStats();
+            EventBus<MatchResetEvent>.Raise(new MatchResetEvent());
         }
         
         [ObserversRpc]
         public void StartRoundObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.StartRound();
+            _hasLost = false;
+            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
         }
 
         [ObserversRpc]
         public void StartTurnObserversRpc()
         {
-            OwnedPlayerManager.Instance.UpdateIsMyTurn(IsOwner);
+            EventBus<TurnOwnerChangedEvent>.Raise(new TurnOwnerChangedEvent
+            {
+                isMyTurn = IsOwner,
+                hasLost = _hasLost
+            });
         }
 
         [ObserversRpc]
         public void LoseObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.Lose();
+            _hasLost = true;
+            EventBus<LoseRoundEvent>.Raise(new LoseRoundEvent());
         }
 
         [Server]
@@ -990,10 +1010,11 @@ namespace HotPotato.Player
         [ObserversRpc]
         private void WinRoundObserversRpc(int winCount)
         {
-            if (IsOwner)
+            if (!IsOwner) return;
+            EventBus<WinRoundEvent>.Raise(new WinRoundEvent
             {
-                OwnedPlayerManager.Instance.WinRound(winCount);
-            }
+                winCount = winCount
+            });
         }
 
         [Server]
@@ -1008,11 +1029,14 @@ namespace HotPotato.Player
         {
             if (IsOwner)
             {
-                OwnedPlayerManager.Instance.WinMatch(winCount);
+                EventBus<WinMatchEvent>.Raise(new WinMatchEvent
+                {
+                    winCount = winCount
+                });
                 return;
             }
             
-            OwnedPlayerManager.Instance.LoseMatch();
+            EventBus<LoseMatchEvent>.Raise(new LoseMatchEvent());
         }
     }
 }﻿using System.Collections.Generic;
@@ -1077,22 +1101,23 @@ namespace HotPotato.UI
         [Required]
         [SerializeField] private TextMeshProUGUI _resultText;
 
+        private EventBinding<WinMatchEvent> _winMatchEventBinding;
+        private EventBinding<LoseMatchEvent> _loseMatchEventBinding;
+        private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
+        
         private void Start()
         {
-            OwnedPlayerManager.Instance.OnWinMatch += ShowWinResult;
-            OwnedPlayerManager.Instance.OnLoseMatch += ShowLoseResult;
-            OwnedPlayerManager.Instance.OnRoundStarted += HideResult;
+            RegisterEvents();
+
             HideResult();
         }
-        
+
         private void OnDestroy()
         {
-            OwnedPlayerManager.Instance.OnWinMatch -= ShowWinResult;
-            OwnedPlayerManager.Instance.OnLoseMatch -= ShowLoseResult;
-            OwnedPlayerManager.Instance.OnRoundStarted -= HideResult;
+            DeregisterEvents();
         }
 
-        private void ShowWinResult(int winCount)
+        private void ShowWinResult(WinMatchEvent winMatchEvent)
         {
             gameObject.SetActive(true);
             _background.color = Color.yellow;
@@ -1110,6 +1135,25 @@ namespace HotPotato.UI
         {
             gameObject.SetActive(false);
         }
+        
+        private void RegisterEvents()
+        {
+            _winMatchEventBinding = new EventBinding<WinMatchEvent>(ShowWinResult);
+            EventBus<WinMatchEvent>.Register(_winMatchEventBinding);
+            
+            _loseMatchEventBinding = new EventBinding<LoseMatchEvent>(ShowLoseResult);
+            EventBus<LoseMatchEvent>.Register(_loseMatchEventBinding);
+            
+            _roundStartedEventBinding = new EventBinding<RoundStartedEvent>(HideResult);
+            EventBus<RoundStartedEvent>.Register(_roundStartedEventBinding);
+        }
+        
+        private void DeregisterEvents()
+        {
+            EventBus<WinMatchEvent>.Deregister(_winMatchEventBinding);
+            EventBus<LoseMatchEvent>.Deregister(_loseMatchEventBinding);
+            EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
+        }
     }
 }
 ﻿using HotPotato.Player;
@@ -1120,33 +1164,54 @@ namespace HotPotato.UI
     {
         [SerializeField, Required] private Image _image;
 
+        private EventBinding<TurnOwnerChangedEvent> _turnOwnerChangedEventBinding;
+        private EventBinding<LoseRoundEvent> _loseRoundEventBinding;
+        private EventBinding<WinRoundEvent> _winRoundEventBinding;
+        
         private void Start()
         {
-            OwnedPlayerManager.Instance.OnIsMyTurnUpdate += SetTurnOwner;
-            OwnedPlayerManager.Instance.OnLose += Lose;
-            OwnedPlayerManager.Instance.OnWinRound += WinRound;
+            RegisterEvents();
         }
-        
+
         private void OnDestroy()
         {
-            OwnedPlayerManager.Instance.OnIsMyTurnUpdate -= SetTurnOwner;
-            OwnedPlayerManager.Instance.OnLose -= Lose;
-            OwnedPlayerManager.Instance.OnWinRound -= WinRound;
+            DeregisterEvents();
         }
 
-        private void SetTurnOwner(bool isOwner)
+        private void SetTurnOwner(TurnOwnerChangedEvent turnOwnerChangedEvent)
         {
-            _image.color = isOwner ? Color.green : Color.red;
+            if (turnOwnerChangedEvent.hasLost) return;
+            
+            _image.color = turnOwnerChangedEvent.isMyTurn ? Color.green : Color.red;
         }
 
-        private void Lose()
+        private void LoseRound()
         {
             _image.color = Color.black;
         }
 
-        private void WinRound(int winCount)
+        private void WinRound()
         {
             _image.color = Color.yellow;
+        }
+        
+        private void RegisterEvents()
+        {
+            _turnOwnerChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(SetTurnOwner);
+            EventBus<TurnOwnerChangedEvent>.Register(_turnOwnerChangedEventBinding);
+            
+            _loseRoundEventBinding = new EventBinding<LoseRoundEvent>(LoseRound);
+            EventBus<LoseRoundEvent>.Register(_loseRoundEventBinding);
+            
+            _winRoundEventBinding = new EventBinding<WinRoundEvent>(WinRound);
+            EventBus<WinRoundEvent>.Register(_winRoundEventBinding);
+        }
+        
+        private void DeregisterEvents()
+        {
+            EventBus<TurnOwnerChangedEvent>.Deregister(_turnOwnerChangedEventBinding);
+            EventBus<LoseRoundEvent>.Deregister(_loseRoundEventBinding);
+            EventBus<WinRoundEvent>.Deregister(_winRoundEventBinding);
         }
     }
 }﻿using System.Collections.Generic;
@@ -1167,10 +1232,12 @@ namespace HotPotato.UI
         [Required, SceneObjectsOnly] 
         [SerializeField] private Button _newMatchButton;
         
+        private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
+        private EventBinding<RoundEndedEvent> _roundEndedEventBinding;
+        private EventBinding<MatchEndedEvent> _matchEndedEventBinding;
+        
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
         private List<ClueFieldUI> _clueFieldUIList = new();
-
-        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
 
         public override void OnStartNetwork()
         {
@@ -1179,18 +1246,21 @@ namespace HotPotato.UI
 
         public override void OnStartServer()
         {
-            GameManager.OnRoundEnded += ClearClueTypeData;
-            GameManager.OnRoundEnded += ShowNextRoundButton;
-            GameManager.OnRoundStarted += ShowNextRoundClues;
-            GameManager.OnMatchEnded += ShowNextMatchButton;
+            _roundStartedEventBinding = new EventBinding<RoundStartedEvent>(ShowNextRoundClues);
+            EventBus<RoundStartedEvent>.Register(_roundStartedEventBinding);
+            
+            _roundEndedEventBinding = new EventBinding<RoundEndedEvent>(HandleRoundEndedEvent);
+            EventBus<RoundEndedEvent>.Register(_roundEndedEventBinding);
+            
+            _matchEndedEventBinding = new EventBinding<MatchEndedEvent>(ShowNextMatchButton);
+            EventBus<MatchEndedEvent>.Register(_matchEndedEventBinding);
         }
         
         public override void OnStopServer()
         {
-            GameManager.OnRoundEnded -= ClearClueTypeData;
-            GameManager.OnRoundEnded -= ShowNextRoundButton;
-            GameManager.OnRoundStarted -= ShowNextRoundClues;
-            GameManager.OnMatchEnded -= ShowNextMatchButton;
+            EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
+            EventBus<RoundEndedEvent>.Deregister(_roundEndedEventBinding);
+            EventBus<MatchEndedEvent>.Deregister(_matchEndedEventBinding);
         }
 
         public override void OnStartClient()
@@ -1209,6 +1279,12 @@ namespace HotPotato.UI
                 { BombClueType.Type, clueData.ModuleTypeData },
                 { BombClueType.Letter, clueData.ModuleLetterData }
             };
+        }
+        
+        private void HandleRoundEndedEvent()
+        {
+            ClearClueTypeData();
+            ShowNextRoundButton();
         }
         
         [Server]
@@ -1296,28 +1372,52 @@ namespace HotPotato.UI
         [Required]
         [SerializeField] private TextMeshProUGUI _text;
     
+        private EventBinding<WinRoundEvent> _winRoundEventBinding;
+        private EventBinding<WinMatchEvent> _winMatchEventBinding;
+        private EventBinding<MatchResetEvent> _resetMatchStatsEventBinding;
+        
         private void Start()
         {
-            OwnedPlayerManager.Instance.OnWinRound += UpdateWinRoundCount;
-            OwnedPlayerManager.Instance.OnWinMatch += UpdateWinRoundCount;
-            OwnedPlayerManager.Instance.OnResetMatchStats += ResetWinRoundCount;
+            RegisterEvents();
         }
 
         private void OnDestroy()
         {
-            OwnedPlayerManager.Instance.OnWinRound -= UpdateWinRoundCount;
-            OwnedPlayerManager.Instance.OnWinMatch -= UpdateWinRoundCount;
-            OwnedPlayerManager.Instance.OnResetMatchStats -= ResetWinRoundCount;
+            DeregisterEvents();
         }
 
-        private void UpdateWinRoundCount(int winCount)
+        private void UpdateWinRoundCount(WinRoundEvent winRoundEvent)
         {
-            _text.text = winCount.ToString();
+            _text.text = winRoundEvent.winCount.ToString();
+        }
+        
+        private void UpdateWinRoundCount(WinMatchEvent winMatchEvent)
+        {
+            _text.text = winMatchEvent.winCount.ToString();
         }
         
         private void ResetWinRoundCount()
         {
             _text.text = "0";
+        }
+        
+        private void RegisterEvents()
+        {
+            _winRoundEventBinding = new EventBinding<WinRoundEvent>(UpdateWinRoundCount);
+            EventBus<WinRoundEvent>.Register(_winRoundEventBinding);
+            
+            _winMatchEventBinding = new EventBinding<WinMatchEvent>(UpdateWinRoundCount);
+            EventBus<WinMatchEvent>.Register(_winMatchEventBinding);
+            
+            _resetMatchStatsEventBinding = new EventBinding<MatchResetEvent>(ResetWinRoundCount);
+            EventBus<MatchResetEvent>.Register(_resetMatchStatsEventBinding);
+        }
+
+        private void DeregisterEvents()
+        {
+            EventBus<WinRoundEvent>.Deregister(_winRoundEventBinding);
+            EventBus<WinMatchEvent>.Deregister(_winMatchEventBinding);
+            EventBus<MatchResetEvent>.Deregister(_resetMatchStatsEventBinding);
         }
     }
 }﻿using UnityEngine;

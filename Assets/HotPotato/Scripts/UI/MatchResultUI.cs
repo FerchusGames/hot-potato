@@ -14,22 +14,23 @@ namespace HotPotato.UI
         [Required]
         [SerializeField] private TextMeshProUGUI _resultText;
 
+        private EventBinding<WinMatchEvent> _winMatchEventBinding;
+        private EventBinding<LoseMatchEvent> _loseMatchEventBinding;
+        private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
+        
         private void Start()
         {
-            OwnedPlayerManager.Instance.OnWinMatch += ShowWinResult;
-            OwnedPlayerManager.Instance.OnLoseMatch += ShowLoseResult;
-            OwnedPlayerManager.Instance.OnRoundStarted += HideResult;
+            RegisterEvents();
+
             HideResult();
         }
-        
+
         private void OnDestroy()
         {
-            OwnedPlayerManager.Instance.OnWinMatch -= ShowWinResult;
-            OwnedPlayerManager.Instance.OnLoseMatch -= ShowLoseResult;
-            OwnedPlayerManager.Instance.OnRoundStarted -= HideResult;
+            DeregisterEvents();
         }
 
-        private void ShowWinResult(int winCount)
+        private void ShowWinResult(WinMatchEvent winMatchEvent)
         {
             gameObject.SetActive(true);
             _background.color = Color.yellow;
@@ -46,6 +47,25 @@ namespace HotPotato.UI
         private void HideResult()
         {
             gameObject.SetActive(false);
+        }
+        
+        private void RegisterEvents()
+        {
+            _winMatchEventBinding = new EventBinding<WinMatchEvent>(ShowWinResult);
+            EventBus<WinMatchEvent>.Register(_winMatchEventBinding);
+            
+            _loseMatchEventBinding = new EventBinding<LoseMatchEvent>(ShowLoseResult);
+            EventBus<LoseMatchEvent>.Register(_loseMatchEventBinding);
+            
+            _roundStartedEventBinding = new EventBinding<RoundStartedEvent>(HideResult);
+            EventBus<RoundStartedEvent>.Register(_roundStartedEventBinding);
+        }
+        
+        private void DeregisterEvents()
+        {
+            EventBus<WinMatchEvent>.Deregister(_winMatchEventBinding);
+            EventBus<LoseMatchEvent>.Deregister(_loseMatchEventBinding);
+            EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
         }
     }
 }

@@ -15,19 +15,19 @@ public class BombTimer : NetworkBehaviour
     private readonly SyncTimer _timer = new();
     private readonly SyncVar<bool> _isRunning = new(true);
     
-    private EventBinding<TurnChangedEvent> _turnChangedEventBinding;
+    private EventBinding<TurnOwnerChangedEvent> _turnChangedEventBinding;
     
     private bool _timerExpired = false;
     
     public override void OnStartServer()
     {
-        _turnChangedEventBinding = new EventBinding<TurnChangedEvent>(ResetTimer);
-        EventBus<TurnChangedEvent>.Register(_turnChangedEventBinding);
+        _turnChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(ResetTimer);
+        EventBus<TurnOwnerChangedEvent>.Register(_turnChangedEventBinding);
     }
 
     public override void OnStopServer()
     {
-        EventBus<TurnChangedEvent>.Deregister(_turnChangedEventBinding);
+        EventBus<TurnOwnerChangedEvent>.Deregister(_turnChangedEventBinding);
     }
 
     private void Update()

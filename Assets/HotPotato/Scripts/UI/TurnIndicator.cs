@@ -9,33 +9,67 @@ namespace HotPotato.UI
     {
         [SerializeField, Required] private Image _image;
 
+        private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
+        private EventBinding<TurnOwnerChangedEvent> _turnOwnerChangedEventBinding;
+        private EventBinding<LoseRoundEvent> _loseRoundEventBinding;
+        private EventBinding<WinRoundEvent> _winRoundEventBinding;
+
+        private bool _hasLost = false;
+        
         private void Start()
         {
-            OwnedPlayerManager.Instance.OnIsMyTurnUpdate += SetTurnOwner;
-            OwnedPlayerManager.Instance.OnLose += Lose;
-            OwnedPlayerManager.Instance.OnWinRound += WinRound;
+            RegisterEvents();
         }
-        
+
         private void OnDestroy()
         {
-            OwnedPlayerManager.Instance.OnIsMyTurnUpdate -= SetTurnOwner;
-            OwnedPlayerManager.Instance.OnLose -= Lose;
-            OwnedPlayerManager.Instance.OnWinRound -= WinRound;
+            DeregisterEvents();
         }
 
-        private void SetTurnOwner(bool isOwner)
+        private void SetTurnOwner(TurnOwnerChangedEvent turnOwnerChangedEvent)
         {
-            _image.color = isOwner ? Color.green : Color.red;
+            if (_hasLost) return;
+            
+            _image.color = turnOwnerChangedEvent.isMyTurn ? Color.green : Color.red;
         }
 
-        private void Lose()
+        private void HandleRoundStartedEvent()
         {
+            _hasLost = false;
+        }
+        
+        private void LoseRound()
+        {
+            _hasLost = true;
             _image.color = Color.black;
         }
 
-        private void WinRound(int winCount)
+        private void WinRound()
         {
             _image.color = Color.yellow;
+        }
+        
+        private void RegisterEvents()
+        {
+            _roundStartedEventBinding = new EventBinding<RoundStartedEvent>(HandleRoundStartedEvent);
+            EventBus<RoundStartedEvent>.Register(_roundStartedEventBinding);
+            
+            _turnOwnerChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(SetTurnOwner);
+            EventBus<TurnOwnerChangedEvent>.Register(_turnOwnerChangedEventBinding);
+            
+            _loseRoundEventBinding = new EventBinding<LoseRoundEvent>(LoseRound);
+            EventBus<LoseRoundEvent>.Register(_loseRoundEventBinding);
+            
+            _winRoundEventBinding = new EventBinding<WinRoundEvent>(WinRound);
+            EventBus<WinRoundEvent>.Register(_winRoundEventBinding);
+        }
+        
+        private void DeregisterEvents()
+        {
+            EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
+            EventBus<TurnOwnerChangedEvent>.Deregister(_turnOwnerChangedEventBinding);
+            EventBus<LoseRoundEvent>.Deregister(_loseRoundEventBinding);
+            EventBus<WinRoundEvent>.Deregister(_winRoundEventBinding);
         }
     }
 }

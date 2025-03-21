@@ -53,7 +53,7 @@ namespace HotPotato.Bomb
         public void OnPointerClick(PointerEventData eventData)
         {
             GameManager.InteractWithModuleServerRpc(this);
-            OwnedPlayerManager.Instance.DisableModuleInteractivity();
+            EventBus<ModuleClickedEvent>.Raise(new ModuleClickedEvent());
         }
 
         private void ApplySettings(BombModuleSettings settings)
