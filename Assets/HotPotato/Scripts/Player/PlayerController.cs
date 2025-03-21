@@ -11,9 +11,6 @@ namespace HotPotato.Player
 
         private readonly SyncVar<int> _winCount = new();
 
-        private bool _isCurrentPlayer = false;
-        private bool _isMyTurn = false;
-
         private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
 
         public override void OnStartClient()
