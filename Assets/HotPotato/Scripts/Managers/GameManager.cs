@@ -17,6 +17,7 @@ namespace HotPotato.Managers
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
         private EventBinding<ModulesSpawnedEvent> _modulesSpawnedEventBinding;
+        private EventBinding<TimerExpiredEvent> _timerExpiredEventBinding;
         
         private List<PlayerController> _matchPlayers = new();
         private List<PlayerController> _remainingPlayers = new();
@@ -34,17 +35,18 @@ namespace HotPotato.Managers
         public override void OnStartServer()
         {
             _remainingPlayers.Clear();
-            _bombTimer.OnTimerExpired += TimerExpiredEvent;
             
             _modulesSpawnedEventBinding = new EventBinding<ModulesSpawnedEvent>(SetCurrentRoundModuleSettings);
             EventBus<ModulesSpawnedEvent>.Register(_modulesSpawnedEventBinding);
+            
+            _timerExpiredEventBinding = new EventBinding<TimerExpiredEvent>(TimerExpiredEvent);
+            EventBus<TimerExpiredEvent>.Register(_timerExpiredEventBinding);
         }
 
         public override void OnStopServer()
         {
-            _bombTimer.OnTimerExpired -= TimerExpiredEvent;
-            
             EventBus<ModulesSpawnedEvent>.Deregister(_modulesSpawnedEventBinding);
+            EventBus<TimerExpiredEvent>.Deregister(_timerExpiredEventBinding);
         }
 
         public void RegisterPlayer(PlayerController player)

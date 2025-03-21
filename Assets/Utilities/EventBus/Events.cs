@@ -29,3 +29,4 @@ public struct WinMatchEvent : IEvent
     public int winCount;
 }
 public struct LoseMatchEvent : IEvent { }
+public struct TimerExpiredEvent : IEvent { }

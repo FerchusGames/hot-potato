@@ -6,8 +6,6 @@ using TMPro;
 
 public class BombTimer : NetworkBehaviour
 {
-    public event Action OnTimerExpired; // TODO: Change this to event bus
-    
     [SerializeField] private int _initialTime = 20;
 
     [SerializeField] private TextMeshProUGUI _text;
@@ -54,7 +52,7 @@ public class BombTimer : NetworkBehaviour
         if (_timer.Remaining <= 0 && !_timerExpired)
         {
             _timerExpired = true;
-            OnTimerExpired?.Invoke();
+            EventBus<TimerExpiredEvent>.Raise(new TimerExpiredEvent());
         }
     }
     
