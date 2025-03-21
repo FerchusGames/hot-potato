@@ -124,10 +124,10 @@ namespace HotPotato.Bomb
 
         private int GetRandomModulePropertyIndex() => Random.Range(0, _bombModulePrefabs.Length);
 
-        private Vector3 GetModulePosition(int row, int column) => new(
-            FirstPositionOffset + row * OffsetBetweenModules,
+        private Vector3 GetModulePosition(int column, int row) => new(
+            FirstPositionOffset + column * OffsetBetweenModules,
             0,
-            FirstPositionOffset + column * OffsetBetweenModules
+            FirstPositionOffset + row * OffsetBetweenModules
         );
     }
 }
