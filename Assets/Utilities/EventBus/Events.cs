@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using HotPotato.Bomb;
+using HotPotato.Player;
 
 public interface IEvent { }
 
 public struct TurnOwnerChangedEvent : IEvent
 {
-    public bool isMyTurn;
+    public bool IsMyTurn;
+}
 }
 public struct RoundStartedEvent : IEvent { }
 public struct RoundEndedEvent : IEvent { }
@@ -13,7 +15,7 @@ public struct MatchResetEvent : IEvent { }
 public struct MatchEndedEvent : IEvent { }
 public struct ModulesSpawnedEvent : IEvent
 {
-    public List<BombModuleSettings> settingsList;
+    public List<BombModuleSettings> SettingsList;
 }
 
 public struct ModuleClickedEvent : IEvent { }
@@ -22,11 +24,11 @@ public struct LoseRoundEvent : IEvent { }
 
 public struct WinRoundEvent : IEvent
 {
-    public int winCount;
+    public int WinCount;
 }
 public struct WinMatchEvent : IEvent
 {
-    public int winCount;
+    public int WinCount;
 }
 public struct LoseMatchEvent : IEvent { }
 public struct TimerExpiredEvent : IEvent { }

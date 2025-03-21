@@ -26,12 +26,12 @@ namespace HotPotato.UI
 
         private void UpdateWinRoundCount(WinRoundEvent winRoundEvent)
         {
-            _text.text = winRoundEvent.winCount.ToString();
+            _text.text = winRoundEvent.WinCount.ToString();
         }
         
         private void UpdateWinRoundCount(WinMatchEvent winMatchEvent)
         {
-            _text.text = winMatchEvent.winCount.ToString();
+            _text.text = winMatchEvent.WinCount.ToString();
         }
         
         private void ResetWinRoundCount()

@@ -30,7 +30,7 @@ namespace HotPotato.UI
         {
             if (_hasLost) return;
             
-            _image.color = turnOwnerChangedEvent.isMyTurn ? Color.green : Color.red;
+            _image.color = turnOwnerChangedEvent.IsMyTurn ? Color.green : Color.red;
         }
 
         private void HandleRoundStartedEvent()

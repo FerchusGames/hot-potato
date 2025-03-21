@@ -63,7 +63,7 @@ namespace HotPotato.Bomb
 
             EventBus<ModulesSpawnedEvent>.Raise(new ModulesSpawnedEvent
             {
-                settingsList = _settingsList
+                SettingsList = _settingsList
             });
         }
 

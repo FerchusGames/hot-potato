@@ -45,7 +45,7 @@ namespace HotPotato.Player
         
         private void HandleTurnOwnerChangedEvent(TurnOwnerChangedEvent turnOwnerChangedEvent)
         {
-            SetModuleInteractivity(turnOwnerChangedEvent.isMyTurn);
+            SetModuleInteractivity(turnOwnerChangedEvent.IsMyTurn);
         }
         
         private void HandleWinMatchEvent(WinMatchEvent winMatchEvent)
