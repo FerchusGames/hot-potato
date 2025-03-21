@@ -8,6 +8,9 @@ public struct TurnOwnerChangedEvent : IEvent
 {
     public bool IsMyTurn;
 }
+public struct PlayerJoinedEvent : IEvent
+{
+    public PlayerController PlayerController;
 }
 public struct RoundStartedEvent : IEvent { }
 public struct RoundEndedEvent : IEvent { }

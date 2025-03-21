@@ -18,6 +18,7 @@ namespace HotPotato.Managers
 
         private EventBinding<ModulesSpawnedEvent> _modulesSpawnedEventBinding;
         private EventBinding<TimerExpiredEvent> _timerExpiredEventBinding;
+        private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
         
         private List<PlayerController> _matchPlayers = new();
         private List<PlayerController> _remainingPlayers = new();
@@ -35,24 +36,40 @@ namespace HotPotato.Managers
         public override void OnStartServer()
         {
             _remainingPlayers.Clear();
-            
+
+            RegisterEvents();
+        }
+
+        public override void OnStopServer()
+        {
+            DeregisterEvents();
+        }
+
+        private void RegisterEvents()
+        {
             _modulesSpawnedEventBinding = new EventBinding<ModulesSpawnedEvent>(SetCurrentRoundModuleSettings);
             EventBus<ModulesSpawnedEvent>.Register(_modulesSpawnedEventBinding);
             
             _timerExpiredEventBinding = new EventBinding<TimerExpiredEvent>(TimerExpiredEvent);
             EventBus<TimerExpiredEvent>.Register(_timerExpiredEventBinding);
+            
+            _playerJoinedEventBinding = new EventBinding<PlayerJoinedEvent>(RegisterPlayer);
+            EventBus<PlayerJoinedEvent>.Register(_playerJoinedEventBinding);
         }
-
-        public override void OnStopServer()
+        
+        private void DeregisterEvents()
         {
             EventBus<ModulesSpawnedEvent>.Deregister(_modulesSpawnedEventBinding);
             EventBus<TimerExpiredEvent>.Deregister(_timerExpiredEventBinding);
+            EventBus<PlayerJoinedEvent>.Deregister(_playerJoinedEventBinding);
         }
 
-        public void RegisterPlayer(PlayerController player)
+        private void RegisterPlayer(PlayerJoinedEvent playerJoinedEvent)
         {
             if (!IsServerStarted) return;
 
+            var player = playerJoinedEvent.PlayerController;
+            
             if (!_matchPlayers.Contains(player))
             {
                 _matchPlayers.Add(player);
@@ -103,7 +120,7 @@ namespace HotPotato.Managers
         [Server]
         private void SetCurrentRoundModuleSettings(ModulesSpawnedEvent modulesSpawnedEvent)
         {
-            var settingsList = modulesSpawnedEvent.settingsList;
+            var settingsList = modulesSpawnedEvent.SettingsList;
             
             _bombModuleSettingsList = settingsList;
             _clueData = new ClueData(settingsList, false);

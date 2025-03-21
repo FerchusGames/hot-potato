@@ -1,7 +1,5 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using HotPotato.Managers;
-using UnityEngine;
 
 namespace HotPotato.Player
 {
@@ -11,12 +9,14 @@ namespace HotPotato.Player
 
         private readonly SyncVar<int> _winCount = new();
 
-        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
-
         public override void OnStartClient()
         {
             if (!IsServerInitialized) return;
-            GameManager.RegisterPlayer(this);
+            
+            EventBus<PlayerJoinedEvent>.Raise(new PlayerJoinedEvent
+            {
+                PlayerController = this
+            });
         }
 
         [Server]
@@ -45,7 +45,7 @@ namespace HotPotato.Player
         {
             EventBus<TurnOwnerChangedEvent>.Raise(new TurnOwnerChangedEvent
             {
-                isMyTurn = IsOwner
+                IsMyTurn = IsOwner
             });
         }
 
@@ -69,7 +69,7 @@ namespace HotPotato.Player
             if (!IsOwner) return;
             EventBus<WinRoundEvent>.Raise(new WinRoundEvent
             {
-                winCount = winCount
+                WinCount = winCount
             });
         }
 
@@ -87,7 +87,7 @@ namespace HotPotato.Player
             {
                 EventBus<WinMatchEvent>.Raise(new WinMatchEvent
                 {
-                    winCount = winCount
+                    WinCount = winCount
                 });
                 return;
             }
