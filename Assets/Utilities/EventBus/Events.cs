@@ -10,7 +10,7 @@ public struct TurnOwnerChangedEvent : IEvent
 }
 public struct PlayerJoinedEvent : IEvent
 {
-    public PlayerController PlayerController;
+    public IPlayerController PlayerController;
 }
 public struct RoundStartedEvent : IEvent { }
 public struct RoundEndedEvent : IEvent { }

@@ -21,8 +21,8 @@ namespace HotPotato.Managers
         private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
         private EventBinding<ModuleClickedEvent> _moduleClickedEventBinding;
         
-        private List<PlayerController> _matchPlayers = new();
-        private List<PlayerController> _remainingPlayers = new();
+        private List<IPlayerController> _matchPlayers = new();
+        private List<IPlayerController> _remainingPlayers = new();
         private List<BombModuleSettings> _bombModuleSettingsList = new();
         
         private ClueData _clueData;
@@ -129,7 +129,7 @@ namespace HotPotato.Managers
         [Server]
         private void ExplodeBomb()
         {
-            _remainingPlayers[_currentPlayerIndex.Value].LoseObserversRpc();
+            _remainingPlayers[_currentPlayerIndex.Value].Lose();
             _remainingPlayers.RemoveAt(_currentPlayerIndex.Value);
             _currentPlayerIndex.Value %= _remainingPlayers.Count;
         }
@@ -194,7 +194,7 @@ namespace HotPotato.Managers
 
             foreach (var player in _remainingPlayers)
             {
-                player.StartRoundObserversRpc();
+                player.StartRound();
             }
             
             StartNextTurn();
@@ -209,7 +209,7 @@ namespace HotPotato.Managers
             foreach (var player in _remainingPlayers)
             {
                 player.ResetMatchStats();
-                player.StartRoundObserversRpc();
+                player.StartRound();
             }
             
             StartNextTurn();
@@ -225,8 +225,8 @@ namespace HotPotato.Managers
         [Server]
         private void StartNextTurn()
         {
-            PlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
-            currentPlayer.StartTurnObserversRpc();
+            IPlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
+            currentPlayer.StartTurn();
         }
     }
 }

@@ -3,7 +3,7 @@ using FishNet.Object.Synchronizing;
 
 namespace HotPotato.Player
 {
-    public class PlayerController : NetworkBehaviour
+    public class PlayerController : NetworkBehaviour, IPlayerController
     {
         public int WinCount => _winCount.Value;
 
@@ -32,25 +32,40 @@ namespace HotPotato.Player
             if (!IsOwner) return;
             EventBus<MatchResetEvent>.Raise(new MatchResetEvent());
         }
+
+        public void StartRound()
+        {
+            StartRoundObserversRpc();
+        }
         
         [ObserversRpc]
-        public void StartRoundObserversRpc()
+        private void StartRoundObserversRpc()
         {
             if (!IsOwner) return;
             EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
         }
 
+        public void StartTurn()
+        {
+            StartTurnObserversRpc();
+        }
+        
         [ObserversRpc]
-        public void StartTurnObserversRpc()
+        private void StartTurnObserversRpc()
         {
             EventBus<TurnOwnerChangedEvent>.Raise(new TurnOwnerChangedEvent
             {
                 IsMyTurn = IsOwner
             });
         }
+        
+        public void Lose()
+        {
+            LoseObserversRpc();
+        }
 
         [ObserversRpc]
-        public void LoseObserversRpc()
+        private void LoseObserversRpc()
         {
             if (!IsOwner) return;
             EventBus<LoseRoundEvent>.Raise(new LoseRoundEvent());
