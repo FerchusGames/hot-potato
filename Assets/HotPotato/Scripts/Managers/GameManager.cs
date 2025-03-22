@@ -11,7 +11,6 @@ namespace HotPotato.Managers
 {
     public class GameManager : NetworkBehaviour
     {
-        [SerializeField] private BombTimer _bombTimer;
         [SerializeField] private int _roundsToWin = 3;
         
         private readonly SyncVar<int> _currentPlayerIndex = new();
@@ -174,7 +173,6 @@ namespace HotPotato.Managers
         private void EndRound()
         {
             EventBus<RoundEndedEvent>.Raise(new RoundEndedEvent());
-            _bombTimer.StopTimerObserversRpc();
             _remainingPlayers[0].WinRound();
         }
         
@@ -182,7 +180,6 @@ namespace HotPotato.Managers
         private void EndMatch()
         {
             EventBus<MatchEndedEvent>.Raise(new MatchEndedEvent());
-            _bombTimer.StopTimerObserversRpc();
             _remainingPlayers[0].WinMatch();
         }
         
