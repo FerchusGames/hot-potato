@@ -1,8 +1,5 @@
 using FishNet.Object;
-using System.Collections.Generic;
-using HotPotato.Bomb;
 using HotPotato.Clues;
-using HotPotato.UI;
 
 namespace HotPotato.Managers
 {
@@ -10,12 +7,6 @@ namespace HotPotato.Managers
     {
         private EventBinding<ModulesSpawnedEvent> _modulesSpawnedEventBinding;
         private EventBinding<ModuleClickedEvent> _moduleClickedEventBinding;
-
-        private List<BombModuleSettings> _bombModuleSettingsList = new();
-
-        private ClueData _clueData;
-
-        private UIManager UIManager => base.NetworkManager.GetInstance<UIManager>();
 
         public override void OnStartNetwork()
         {
@@ -87,11 +78,12 @@ namespace HotPotato.Managers
         [Server]
         private void SetCurrentRoundModuleSettings(ModulesSpawnedEvent modulesSpawnedEvent)
         {
-            var settingsList = modulesSpawnedEvent.SettingsList;
-
-            _bombModuleSettingsList = settingsList;
-            _clueData = new ClueData(settingsList, false);
-            UIManager.SetClueData(_clueData);
+            var clueData = new ClueData(modulesSpawnedEvent.SettingsList, false);
+            
+            EventBus<GeneratedClueDataEvent>.Raise(new GeneratedClueDataEvent
+            {
+                ClueData = clueData
+            });
         }
     }
 }

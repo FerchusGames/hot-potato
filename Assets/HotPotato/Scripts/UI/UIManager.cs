@@ -27,6 +27,7 @@ namespace HotPotato.UI
         private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
         private EventBinding<RoundEndedEvent> _roundEndedEventBinding;
         private EventBinding<MatchEndedEvent> _matchEndedEventBinding;
+        private EventBinding<GeneratedClueDataEvent> _generatedClueDataEventBinding;
         
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
         private List<ClueFieldUI> _clueFieldUIList = new();
@@ -46,6 +47,9 @@ namespace HotPotato.UI
             
             _matchEndedEventBinding = new EventBinding<MatchEndedEvent>(ShowNextMatchButton);
             EventBus<MatchEndedEvent>.Register(_matchEndedEventBinding);
+            
+            _generatedClueDataEventBinding = new EventBinding<GeneratedClueDataEvent>(SetClueData);
+            EventBus<GeneratedClueDataEvent>.Register(_generatedClueDataEventBinding);
         }
         
         public override void OnStopServer()
@@ -53,6 +57,7 @@ namespace HotPotato.UI
             EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
             EventBus<RoundEndedEvent>.Deregister(_roundEndedEventBinding);
             EventBus<MatchEndedEvent>.Deregister(_matchEndedEventBinding);
+            EventBus<GeneratedClueDataEvent>.Deregister(_generatedClueDataEventBinding);
         }
 
         public override void OnStartClient()
@@ -62,8 +67,10 @@ namespace HotPotato.UI
         }
 
         [Server]
-        public void SetClueData(ClueData clueData)
+        private void SetClueData(GeneratedClueDataEvent generatedClueDataEvent)
         {
+            var clueData = generatedClueDataEvent.ClueData;
+            
             _clueTypeData = new Dictionary<BombClueType, Dictionary<int, int>>
             {
                 { BombClueType.Number, clueData.ModuleNumberData },

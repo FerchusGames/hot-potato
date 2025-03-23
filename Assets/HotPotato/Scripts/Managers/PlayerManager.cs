@@ -37,7 +37,7 @@ namespace HotPotato.Managers
             _playerJoinedEventBinding = new EventBinding<PlayerJoinedEvent>(RegisterPlayer);
             EventBus<PlayerJoinedEvent>.Register(_playerJoinedEventBinding);
             
-            _timerExpiredEventBinding = new EventBinding<TimerExpiredEvent>(TimerExpiredEvent);
+            _timerExpiredEventBinding = new EventBinding<TimerExpiredEvent>(HandleTimerExpiredEvent);
             EventBus<TimerExpiredEvent>.Register(_timerExpiredEventBinding);
             
             _moduleExplodedEventBinding = new EventBinding<ModuleExplodedEvent>(HandleModuleExplodedEvent);
@@ -74,7 +74,7 @@ namespace HotPotato.Managers
         }
         
         [Server]
-        private void TimerExpiredEvent()
+        private void HandleTimerExpiredEvent()
         {
             HandleModuleExplodedEvent();
         }
@@ -93,6 +93,13 @@ namespace HotPotato.Managers
             _remainingPlayers.RemoveAt(_currentPlayerIndex.Value);
             _currentPlayerIndex.Value %= _remainingPlayers.Count;
             CheckForNextTurn();
+        }
+        
+        private void ResetPlayers()
+        {
+            _remainingPlayers.Clear();
+            _remainingPlayers.AddRange(_matchPlayers);
+            _currentPlayerIndex.Value = 0;
         }
         
         [Server]
@@ -119,13 +126,6 @@ namespace HotPotato.Managers
         {
             IPlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
             currentPlayer.StartTurn();
-        }
-        
-        private void ResetPlayers()
-        {
-            _remainingPlayers.Clear();
-            _remainingPlayers.AddRange(_matchPlayers);
-            _currentPlayerIndex.Value = 0;
         }
         
         [ServerRpc(RequireOwnership = false)]

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HotPotato.Bomb;
+using HotPotato.Clues;
 using HotPotato.Player;
 
 public interface IEvent { }
@@ -11,6 +12,10 @@ public struct TurnOwnerChangedEvent : IEvent
 public struct PlayerJoinedEvent : IEvent
 {
     public IPlayerController PlayerController;
+}
+public struct GeneratedClueDataEvent : IEvent
+{
+    public ClueData ClueData;
 }
 public struct RoundStartedEvent : IEvent { }
 public struct RoundEndedEvent : IEvent { }
