@@ -1,33 +1,22 @@
 using FishNet.Object;
-using FishNet.Object.Synchronizing;
 using System.Collections.Generic;
 using HotPotato.Bomb;
 using HotPotato.Clues;
-using HotPotato.Player;
 using HotPotato.UI;
-using UnityEngine;
 
 namespace HotPotato.Managers
 {
     public class GameManager : NetworkBehaviour
     {
-        [SerializeField] private int _roundsToWin = 3;
-        
-        private readonly SyncVar<int> _currentPlayerIndex = new();
-
         private EventBinding<ModulesSpawnedEvent> _modulesSpawnedEventBinding;
-        private EventBinding<TimerExpiredEvent> _timerExpiredEventBinding;
-        private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
         private EventBinding<ModuleClickedEvent> _moduleClickedEventBinding;
-        
-        private List<IPlayerController> _matchPlayers = new();
-        private List<IPlayerController> _remainingPlayers = new();
+
         private List<BombModuleSettings> _bombModuleSettingsList = new();
-        
+
         private ClueData _clueData;
-        
+
         private UIManager UIManager => base.NetworkManager.GetInstance<UIManager>();
-        
+
         public override void OnStartNetwork()
         {
             base.NetworkManager.RegisterInstance(this);
@@ -35,8 +24,6 @@ namespace HotPotato.Managers
 
         public override void OnStartServer()
         {
-            _remainingPlayers.Clear();
-
             RegisterServerEvents();
         }
 
@@ -44,12 +31,12 @@ namespace HotPotato.Managers
         {
             DeregisterServerEvents();
         }
-        
+
         public override void OnStartClient()
         {
             RegisterClientEvents();
         }
-        
+
         public override void OnStopClient()
         {
             DeregisterClientEvents();
@@ -59,19 +46,11 @@ namespace HotPotato.Managers
         {
             _modulesSpawnedEventBinding = new EventBinding<ModulesSpawnedEvent>(SetCurrentRoundModuleSettings);
             EventBus<ModulesSpawnedEvent>.Register(_modulesSpawnedEventBinding);
-            
-            _timerExpiredEventBinding = new EventBinding<TimerExpiredEvent>(TimerExpiredEvent);
-            EventBus<TimerExpiredEvent>.Register(_timerExpiredEventBinding);
-            
-            _playerJoinedEventBinding = new EventBinding<PlayerJoinedEvent>(RegisterPlayer);
-            EventBus<PlayerJoinedEvent>.Register(_playerJoinedEventBinding);
         }
-        
+
         private void DeregisterServerEvents()
         {
             EventBus<ModulesSpawnedEvent>.Deregister(_modulesSpawnedEventBinding);
-            EventBus<TimerExpiredEvent>.Deregister(_timerExpiredEventBinding);
-            EventBus<PlayerJoinedEvent>.Deregister(_playerJoinedEventBinding);
         }
 
         private void RegisterClientEvents()
@@ -79,151 +58,40 @@ namespace HotPotato.Managers
             _moduleClickedEventBinding = new EventBinding<ModuleClickedEvent>(InteractWithModuleServerRpc);
             EventBus<ModuleClickedEvent>.Register(_moduleClickedEventBinding);
         }
-        
+
         private void DeregisterClientEvents()
         {
             EventBus<ModuleClickedEvent>.Deregister(_moduleClickedEventBinding);
         }
-        
-        private void RegisterPlayer(PlayerJoinedEvent playerJoinedEvent)
-        {
-            if (!IsServerStarted) return;
 
-            var player = playerJoinedEvent.PlayerController;
-            
-            if (!_matchPlayers.Contains(player))
-            {
-                _matchPlayers.Add(player);
-                _remainingPlayers.Add(player);
-                if (_remainingPlayers.Count == 1)
-                {
-                    EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
-                    StartNextTurn();
-                }
-            }
-        }
-        
         [ServerRpc(RequireOwnership = false)]
         private void InteractWithModuleServerRpc(ModuleClickedEvent moduleClickedEvent)
         {
             if (!IsServerStarted) return;
-            
+
             var module = moduleClickedEvent.Module;
-            
+
             if (module.IsTrap)
             {
                 module.ExplodeObserversRpc();
-                
-                ExplodeBomb();
+                EventBus<ModuleExplodedEvent>.Raise(new ModuleExplodedEvent());
             }
             else
             {
-                _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _remainingPlayers.Count;
+                EventBus<ModuleDefusedEvent>.Raise(new ModuleDefusedEvent());
             }
-            
-            module.Despawn();
-            CheckForNextTurn();
-        }
 
-        [Server]
-        private void ExplodeBomb()
-        {
-            _remainingPlayers[_currentPlayerIndex.Value].Lose();
-            _remainingPlayers.RemoveAt(_currentPlayerIndex.Value);
-            _currentPlayerIndex.Value %= _remainingPlayers.Count;
-        }
-        
-        [Server]
-        private void TimerExpiredEvent()
-        {
-            ExplodeBomb();
-            CheckForNextTurn();
+            module.Despawn();
         }
 
         [Server]
         private void SetCurrentRoundModuleSettings(ModulesSpawnedEvent modulesSpawnedEvent)
         {
             var settingsList = modulesSpawnedEvent.SettingsList;
-            
+
             _bombModuleSettingsList = settingsList;
             _clueData = new ClueData(settingsList, false);
             UIManager.SetClueData(_clueData);
-        }
-   
-        [Server]
-        private void CheckForNextTurn()
-        {
-            if (!IsServerStarted) return;
-
-            if (_remainingPlayers.Count > 1)
-            {
-                StartNextTurn();
-            }
-            else if (_remainingPlayers[0].WinCount + 1 >= _roundsToWin)
-            {
-                EndMatch();
-            }
-            else
-            {
-                EndRound();
-            }
-        }
-
-        [Server]
-        private void EndRound()
-        {
-            EventBus<RoundEndedEvent>.Raise(new RoundEndedEvent());
-            _remainingPlayers[0].WinRound();
-        }
-        
-        [Server]
-        private void EndMatch()
-        {
-            EventBus<MatchEndedEvent>.Raise(new MatchEndedEvent());
-            _remainingPlayers[0].WinMatch();
-        }
-        
-        [ServerRpc(RequireOwnership = false)]
-        public void StartNextRoundServerRpc()
-        {
-            ResetPlayers();
-            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
-
-            foreach (var player in _remainingPlayers)
-            {
-                player.StartRound();
-            }
-            
-            StartNextTurn();
-        }
-        
-        [ServerRpc(RequireOwnership = false)]
-        public void StartNextMatchServerRpc()
-        {
-            ResetPlayers();
-            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
-
-            foreach (var player in _remainingPlayers)
-            {
-                player.ResetMatchStats();
-                player.StartRound();
-            }
-            
-            StartNextTurn();
-        }
-
-        private void ResetPlayers()
-        {
-            _remainingPlayers.Clear();
-            _remainingPlayers.AddRange(_matchPlayers);
-            _currentPlayerIndex.Value = 0;
-        }
-        
-        [Server]
-        private void StartNextTurn()
-        {
-            IPlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
-            currentPlayer.StartTurn();
         }
     }
 }

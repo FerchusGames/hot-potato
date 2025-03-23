@@ -516,8 +516,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 414593660}
-        m_TargetAssemblyTypeName: HotPotato.Managers.GameManager, Assembly-CSharp
+      - m_Target: {fileID: 6068187290235156920}
+        m_TargetAssemblyTypeName: HotPotato.Managers.PlayerManager, Assembly-CSharp
         m_MethodName: StartNextMatchServerRpc
         m_Mode: 1
         m_Arguments:
@@ -2115,10 +2115,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1860036183}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 6068187290235156920}
+        m_TargetAssemblyTypeName: HotPotato.Managers.PlayerManager, Assembly-CSharp
+        m_MethodName: StartNextRoundServerRpc
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2548,8 +2548,85 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5217799318354643544, guid: 763ecb142278a1b488ed863a513759a0, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 6068187290235156920}
+    - targetCorrespondingSourceObject: {fileID: 5217799318354643544, guid: 763ecb142278a1b488ed863a513759a0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6068187290235156919}
   m_SourcePrefab: {fileID: 100100000, guid: 763ecb142278a1b488ed863a513759a0, type: 3}
+--- !u!1 &6068187290235156918 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5217799318354643544, guid: 763ecb142278a1b488ed863a513759a0, type: 3}
+  m_PrefabInstance: {fileID: 6068187290235156917}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6068187290235156919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068187290235156918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 0
+  <ComponentIndex>k__BackingField: 0
+  <PredictedSpawn>k__BackingField: {fileID: 0}
+  <PredictedOwner>k__BackingField: {fileID: 0}
+  NetworkBehaviours: []
+  InitializedParentNetworkBehaviour: {fileID: 0}
+  InitializedNestedNetworkObjects: []
+  RuntimeParentNetworkBehaviour: {fileID: 0}
+  RuntimeChildNetworkBehaviours: []
+  _isNetworked: 1
+  _isSpawnable: 1
+  _isGlobal: 0
+  _initializeOrder: 0
+  _preventDespawnOnDisconnect: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  _enablePrediction: 0
+  _predictionType: 0
+  _graphicalObject: {fileID: 0}
+  _detachGraphicalObject: 0
+  _enableStateForwarding: 1
+  _networkTransform: {fileID: 0}
+  _ownerInterpolation: 1
+  _ownerSmoothedProperties: 255
+  _adaptiveInterpolation: 3
+  _spectatorSmoothedProperties: 255
+  _spectatorInterpolation: 2
+  _enableTeleport: 0
+  _teleportThreshold: 1
+  <PrefabId>k__BackingField: 65535
+  <SpawnableCollectionId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 0
+  <SceneId>k__BackingField: 2146426235
+  SerializedTransformProperties:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0, w: 0}
+    Scale: {x: 0, y: 0, z: 0}
+    IsValid: 0
+--- !u!114 &6068187290235156920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6068187290235156918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 923a19ce630149338578b4cfe7ca9019, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 6068187290235156919}
+  _networkObjectCache: {fileID: 0}
+  _roundsToWin: 3
 --- !u!1001 &8121228594411102787
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2615,8 +2692,8 @@ SceneRoots:
   - {fileID: 2087632954}
   - {fileID: 8121228594411102787}
   - {fileID: 2138976901}
-  - {fileID: 1634674728}
   - {fileID: 6068187290235156917}
+  - {fileID: 1634674728}
   - {fileID: 783500181}
   - {fileID: 330585546}
   - {fileID: 1033393826}

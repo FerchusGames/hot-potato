@@ -25,7 +25,8 @@ public struct ModuleClickedEvent : IEvent
 {
     public BombModule Module;
 }
-
+public struct ModuleExplodedEvent : IEvent { }
+public struct ModuleDefusedEvent : IEvent { }
 public struct LoseRoundEvent : IEvent { }
 
 public struct WinRoundEvent : IEvent
