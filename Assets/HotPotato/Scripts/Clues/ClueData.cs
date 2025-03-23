@@ -13,7 +13,8 @@ namespace HotPotato.Clues
         
         public ClueData(List<BombModuleSettings> moduleSettings, bool isCountingTraps)
         {
-            var filteredModules = moduleSettings.Where(m => m.IsTrap == isCountingTraps);
+            var filteredModules = 
+                moduleSettings.Where(m => m.IsTrap == isCountingTraps);
             
             foreach (var module in filteredModules)
             {

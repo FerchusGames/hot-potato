@@ -1,25 +1,22 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using HotPotato.Managers;
-using UnityEngine;
 
 namespace HotPotato.Player
 {
-    public class PlayerController : NetworkBehaviour
+    public class PlayerController : NetworkBehaviour, IPlayerController
     {
         public int WinCount => _winCount.Value;
 
         private readonly SyncVar<int> _winCount = new();
 
-        private bool _isCurrentPlayer = false;
-        private bool _isMyTurn = false;
-
-        private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
-
         public override void OnStartClient()
         {
             if (!IsServerInitialized) return;
-            GameManager.RegisterPlayer(this);
+            
+            EventBus<PlayerJoinedEvent>.Raise(new PlayerJoinedEvent
+            {
+                PlayerController = this
+            });
         }
 
         [Server]
@@ -33,27 +30,45 @@ namespace HotPotato.Player
         private void ResetMatchStatsObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.ResetMatchStats();
+            EventBus<MatchResetEvent>.Raise(new MatchResetEvent());
+        }
+
+        public void StartRound()
+        {
+            StartRoundObserversRpc();
         }
         
         [ObserversRpc]
-        public void StartRoundObserversRpc()
+        private void StartRoundObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.StartRound();
+            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
+        }
+
+        public void StartTurn()
+        {
+            StartTurnObserversRpc();
+        }
+        
+        [ObserversRpc]
+        private void StartTurnObserversRpc()
+        {
+            EventBus<TurnOwnerChangedEvent>.Raise(new TurnOwnerChangedEvent
+            {
+                IsMyTurn = IsOwner
+            });
+        }
+        
+        public void Lose()
+        {
+            LoseObserversRpc();
         }
 
         [ObserversRpc]
-        public void StartTurnObserversRpc()
-        {
-            OwnedPlayerManager.Instance.UpdateIsMyTurn(IsOwner);
-        }
-
-        [ObserversRpc]
-        public void LoseObserversRpc()
+        private void LoseObserversRpc()
         {
             if (!IsOwner) return;
-            OwnedPlayerManager.Instance.Lose();
+            EventBus<LoseRoundEvent>.Raise(new LoseRoundEvent());
         }
 
         [Server]
@@ -66,10 +81,11 @@ namespace HotPotato.Player
         [ObserversRpc]
         private void WinRoundObserversRpc(int winCount)
         {
-            if (IsOwner)
+            if (!IsOwner) return;
+            EventBus<WinRoundEvent>.Raise(new WinRoundEvent
             {
-                OwnedPlayerManager.Instance.WinRound(winCount);
-            }
+                WinCount = winCount
+            });
         }
 
         [Server]
@@ -84,11 +100,14 @@ namespace HotPotato.Player
         {
             if (IsOwner)
             {
-                OwnedPlayerManager.Instance.WinMatch(winCount);
+                EventBus<WinMatchEvent>.Raise(new WinMatchEvent
+                {
+                    WinCount = winCount
+                });
                 return;
             }
             
-            OwnedPlayerManager.Instance.LoseMatch();
+            EventBus<LoseMatchEvent>.Raise(new LoseMatchEvent());
         }
     }
 }

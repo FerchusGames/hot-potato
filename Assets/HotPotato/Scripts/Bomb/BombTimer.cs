@@ -1,88 +1,108 @@
-using System;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using UnityEngine;
 using TMPro;
-using HotPotato.Managers;
+using UnityEngine;
 
-public class BombTimer : NetworkBehaviour
+namespace HotPotato.Bomb
 {
-    public event Action OnTimerExpired; // TODO: Change this to event bus
-    
-    [SerializeField] private int _initialTime = 20;
-
-    [SerializeField] private TextMeshProUGUI _text;
-    
-    private readonly SyncTimer _timer = new();
-    private readonly SyncVar<bool> _isRunning = new(true);
-    
-    private GameManager GameManager => base.NetworkManager.GetInstance<GameManager>();
-    
-    private bool _timerExpired = false;
-    
-    public override void OnStartServer()
+    public class BombTimer : NetworkBehaviour
     {
-        GameManager.OnTurnChanged += ResetTimer;
-    }
+        [SerializeField] private int _initialTime = 20;
 
-    public override void OnStopServer()
-    {
-        GameManager.OnTurnChanged -= ResetTimer;
-    }
-
-    private void Update()
-    {
-        if (!_isRunning.Value) 
+        [SerializeField] private TextMeshProUGUI _text;
+    
+        private readonly SyncTimer _timer = new();
+        private readonly SyncVar<bool> _isRunning = new(true);
+    
+        private EventBinding<TurnOwnerChangedEvent> _turnChangedEventBinding;
+        private EventBinding<RoundEndedEvent> _roundEndedEventBinding;
+        private EventBinding<MatchEndedEvent> _matchEndedEventBinding;
+    
+        private bool _timerExpired = false;
+    
+        public override void OnStartServer()
         {
-            _text.text = "END";
-            return;
-        }
-
-        _timer.Update();
-    
-        if (IsClientStarted)
-        {
-            _text.text = _timer.Remaining > 0 ? _timer.Remaining.ToString("F2") : "BOOM!";
+            RegisterServerEvents();
         }
         
-        CheckTimer();
-    }
-    
-    [Server]
-    private void CheckTimer()
-    {
-        if (_timer.Remaining <= 0 && !_timerExpired)
+        public override void OnStopServer()
         {
-            _timerExpired = true;
-            OnTimerExpired?.Invoke();
+            DeregisterServerEvents();
         }
-    }
-    
-    [Server]
-    private void ResetTimer()
-    {
-        _isRunning.Value = true;
-        _timerExpired = false;
-        _timer.StartTimer(_initialTime);
-    }
-    
-    [ServerRpc(RequireOwnership = false)]
-    public void StopTimerObserversRpc()
-    {
-        StopTimer();
-        StopTimerClientRpc();
-    }
 
-    [Server]
-    private void StopTimer()
-    {
-        _isRunning.Value = false;
-        _timer.StopTimer();
-    }
+        private void RegisterServerEvents()
+        {
+            _turnChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(ResetTimer);
+            EventBus<TurnOwnerChangedEvent>.Register(_turnChangedEventBinding);
+            
+            _roundEndedEventBinding = new EventBinding<RoundEndedEvent>(StopTimerObserversRpc);
+            EventBus<RoundEndedEvent>.Register(_roundEndedEventBinding);
+            
+            _matchEndedEventBinding = new EventBinding<MatchEndedEvent>(StopTimerObserversRpc);
+            EventBus<MatchEndedEvent>.Register(_matchEndedEventBinding);
+        }
 
-    [ObserversRpc]
-    private void StopTimerClientRpc()
-    {
-        _isRunning.Value = false;
+        private void DeregisterServerEvents()
+        {
+            EventBus<TurnOwnerChangedEvent>.Deregister(_turnChangedEventBinding);
+            EventBus<RoundEndedEvent>.Deregister(_roundEndedEventBinding);
+            EventBus<MatchEndedEvent>.Deregister(_matchEndedEventBinding);
+        }
+
+        private void Update()
+        {
+            if (!_isRunning.Value) 
+            {
+                _text.text = "END";
+                return;
+            }
+
+            _timer.Update();
+    
+            if (IsClientStarted)
+            {
+                _text.text = _timer.Remaining > 0 ? _timer.Remaining.ToString("F2") : "BOOM!";
+            }
+        
+            CheckTimer();
+        }
+    
+        [Server]
+        private void CheckTimer()
+        {
+            if (_timer.Remaining <= 0 && !_timerExpired)
+            {
+                _timerExpired = true;
+                EventBus<TimerExpiredEvent>.Raise(new TimerExpiredEvent());
+            }
+        }
+    
+        [Server]
+        private void ResetTimer()
+        {
+            _isRunning.Value = true;
+            _timerExpired = false;
+            _timer.StartTimer(_initialTime);
+        }
+    
+        [ServerRpc(RequireOwnership = false)]
+        public void StopTimerObserversRpc()
+        {
+            StopTimer();
+            StopTimerClientRpc();
+        }
+
+        [Server]
+        private void StopTimer()
+        {
+            _isRunning.Value = false;
+            _timer.StopTimer();
+        }
+
+        [ObserversRpc]
+        private void StopTimerClientRpc()
+        {
+            _isRunning.Value = false;
+        }
     }
 }
