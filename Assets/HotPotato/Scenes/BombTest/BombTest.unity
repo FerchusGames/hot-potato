@@ -445,6 +445,7 @@ GameObject:
   - component: {fileID: 139391149}
   - component: {fileID: 139391148}
   - component: {fileID: 139391147}
+  - component: {fileID: 139391150}
   m_Layer: 5
   m_Name: NewMatchButton
   m_TagString: Untagged
@@ -515,31 +516,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 139391148}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: HotPotato.Managers.PlayerManager, Assembly-CSharp
-        m_MethodName: StartNextMatchServerRpc
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 139391145}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &139391148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -578,6 +555,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 139391145}
   m_CullTransparentMesh: 1
+--- !u!114 &139391150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139391145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7346aca334b496ea318cf3fe8f67f8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _button: {fileID: 139391147}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -2044,6 +2034,7 @@ GameObject:
   - component: {fileID: 1860036187}
   - component: {fileID: 1860036186}
   - component: {fileID: 1860036185}
+  - component: {fileID: 1860036188}
   m_Layer: 5
   m_Name: NextRoundButton
   m_TagString: Untagged
@@ -2114,31 +2105,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1860036186}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: HotPotato.Managers.GameManager, Assembly-CSharp
-        m_MethodName: StartNextRoundServerRpc
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: HotPotato.Managers.PlayerManager, Assembly-CSharp
-        m_MethodName: StartNextRoundServerRpc
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1860036186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2177,6 +2144,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1860036183}
   m_CullTransparentMesh: 1
+--- !u!114 &1860036188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1860036183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e72a913bcbd34443a795d32ffc3f82a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _button: {fileID: 1860036185}
 --- !u!1 &1896727894
 GameObject:
   m_ObjectHideFlags: 0

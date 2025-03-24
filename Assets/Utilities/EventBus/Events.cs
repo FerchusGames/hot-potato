@@ -43,4 +43,10 @@ public struct WinMatchEvent : IEvent
     public int WinCount;
 }
 public struct LoseMatchEvent : IEvent { }
+public struct StartNextRoundEvent : IEvent { }
+public struct StartNextMatchEvent : IEvent { }
 public struct TimerExpiredEvent : IEvent { }
+public struct ChangeSceneEvent : IEvent
+{
+    public string SceneToLoadName;
+}

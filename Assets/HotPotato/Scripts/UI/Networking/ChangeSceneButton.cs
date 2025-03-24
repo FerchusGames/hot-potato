@@ -1,12 +1,11 @@
-﻿using FishNet.Managing.Scened;
-using FishNet.Object;
+﻿using FishNet.Object;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace HotPotato.UI.GameFlow
 {
-    public class SceneChangeButton : NetworkBehaviour
+    public class ChangeSceneButton : MonoBehaviour
     {
         [Required]
         [SerializeField] private string _sceneToLoadName;
@@ -22,12 +21,10 @@ namespace HotPotato.UI.GameFlow
         [Server]
         private void ChangeScene()
         {
-            var sceneLoadData = new SceneLoadData(_sceneToLoadName)
+            EventBus<ChangeSceneEvent>.Raise(new ChangeSceneEvent
             {
-                ReplaceScenes = ReplaceOption.All,
-            };
-            
-            base.SceneManager.LoadGlobalScenes(sceneLoadData);
+                SceneToLoadName = _sceneToLoadName
+            });
         }
     }
 }
