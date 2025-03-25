@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 public static class EventBus<T> where T : IEvent {
     static readonly HashSet<IEventBinding<T>> bindings = new HashSet<IEventBinding<T>>();
@@ -19,7 +18,7 @@ public static class EventBus<T> where T : IEvent {
     }
 
     static void Clear() {
-        Debug.Log($"Clearing {typeof(T).Name} bindings");
+        //Debug.Log($"Clearing {typeof(T).Name} bindings");
         bindings.Clear();
     }
 }

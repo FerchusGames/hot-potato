@@ -19,6 +19,8 @@ namespace HotPotato.Managers
         private EventBinding<TimerExpiredEvent> _timerExpiredEventBinding;
         private EventBinding<ModuleExplodedEvent> _moduleExplodedEventBinding;
         private EventBinding<ModuleDefusedEvent> _moduleDefusedEventBinding;
+        private EventBinding<StartNextRoundEvent> _startNextRoundEventBinding;
+        private EventBinding<StartNextMatchEvent> _startNextMatchEventBinding;
         
         public override void OnStartServer()
         {
@@ -45,6 +47,12 @@ namespace HotPotato.Managers
             
             _moduleDefusedEventBinding = new EventBinding<ModuleDefusedEvent>(HandelModuleDefusedEvent);
             EventBus<ModuleDefusedEvent>.Register(_moduleDefusedEventBinding);
+            
+            _startNextRoundEventBinding = new EventBinding<StartNextRoundEvent>(StartNextRoundServerRpc);
+            EventBus<StartNextRoundEvent>.Register(_startNextRoundEventBinding);
+            
+            _startNextMatchEventBinding = new EventBinding<StartNextMatchEvent>(StartNextMatchServerRpc);
+            EventBus<StartNextMatchEvent>.Register(_startNextMatchEventBinding);
         }
         
         private void DeregisterServerEvents()
@@ -53,6 +61,8 @@ namespace HotPotato.Managers
             EventBus<TimerExpiredEvent>.Deregister(_timerExpiredEventBinding);
             EventBus<ModuleExplodedEvent>.Deregister(_moduleExplodedEventBinding);
             EventBus<ModuleDefusedEvent>.Deregister(_moduleDefusedEventBinding);
+            EventBus<StartNextRoundEvent>.Deregister(_startNextRoundEventBinding);
+            EventBus<StartNextMatchEvent>.Deregister(_startNextMatchEventBinding);
         }
         
         private void RegisterPlayer(PlayerJoinedEvent playerJoinedEvent)
@@ -129,7 +139,7 @@ namespace HotPotato.Managers
         }
         
         [ServerRpc(RequireOwnership = false)]
-        public void StartNextRoundServerRpc()
+        private void StartNextRoundServerRpc()
         {
             ResetPlayers();
             EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
@@ -143,7 +153,7 @@ namespace HotPotato.Managers
         }
         
         [ServerRpc(RequireOwnership = false)]
-        public void StartNextMatchServerRpc()
+        private void StartNextMatchServerRpc()
         {
             ResetPlayers();
             EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());

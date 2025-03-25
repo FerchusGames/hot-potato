@@ -13,7 +13,7 @@ namespace HotPotato.Bomb
         [BoxGroup("Bomb Modules"), Tooltip("List of bomb module prefabs to spawn."), Required, AssetsOnly]
         [SerializeField] private BombModule[] _bombModulePrefabs;
 
-        [BoxGroup("Bomb Modules"), Tooltip("GameObject the modules will spawn in."), Required, SceneObjectsOnly]
+        [BoxGroup("Bomb Modules"), Tooltip("GameObject the modules will spawn in."), Required]
         [SerializeField] private Transform _bombModuleParent;
 
         [BoxGroup("Grid Settings"), Tooltip("Defines the size of the module grid (between 2 and 10).")]
