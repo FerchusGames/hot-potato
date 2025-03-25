@@ -1,5 +1,4 @@
-﻿using System;
-using FishNet.Object;
+﻿using FishNet.Object;
 
 namespace HotPotato.Network
 {

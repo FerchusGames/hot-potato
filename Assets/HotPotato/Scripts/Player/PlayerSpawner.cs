@@ -1,5 +1,4 @@
-﻿using FishNet.Connection;
-using FishNet.Managing;
+﻿using FishNet.Managing;
 using FishNet.Object;
 using UnityEngine;
 using FishNet.Managing.Scened;
