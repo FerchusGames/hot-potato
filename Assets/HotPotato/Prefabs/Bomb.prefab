@@ -100,13 +100,14 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 6965157266222809923}
   _networkObjectCache: {fileID: 0}
+  _trapAmount: 3
   _bombModulePrefabs:
   - {fileID: 3251477505814477459, guid: 95baa32e01777804ba83e747fe7a6cba, type: 3}
   - {fileID: 5555338648110123692, guid: b3a11cbdd54ffc64db1b6b8c457e9dbd, type: 3}
   - {fileID: 1264964065695350997, guid: 1f9973d8b947a6d47beb4f8fee4dab59, type: 3}
   - {fileID: 3209531811150487972, guid: 7d193a6f41eb7be468cff91c6981d4f9, type: 3}
   - {fileID: 5470247859747079131, guid: 5d85cd8d149b17e4b9debffc8a5b8775, type: 3}
-  _bombModuleParent: {fileID: 786856326019156455}
+  _bombModuleParent: {fileID: 5693768737297876056}
   _gridSize: 5
   _unitaryScale: 10
   _caseSize: 0.5

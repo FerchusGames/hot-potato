@@ -19,6 +19,7 @@ namespace HotPotato.UI.GameFlow
         private void StartNextMatch()
         {
             EventBus<StartNextMatchEvent>.Raise(new StartNextMatchEvent());
+            gameObject.SetActive(false);
         }
     }
 }
