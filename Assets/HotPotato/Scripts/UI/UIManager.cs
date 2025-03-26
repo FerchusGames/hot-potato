@@ -31,7 +31,7 @@ namespace HotPotato.UI
         
         private Dictionary<BombClueType, Dictionary<int, int>> _clueTypeData;
         private List<ClueFieldUI> _clueFieldUIList = new();
-
+        
         public override void OnStartNetwork()
         {
             base.NetworkManager.RegisterInstance(this);
