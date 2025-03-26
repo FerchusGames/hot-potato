@@ -142,7 +142,6 @@ namespace HotPotato.Managers
         private void StartNextRoundServerRpc()
         {
             ResetPlayers();
-            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
 
             foreach (var player in _remainingPlayers)
             {
@@ -156,7 +155,6 @@ namespace HotPotato.Managers
         private void StartNextMatchServerRpc()
         {
             ResetPlayers();
-            EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
 
             foreach (var player in _remainingPlayers)
             {
