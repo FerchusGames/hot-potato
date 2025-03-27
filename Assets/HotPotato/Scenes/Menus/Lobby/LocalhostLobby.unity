@@ -999,7 +999,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13336eeff7454828a1b0c813c9941dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sceneToLoadName: BombTest
+  _sceneToLoadName: MainGame
   _button: {fileID: 2104345100}
 --- !u!114 &2104345104
 MonoBehaviour:

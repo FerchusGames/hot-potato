@@ -2,6 +2,7 @@
 using FishNet.Object;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 namespace HotPotato.Bomb
 {
@@ -14,13 +15,13 @@ namespace HotPotato.Bomb
         [SerializeField] private BombModule[] _bombModulePrefabs;
 
         [BoxGroup("Bomb Modules"), Tooltip("GameObject the modules will spawn in."), Required]
-        [SerializeField] private Transform _bombModuleParent;
+        [SerializeField] private NetworkObject _bombModuleParent;
 
         [BoxGroup("Grid Settings"), Tooltip("Defines the size of the module grid (between 2 and 10).")]
         [SerializeField, Range(2, 10)] private int _gridSize = 5;
 
         [BoxGroup("Grid Settings"), Tooltip("Determines the scale of each module.")]
-        [SerializeField] private float _unitaryScale = 10f;
+        [SerializeField] private float _unitaryScale = 20f;
 
         [BoxGroup("Grid Settings"), Tooltip("Determines the spacing between modules.")]
         [SerializeField] private float _caseSize = 0.5f;
@@ -31,7 +32,7 @@ namespace HotPotato.Bomb
         private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
         
         private int TotalModulesCount => _gridSize * _gridSize;
-        private float ModuleScale => _unitaryScale / _gridSize;
+        private float ModuleScale => _unitaryScale * _caseSize / _gridSize;
         private float OffsetBetweenModules => _caseSize / _gridSize;
         private float FirstPositionOffset => -OffsetBetweenModules * 0.5f * (_gridSize - 1);
 
@@ -85,16 +86,17 @@ namespace HotPotato.Bomb
 
         private GameObject InstantiateBombModule(int moduleTypeIndex, Vector3 position)
         {
-            GameObject bombModule = Instantiate(
-                _bombModulePrefabs[moduleTypeIndex].gameObject,
-                position,
-                Quaternion.identity,
-                _bombModuleParent
-            );
-
-            bombModule.transform.localScale = new Vector3(ModuleScale, 1, ModuleScale);
-            bombModule.name = $"Bomb Module {position.x} {position.z}";
-            base.Spawn(bombModule);
+            GameObject bombModule = Instantiate(_bombModulePrefabs[moduleTypeIndex].gameObject);
+            
+            NetworkObject networkObject = bombModule.GetComponent<NetworkObject>();
+            
+            networkObject.SetParent(_bombModuleParent);
+            networkObject.name = $"Bomb Module {position.x} {position.z}";
+            networkObject.transform.localRotation = Quaternion.identity;
+            networkObject.transform.localPosition = position;
+            networkObject.transform.localScale = new Vector3(ModuleScale, 1, ModuleScale);
+            
+            base.Spawn(networkObject);
 
             return bombModule;
         }
