@@ -99,6 +99,7 @@ namespace HotPotato.Managers
         [Server]
         private void HandleModuleExplodedEvent()
         {
+            if (_remainingPlayers.Count <= 1) return;
             _remainingPlayers[_currentPlayerIndex.Value].Lose();
             _remainingPlayers.RemoveAt(_currentPlayerIndex.Value);
             _currentPlayerIndex.Value %= _remainingPlayers.Count;

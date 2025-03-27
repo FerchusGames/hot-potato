@@ -15,7 +15,7 @@ namespace HotPotato.Bomb
         [SerializeField] private BombModule[] _bombModulePrefabs;
 
         [BoxGroup("Bomb Modules"), Tooltip("GameObject the modules will spawn in."), Required]
-        [SerializeField] private Transform _bombModuleParent;
+        [SerializeField] private NetworkObject _bombModuleParent;
 
         [BoxGroup("Grid Settings"), Tooltip("Defines the size of the module grid (between 2 and 10).")]
         [SerializeField, Range(2, 10)] private int _gridSize = 5;
@@ -86,17 +86,17 @@ namespace HotPotato.Bomb
 
         private GameObject InstantiateBombModule(int moduleTypeIndex, Vector3 position)
         {
-            GameObject bombModule = Instantiate(
-                _bombModulePrefabs[moduleTypeIndex].gameObject,
-                Vector3.zero,
-                _bombModuleParent.rotation,
-                _bombModuleParent
-            );
+            GameObject bombModule = Instantiate(_bombModulePrefabs[moduleTypeIndex].gameObject);
             
-            bombModule.transform.localPosition = position;
-            bombModule.transform.localScale = new Vector3(ModuleScale, 1, ModuleScale);
-            bombModule.name = $"Bomb Module {position.x} {position.z}";
-            base.Spawn(bombModule);
+            NetworkObject networkObject = bombModule.GetComponent<NetworkObject>();
+            
+            networkObject.SetParent(_bombModuleParent);
+            networkObject.name = $"Bomb Module {position.x} {position.z}";
+            networkObject.transform.localRotation = Quaternion.identity;
+            networkObject.transform.localPosition = position;
+            networkObject.transform.localScale = new Vector3(ModuleScale, 1, ModuleScale);
+            
+            base.Spawn(networkObject);
 
             return bombModule;
         }
