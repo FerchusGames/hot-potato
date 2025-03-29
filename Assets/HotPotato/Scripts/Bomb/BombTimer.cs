@@ -61,7 +61,8 @@ namespace HotPotato.Bomb
     
             if (IsClientStarted)
             {
-                _text.text = _timer.Remaining > 0 ? _timer.Remaining.ToString("F2") : "BOOM!";
+                var shownTime = Mathf.CeilToInt(_timer.Remaining).ToString();
+                _text.text = _timer.Remaining > 0 ? shownTime : "BOOM!";
             }
         
             CheckTimer();
