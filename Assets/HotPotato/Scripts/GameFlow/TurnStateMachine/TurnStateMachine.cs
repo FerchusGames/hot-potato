@@ -1,4 +1,6 @@
-﻿namespace HotPotato.GameFlow.StateMachine
+﻿using HotPotato.GameFlow.StateMachine.ConcreteStates;
+
+namespace HotPotato.GameFlow.StateMachine
 {
     public class TurnStateMachine : NetworkStateMachine<TurnStateMachine.TurnState>
     {
@@ -17,7 +19,9 @@
         {
             if (!IsServerInitialized) return;
             
-            // TODO: Implement each state 
+            States[TurnState.BombTicking] = new BombTickingState();
+            
+            CurrentState = States[TurnState.BombTicking];
         }
     }
 }
