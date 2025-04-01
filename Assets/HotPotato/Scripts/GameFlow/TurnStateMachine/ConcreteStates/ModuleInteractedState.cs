@@ -1,4 +1,5 @@
 ﻿using HotPotato.Bomb;
+using UnityEngine;
 
 namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
 {
@@ -9,6 +10,10 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
 
         private BombModuleSettings _moduleSettings;
         
+        private const float TimeToShowModule = 3f;
+        
+        private float _timeElapsed;
+        
         protected override void SubscribeToEvents()
         {
            
@@ -17,6 +22,33 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
         protected override void UnsubscribeToEvents()
         {
          
+        }
+
+        public override void EnterState()
+        {
+            base.EnterState();
+            _timeElapsed = 0f;
+            EventBus<ModuleInteractedEnterStateEvent>.Raise(new ModuleInteractedEnterStateEvent()
+            {
+                Settings = _moduleSettings
+            });
+        }
+
+        public override void ExitState()
+        {
+            base.ExitState();
+            EventBus<ModuleInteractedExitStateEvent>.Raise(new ModuleInteractedExitStateEvent());
+        }
+
+        public override void UpdateState()
+        {
+            if (_timeElapsed < TimeToShowModule)
+            {
+                _timeElapsed += Time.deltaTime;
+                return;
+            }
+
+            NextState = TurnStateMachine.TurnState.BombTicking;
         }
     }
 }

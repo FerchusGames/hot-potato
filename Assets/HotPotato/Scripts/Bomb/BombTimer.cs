@@ -70,6 +70,7 @@ namespace HotPotato.Bomb
 
         private void ReturnToTimer()
         {
+            SetVisibilityObserversRpc(true);
             _isRunning.Value = true;
             _timerExpired = false;
             _timer.StartTimer(Mathf.Ceil(_remainingTime));
@@ -123,6 +124,7 @@ namespace HotPotato.Bomb
         [Server]
         private void StopTimer()
         {
+            SetVisibilityObserversRpc(false);
             _isRunning.Value = false;
             _remainingTime = _timer.Remaining;
             _timer.StopTimer();
@@ -132,6 +134,20 @@ namespace HotPotato.Bomb
         private void StopTimerClientRpc()
         {
             _isRunning.Value = false;
+        }
+
+        [ObserversRpc]
+        private void SetVisibilityObserversRpc(bool isVisible)
+        {
+            Debug.Log(isVisible);
+            
+            if (isVisible)
+            {
+                _text.alpha = 1;
+                return;
+            }
+            
+            _text.alpha = 0;
         }
     }
 }
