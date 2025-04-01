@@ -2,7 +2,8 @@
 {
     public class ModuleExplodedState : TurnState
     {
-        public ModuleExplodedState() : base(GameFlow.TurnStateMachine.TurnStateMachine.TurnState.ModuleExploded) { }
+        public ModuleExplodedState(ITurnStateMachineData stateMachineData) 
+            : base(TurnStateMachine.TurnState.ModuleExploded, stateMachineData) { }
 
         protected override void SubscribeToEvents()
         {

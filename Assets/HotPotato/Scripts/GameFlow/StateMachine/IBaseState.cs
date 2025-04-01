@@ -13,6 +13,5 @@ namespace HotPotato.GameFlow.StateMachine
         public abstract void FixedUpdateState();
         public EState NextState { get; }
         public EState StateKey { get; }
-        public bool IsServer { get; }
     }
 }

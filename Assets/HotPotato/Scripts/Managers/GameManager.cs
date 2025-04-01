@@ -61,17 +61,14 @@ namespace HotPotato.Managers
             if (!IsServerStarted) return;
 
             var module = moduleClickedEvent.Module;
-
-            if (module.IsTrap)
+            
+            var moduleInteractedEvent = new ModuleInteractedEvent
             {
-                module.ExplodeObserversRpc();
-                EventBus<ModuleExplodedEvent>.Raise(new ModuleExplodedEvent());
-            }
-            else
-            {
-                EventBus<ModuleDefusedEvent>.Raise(new ModuleDefusedEvent());
-            }
+                Settings = module.GetSettings()
+            };
 
+            EventBus<ModuleInteractedEvent>.Raise(moduleInteractedEvent);
+            
             module.Despawn();
         }
 

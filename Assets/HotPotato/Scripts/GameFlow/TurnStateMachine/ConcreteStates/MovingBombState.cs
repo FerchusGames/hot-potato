@@ -2,7 +2,8 @@
 {
     public class MovingBombState : TurnState
     {
-        public MovingBombState() : base(GameFlow.TurnStateMachine.TurnStateMachine.TurnState.MovingBomb) { }
+        public MovingBombState(ITurnStateMachineData stateMachineData) 
+            : base(GameFlow.TurnStateMachine.TurnStateMachine.TurnState.MovingBomb, stateMachineData) { }
 
         protected override void SubscribeToEvents()
         {

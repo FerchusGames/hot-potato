@@ -6,14 +6,15 @@ namespace HotPotato.GameFlow.TurnStateMachine
 {
     public abstract class TurnState : IBaseState<TurnStateMachine.TurnState>
     {
-        public GameFlow.TurnStateMachine.TurnStateMachine.TurnState StateKey { get; }
-        public GameFlow.TurnStateMachine.TurnStateMachine.TurnState NextState { get; protected set; }
-        public bool IsServer { get; }
+        public TurnStateMachine.TurnState StateKey { get; }
+        public TurnStateMachine.TurnState NextState { get; protected set; }
+        protected readonly ITurnStateMachineData _stateMachineData;
         
-        protected TurnState(GameFlow.TurnStateMachine.TurnStateMachine.TurnState stateKey)
+        protected TurnState(TurnStateMachine.TurnState stateKey, ITurnStateMachineData stateMachineData)
         {
             StateKey = stateKey;
             NextState = stateKey;
+            _stateMachineData = stateMachineData;
         }
 
         protected virtual void SubscribeToEvents()

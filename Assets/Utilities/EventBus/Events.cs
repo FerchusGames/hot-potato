@@ -30,8 +30,11 @@ public struct ModuleClickedEvent : IEvent
 {
     public BombModule Module;
 }
-public struct ModuleExplodedEvent : IEvent { }
-public struct ModuleDefusedEvent : IEvent { }
+
+public struct ModuleInteractedEvent : IEvent
+{
+    public BombModuleSettings Settings;
+}
 public struct LoseRoundEvent : IEvent { }
 
 public struct WinRoundEvent : IEvent

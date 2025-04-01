@@ -1,9 +1,14 @@
-﻿namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
+﻿using HotPotato.Bomb;
+
+namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
 {
     public class ModuleInteractedState : TurnState
     {
-        public ModuleInteractedState() : base(GameFlow.TurnStateMachine.TurnStateMachine.TurnState.ModuleInteracted) { }
+        public ModuleInteractedState(ITurnStateMachineData stateMachineData) 
+            : base(TurnStateMachine.TurnState.ModuleInteracted, stateMachineData) { }
 
+        private BombModuleSettings _moduleSettings;
+        
         protected override void SubscribeToEvents()
         {
            

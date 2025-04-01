@@ -62,11 +62,10 @@ namespace HotPotato.Bomb
             _text.text = GetModuleText(settings);
             if (IsServerInitialized) IsTrap = settings.IsTrap;
         }
-
-        [ObserversRpc]
-        public void ExplodeObserversRpc()
+        
+        public BombModuleSettings GetSettings()
         {
-            Debug.Log("This module just exploded!");
+            return _settings.Value;
         }
         
         private static Color GetModuleColor(BombModuleSettings settings)

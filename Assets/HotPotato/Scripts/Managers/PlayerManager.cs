@@ -17,8 +17,7 @@ namespace HotPotato.Managers
         
         private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
         private EventBinding<TimerExpiredEvent> _timerExpiredEventBinding;
-        private EventBinding<ModuleExplodedEvent> _moduleExplodedEventBinding;
-        private EventBinding<ModuleDefusedEvent> _moduleDefusedEventBinding;
+        private EventBinding<ModuleInteractedEvent> _moduleExplodedEventBinding;
         private EventBinding<StartNextRoundEvent> _startNextRoundEventBinding;
         private EventBinding<StartNextMatchEvent> _startNextMatchEventBinding;
         
@@ -42,11 +41,8 @@ namespace HotPotato.Managers
             _timerExpiredEventBinding = new EventBinding<TimerExpiredEvent>(HandleTimerExpiredEvent);
             EventBus<TimerExpiredEvent>.Register(_timerExpiredEventBinding);
             
-            _moduleExplodedEventBinding = new EventBinding<ModuleExplodedEvent>(HandleModuleExplodedEvent);
-            EventBus<ModuleExplodedEvent>.Register(_moduleExplodedEventBinding);
-            
-            _moduleDefusedEventBinding = new EventBinding<ModuleDefusedEvent>(HandelModuleDefusedEvent);
-            EventBus<ModuleDefusedEvent>.Register(_moduleDefusedEventBinding);
+            _moduleExplodedEventBinding = new EventBinding<ModuleInteractedEvent>(HandleModuleInteractedEvent);
+            EventBus<ModuleInteractedEvent>.Register(_moduleExplodedEventBinding);
             
             _startNextRoundEventBinding = new EventBinding<StartNextRoundEvent>(StartNextRoundServerRpc);
             EventBus<StartNextRoundEvent>.Register(_startNextRoundEventBinding);
@@ -59,8 +55,7 @@ namespace HotPotato.Managers
         {
             EventBus<PlayerJoinedEvent>.Deregister(_playerJoinedEventBinding);
             EventBus<TimerExpiredEvent>.Deregister(_timerExpiredEventBinding);
-            EventBus<ModuleExplodedEvent>.Deregister(_moduleExplodedEventBinding);
-            EventBus<ModuleDefusedEvent>.Deregister(_moduleDefusedEventBinding);
+            EventBus<ModuleInteractedEvent>.Deregister(_moduleExplodedEventBinding);
             EventBus<StartNextRoundEvent>.Deregister(_startNextRoundEventBinding);
             EventBus<StartNextMatchEvent>.Deregister(_startNextMatchEventBinding);
         }
@@ -86,24 +81,34 @@ namespace HotPotato.Managers
         [Server]
         private void HandleTimerExpiredEvent()
         {
-            HandleModuleExplodedEvent();
+            OnExplodeBomb();
         }
         
-        [Server]
-        private void HandelModuleDefusedEvent()
+        private void OnDefuseBomb()
         {
             _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _remainingPlayers.Count;
             CheckForNextTurn();
         }
-        
-        [Server]
-        private void HandleModuleExplodedEvent()
+
+        private void OnExplodeBomb()
         {
             if (_remainingPlayers.Count <= 1) return;
             _remainingPlayers[_currentPlayerIndex.Value].Lose();
             _remainingPlayers.RemoveAt(_currentPlayerIndex.Value);
             _currentPlayerIndex.Value %= _remainingPlayers.Count;
             CheckForNextTurn();
+        }
+        
+        [Server]
+        private void HandleModuleInteractedEvent(ModuleInteractedEvent moduleInteractedEvent)
+        {
+            if (moduleInteractedEvent.Settings.IsTrap)
+            {
+                OnExplodeBomb();
+                return;
+            }
+            
+            OnDefuseBomb();
         }
         
         private void ResetPlayers()

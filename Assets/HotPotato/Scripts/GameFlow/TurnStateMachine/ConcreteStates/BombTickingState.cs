@@ -2,16 +2,20 @@
 {
     public class BombTickingState : TurnState 
     {
-        public BombTickingState() : base(TurnStateMachine.TurnState.BombTicking) { }
+        public BombTickingState(ITurnStateMachineData stateMachineData) 
+            : base(TurnStateMachine.TurnState.BombTicking, stateMachineData) { }
+        
+        private EventBinding<ModuleInteractedEvent> _moduleExplodedEventBinding;
         
         protected override void SubscribeToEvents()
         {
-            
+            _moduleExplodedEventBinding = new EventBinding<ModuleInteractedEvent>(HandleModuleInteractedEvent);
+            EventBus<ModuleInteractedEvent>.Register(_moduleExplodedEventBinding);
         }
         
         protected override void UnsubscribeToEvents()
         {
-            
+            EventBus<ModuleInteractedEvent>.Deregister(_moduleExplodedEventBinding);
         }
         
         public override void UpdateState()
@@ -21,6 +25,12 @@
             EventBus<BombTickingUpdateStateEvent>.Raise(new BombTickingUpdateStateEvent());
         }
 
+        private void HandleModuleInteractedEvent(ModuleInteractedEvent moduleInteractedEvent)
+        {
+            _stateMachineData.LastModuleSettings = moduleInteractedEvent.Settings;
+            NextState = TurnStateMachine.TurnState.ModuleInteracted;
+        }
+        
         public override void EnterState()
         {
             base.EnterState();

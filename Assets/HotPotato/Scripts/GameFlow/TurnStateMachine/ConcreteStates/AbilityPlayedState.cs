@@ -2,7 +2,8 @@
 {
     public class AbilityPlayedState : TurnState
     {
-        public AbilityPlayedState() : base(TurnStateMachine.TurnState.AbilityPlayed) { }
+        public AbilityPlayedState(ITurnStateMachineData stateMachineData) 
+            : base(TurnStateMachine.TurnState.AbilityPlayed, stateMachineData) { }
 
         protected override void SubscribeToEvents()
         {

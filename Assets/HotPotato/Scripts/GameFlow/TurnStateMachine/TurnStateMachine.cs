@@ -1,10 +1,18 @@
-﻿using HotPotato.GameFlow.StateMachine;
+﻿using HotPotato.Bomb;
+using HotPotato.GameFlow.StateMachine;
 using HotPotato.GameFlow.TurnStateMachine.ConcreteStates;
 
 namespace HotPotato.GameFlow.TurnStateMachine
 {
-    public class TurnStateMachine : NetworkStateMachine<TurnStateMachine.TurnState>
+    public interface ITurnStateMachineData
     {
+        public BombModuleSettings LastModuleSettings { get; set; }
+    }
+    
+    public class TurnStateMachine : NetworkStateMachine<TurnStateMachine.TurnState>, ITurnStateMachineData
+    {
+        public BombModuleSettings LastModuleSettings { get; set; }
+        
         public enum TurnState
         {
             BombTicking,
@@ -20,13 +28,13 @@ namespace HotPotato.GameFlow.TurnStateMachine
         {
             if (!IsServerInitialized) return;
             
-            States[TurnState.BombTicking] = new BombTickingState();
-            States[TurnState.AbilityPlayed] = new AbilityPlayedState();
-            States[TurnState.AbilityBlocked] = new AbilityBlockedState();
-            States[TurnState.ModuleInteracted] = new ModuleInteractedState();
-            States[TurnState.ModuleDefused] = new ModuleDefusedState();
-            States[TurnState.ModuleExploded] = new ModuleExplodedState();
-            States[TurnState.MovingBomb] = new MovingBombState();
+            States[TurnState.BombTicking] = new BombTickingState(this);
+            States[TurnState.AbilityPlayed] = new AbilityPlayedState(this);
+            States[TurnState.AbilityBlocked] = new AbilityBlockedState(this);
+            States[TurnState.ModuleInteracted] = new ModuleInteractedState(this);
+            States[TurnState.ModuleDefused] = new ModuleDefusedState(this);
+            States[TurnState.ModuleExploded] = new ModuleExplodedState(this);
+            States[TurnState.MovingBomb] = new MovingBombState(this);
             
             CurrentState = States[TurnState.BombTicking];
         }

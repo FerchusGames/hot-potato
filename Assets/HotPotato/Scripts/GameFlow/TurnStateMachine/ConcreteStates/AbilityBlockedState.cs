@@ -2,7 +2,8 @@
 {
     public class AbilityBlockedState : TurnState
     {
-        public AbilityBlockedState() : base(GameFlow.TurnStateMachine.TurnStateMachine.TurnState.AbilityBlocked) { }
+        public AbilityBlockedState(ITurnStateMachineData stateMachineData) 
+            : base(TurnStateMachine.TurnState.AbilityBlocked, stateMachineData) { }
 
         protected override void SubscribeToEvents()
         {
