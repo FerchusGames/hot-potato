@@ -20,6 +20,7 @@ namespace HotPotato.GameFlow.StateMachine
             if (!IsServerInitialized) return;
             
             States[TurnState.BombTicking] = new BombTickingState();
+            States[TurnState.ModuleDefused] = new ModuleDefusedState();
             
             CurrentState = States[TurnState.BombTicking];
         }

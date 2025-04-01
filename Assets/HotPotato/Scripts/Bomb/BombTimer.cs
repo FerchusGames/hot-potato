@@ -20,7 +20,10 @@ namespace HotPotato.Bomb
         private EventBinding<MatchEndedEvent> _matchEndedEventBinding;
         
         private EventBinding<BombTickingState.UpdateStateEvent> _updateStateEventBinding;
+        private EventBinding<BombTickingState.EnterStateEvent> _enterStateEventBinding;
+        private EventBinding<BombTickingState.ExitStateEvent> _exitStateEventBinding;
     
+        private float _remainingTime;
         private bool _timerExpired = false;
     
         public override void OnStartServer()
@@ -38,14 +41,20 @@ namespace HotPotato.Bomb
             _turnChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(ResetTimer);
             EventBus<TurnOwnerChangedEvent>.Register(_turnChangedEventBinding);
             
-            _roundEndedEventBinding = new EventBinding<RoundEndedEvent>(StopTimerObserversRpc);
+            _roundEndedEventBinding = new EventBinding<RoundEndedEvent>(StopTimerServerRpc);
             EventBus<RoundEndedEvent>.Register(_roundEndedEventBinding);
             
-            _matchEndedEventBinding = new EventBinding<MatchEndedEvent>(StopTimerObserversRpc);
+            _matchEndedEventBinding = new EventBinding<MatchEndedEvent>(StopTimerServerRpc);
             EventBus<MatchEndedEvent>.Register(_matchEndedEventBinding);
             
             _updateStateEventBinding = new EventBinding<BombTickingState.UpdateStateEvent>(UpdateTimer);
             EventBus<BombTickingState.UpdateStateEvent>.Register(_updateStateEventBinding);
+            
+            _enterStateEventBinding = new EventBinding<BombTickingState.EnterStateEvent>(ReturnToTimer);
+            EventBus<BombTickingState.EnterStateEvent>.Register(_enterStateEventBinding);
+            
+            _exitStateEventBinding = new EventBinding<BombTickingState.ExitStateEvent>(StopTimerServerRpc);
+            EventBus<BombTickingState.ExitStateEvent>.Register(_exitStateEventBinding);
         }
 
         private void DeregisterServerEvents()
@@ -54,8 +63,17 @@ namespace HotPotato.Bomb
             EventBus<RoundEndedEvent>.Deregister(_roundEndedEventBinding);
             EventBus<MatchEndedEvent>.Deregister(_matchEndedEventBinding);
             EventBus<BombTickingState.UpdateStateEvent>.Deregister(_updateStateEventBinding);
+            EventBus<BombTickingState.EnterStateEvent>.Deregister(_enterStateEventBinding);
+            EventBus<BombTickingState.ExitStateEvent>.Deregister(_exitStateEventBinding);
         }
 
+        private void ReturnToTimer()
+        {
+            _isRunning.Value = true;
+            _timerExpired = false;
+            _timer.StartTimer(Mathf.Ceil(_remainingTime));
+        }
+        
         [ObserversRpc]
         private void UpdateTimer()
         {
@@ -95,7 +113,7 @@ namespace HotPotato.Bomb
         }
     
         [ServerRpc(RequireOwnership = false)]
-        public void StopTimerObserversRpc()
+        private void StopTimerServerRpc()
         {
             StopTimer();
             StopTimerClientRpc();
@@ -105,6 +123,7 @@ namespace HotPotato.Bomb
         private void StopTimer()
         {
             _isRunning.Value = false;
+            _remainingTime = _timer.Remaining;
             _timer.StopTimer();
         }
 
