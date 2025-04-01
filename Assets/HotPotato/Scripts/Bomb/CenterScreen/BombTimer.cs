@@ -1,11 +1,10 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using HotPotato.GameFlow.StateMachine;
 using HotPotato.GameFlow.TurnStateMachine;
 using TMPro;
 using UnityEngine;
 
-namespace HotPotato.Bomb
+namespace HotPotato.Bomb.CenterScreen
 {
     public class BombTimer : NetworkBehaviour
     {
@@ -70,10 +69,10 @@ namespace HotPotato.Bomb
 
         private void ReturnToTimer()
         {
-            SetVisibilityObserversRpc(true);
             _isRunning.Value = true;
             _timerExpired = false;
             _timer.StartTimer(Mathf.Ceil(_remainingTime));
+            SetVisibilityObserversRpc(true);
         }
         
         [ObserversRpc]
@@ -124,10 +123,10 @@ namespace HotPotato.Bomb
         [Server]
         private void StopTimer()
         {
-            SetVisibilityObserversRpc(false);
             _isRunning.Value = false;
             _remainingTime = _timer.Remaining;
             _timer.StopTimer();
+            SetVisibilityObserversRpc(false);
         }
 
         [ObserversRpc]
@@ -139,8 +138,6 @@ namespace HotPotato.Bomb
         [ObserversRpc]
         private void SetVisibilityObserversRpc(bool isVisible)
         {
-            Debug.Log(isVisible);
-            
             if (isVisible)
             {
                 _text.alpha = 1;

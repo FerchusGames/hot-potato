@@ -7,8 +7,6 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
     {
         public ModuleInteractedState(ITurnStateMachineData stateMachineData) 
             : base(TurnStateMachine.TurnState.ModuleInteracted, stateMachineData) { }
-
-        private BombModuleSettings _moduleSettings;
         
         private const float TimeToShowModule = 3f;
         
@@ -30,7 +28,7 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
             _timeElapsed = 0f;
             EventBus<ModuleInteractedEnterStateEvent>.Raise(new ModuleInteractedEnterStateEvent()
             {
-                Settings = _moduleSettings
+                Settings = _stateMachineData.LastModuleSettings
             });
         }
 

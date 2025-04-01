@@ -30,13 +30,13 @@ namespace HotPotato.GameFlow.TurnStateMachine
         public virtual void EnterState()
         {
             NextState = StateKey;
-            Debug.Log($"Entering state: {StateKey}");
+            Debug.Log($"Entering state: {StateKey}"); // TODO: Change to LiveWatch
             SubscribeToEvents();
         }
         
         public virtual void ExitState()
         {
-            Debug.Log($"Exiting state: {StateKey}");
+            Debug.Log($"Exiting state: {StateKey}"); // TODO: Change to LiveWatch
             UnsubscribeToEvents();
         }
         

@@ -1,4 +1,6 @@
-﻿namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
+﻿using UnityEngine;
+
+namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
 {
     public class BombTickingState : TurnState 
     {
