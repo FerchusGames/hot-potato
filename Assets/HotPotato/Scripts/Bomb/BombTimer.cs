@@ -1,5 +1,6 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using HotPotato.GameFlow.StateMachine.ConcreteStates;
 using TMPro;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ namespace HotPotato.Bomb
         private EventBinding<TurnOwnerChangedEvent> _turnChangedEventBinding;
         private EventBinding<RoundEndedEvent> _roundEndedEventBinding;
         private EventBinding<MatchEndedEvent> _matchEndedEventBinding;
+        
+        private EventBinding<BombTickingState.UpdateStateEvent> _updateStateEventBinding;
     
         private bool _timerExpired = false;
     
@@ -40,6 +43,9 @@ namespace HotPotato.Bomb
             
             _matchEndedEventBinding = new EventBinding<MatchEndedEvent>(StopTimerObserversRpc);
             EventBus<MatchEndedEvent>.Register(_matchEndedEventBinding);
+            
+            _updateStateEventBinding = new EventBinding<BombTickingState.UpdateStateEvent>(UpdateTimer);
+            EventBus<BombTickingState.UpdateStateEvent>.Register(_updateStateEventBinding);
         }
 
         private void DeregisterServerEvents()
@@ -47,11 +53,13 @@ namespace HotPotato.Bomb
             EventBus<TurnOwnerChangedEvent>.Deregister(_turnChangedEventBinding);
             EventBus<RoundEndedEvent>.Deregister(_roundEndedEventBinding);
             EventBus<MatchEndedEvent>.Deregister(_matchEndedEventBinding);
+            EventBus<BombTickingState.UpdateStateEvent>.Deregister(_updateStateEventBinding);
         }
 
-        private void Update()
+        [ObserversRpc]
+        private void UpdateTimer()
         {
-            if (!_isRunning.Value) 
+            if (!_isRunning.Value)
             {
                 _text.text = "END";
                 return;
@@ -67,7 +75,7 @@ namespace HotPotato.Bomb
         
             CheckTimer();
         }
-    
+
         [Server]
         private void CheckTimer()
         {

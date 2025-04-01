@@ -5,6 +5,9 @@ namespace HotPotato.GameFlow.StateMachine.ConcreteStates
     public class BombTickingState : TurnState 
     {
         public BombTickingState() : base(TurnStateMachine.TurnState.BombTicking) { }
+        
+        public struct EnterStateEvent : IEvent { }
+        public struct UpdateStateEvent : IEvent { }
 
         protected override void SubscribeToEvents()
         {
@@ -19,7 +22,7 @@ namespace HotPotato.GameFlow.StateMachine.ConcreteStates
         public override void UpdateState()
         {
             base.UpdateState();
-            Debug.Log(Time.time);
+            EventBus<UpdateStateEvent>.Raise(new UpdateStateEvent());
         }
 
         public override void EnterState()

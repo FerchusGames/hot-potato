@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HotPotato.GameFlow.StateMachine
 {
-    public class TurnState : IBaseState<TurnStateMachine.TurnState>
+    public abstract class TurnState : IBaseState<TurnStateMachine.TurnState>
     {
         public TurnStateMachine.TurnState StateKey { get; }
         public TurnStateMachine.TurnState NextState { get; protected set; }
