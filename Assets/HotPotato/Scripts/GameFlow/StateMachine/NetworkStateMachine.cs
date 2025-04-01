@@ -16,6 +16,7 @@ namespace HotPotato.GameFlow.StateMachine
             CurrentState.EnterState();
         }
 
+        [Server]
         private void Update()
         {
             if (IsTransitioningState) return;
@@ -31,6 +32,7 @@ namespace HotPotato.GameFlow.StateMachine
             CurrentState.UpdateState();
         }
         
+        [Server]
         private void FixedUpdate()
         {
             if (IsTransitioningState) return;
@@ -38,6 +40,7 @@ namespace HotPotato.GameFlow.StateMachine
             CurrentState.FixedUpdateState();
         }
 
+        [Server]
         protected void TransitionToState(EState nextStateKey)
         {
             IsTransitioningState = true;

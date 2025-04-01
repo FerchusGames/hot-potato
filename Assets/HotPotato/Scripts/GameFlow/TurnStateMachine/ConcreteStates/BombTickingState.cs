@@ -1,4 +1,6 @@
-﻿namespace HotPotato.GameFlow.StateMachine.ConcreteStates
+﻿using UnityEngine;
+
+namespace HotPotato.GameFlow.StateMachine.ConcreteStates
 {
     public class BombTickingState : TurnState 
     {
@@ -6,14 +8,20 @@
 
         protected override void SubscribeToEvents()
         {
-            base.SubscribeToEvents();
+            
         }
         
         protected override void UnsubscribeToEvents()
         {
-            base.UnsubscribeToEvents();
+            
         }
         
+        public override void UpdateState()
+        {
+            base.UpdateState();
+            Debug.Log(Time.time);
+        }
+
         public override void EnterState()
         {
             base.EnterState();
