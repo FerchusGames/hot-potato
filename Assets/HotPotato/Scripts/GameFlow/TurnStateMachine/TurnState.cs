@@ -1,15 +1,16 @@
 ﻿using System;
+using HotPotato.GameFlow.StateMachine;
 using UnityEngine;
 
-namespace HotPotato.GameFlow.StateMachine
+namespace HotPotato.GameFlow.TurnStateMachine
 {
     public abstract class TurnState : IBaseState<TurnStateMachine.TurnState>
     {
-        public TurnStateMachine.TurnState StateKey { get; }
-        public TurnStateMachine.TurnState NextState { get; protected set; }
+        public GameFlow.TurnStateMachine.TurnStateMachine.TurnState StateKey { get; }
+        public GameFlow.TurnStateMachine.TurnStateMachine.TurnState NextState { get; protected set; }
         public bool IsServer { get; }
         
-        protected TurnState(TurnStateMachine.TurnState stateKey)
+        protected TurnState(GameFlow.TurnStateMachine.TurnStateMachine.TurnState stateKey)
         {
             StateKey = stateKey;
             NextState = stateKey;

@@ -1,6 +1,7 @@
-﻿using HotPotato.GameFlow.StateMachine.ConcreteStates;
+﻿using HotPotato.GameFlow.StateMachine;
+using HotPotato.GameFlow.TurnStateMachine.ConcreteStates;
 
-namespace HotPotato.GameFlow.StateMachine
+namespace HotPotato.GameFlow.TurnStateMachine
 {
     public class TurnStateMachine : NetworkStateMachine<TurnStateMachine.TurnState>
     {
@@ -20,7 +21,12 @@ namespace HotPotato.GameFlow.StateMachine
             if (!IsServerInitialized) return;
             
             States[TurnState.BombTicking] = new BombTickingState();
+            States[TurnState.AbilityPlayed] = new AbilityPlayedState();
+            States[TurnState.AbilityBlocked] = new AbilityBlockedState();
+            States[TurnState.ModuleInteracted] = new ModuleInteractedState();
             States[TurnState.ModuleDefused] = new ModuleDefusedState();
+            States[TurnState.ModuleExploded] = new ModuleExplodedState();
+            States[TurnState.MovingBomb] = new MovingBombState();
             
             CurrentState = States[TurnState.BombTicking];
         }

@@ -1,8 +1,8 @@
 ﻿namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
 {
-    public class ModuleDefusedState : TurnState
+    public class AbilityPlayedState : TurnState
     {
-        public ModuleDefusedState() : base(GameFlow.TurnStateMachine.TurnStateMachine.TurnState.ModuleDefused) { }
+        public AbilityPlayedState() : base(TurnStateMachine.TurnState.AbilityPlayed) { }
 
         protected override void SubscribeToEvents()
         {

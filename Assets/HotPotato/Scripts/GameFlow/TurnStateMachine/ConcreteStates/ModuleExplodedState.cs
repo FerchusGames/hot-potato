@@ -1,8 +1,8 @@
 ﻿namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
 {
-    public class ModuleDefusedState : TurnState
+    public class ModuleExplodedState : TurnState
     {
-        public ModuleDefusedState() : base(GameFlow.TurnStateMachine.TurnStateMachine.TurnState.ModuleDefused) { }
+        public ModuleExplodedState() : base(GameFlow.TurnStateMachine.TurnStateMachine.TurnState.ModuleExploded) { }
 
         protected override void SubscribeToEvents()
         {
