@@ -17,15 +17,9 @@ namespace HotPotato.GameFlow.TurnStateMachine
             _stateMachineData = stateMachineData;
         }
 
-        protected virtual void SubscribeToEvents()
-        {
-            throw new NotImplementedException();
-        }
+        protected virtual void SubscribeToEvents() { }
         
-        protected virtual void UnsubscribeToEvents()
-        {
-            throw new NotImplementedException();
-        }
+        protected virtual void UnsubscribeToEvents() { }
         
         public virtual void EnterState()
         {

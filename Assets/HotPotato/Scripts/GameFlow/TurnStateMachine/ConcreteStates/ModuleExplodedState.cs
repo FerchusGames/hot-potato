@@ -4,15 +4,12 @@
     {
         public ModuleExplodedState(ITurnStateMachineData stateMachineData) 
             : base(TurnStateMachine.TurnState.ModuleExploded, stateMachineData) { }
-
-        protected override void SubscribeToEvents()
-        {
-           
-        }
         
-        protected override void UnsubscribeToEvents()
+        public override void EnterState()
         {
-         
+            base.EnterState();
+            NextState = TurnStateMachine.TurnState.TurnStart;
+            EventBus<ModuleExplodedExitStateEvent>.Raise(new ModuleExplodedExitStateEvent());
         }
     }
 }

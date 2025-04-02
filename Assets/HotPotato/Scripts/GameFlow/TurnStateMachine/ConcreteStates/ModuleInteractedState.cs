@@ -46,7 +46,8 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
                 return;
             }
 
-            NextState = TurnStateMachine.TurnState.TurnStart;
+            NextState = _stateMachineData.LastModuleSettings.IsTrap 
+                ? TurnStateMachine.TurnState.ModuleExploded : TurnStateMachine.TurnState.ModuleDefused;
         }
     }
 }

@@ -5,14 +5,11 @@
         public ModuleDefusedState(ITurnStateMachineData stateMachineData) 
             : base(TurnStateMachine.TurnState.ModuleDefused, stateMachineData) { }
 
-        protected override void SubscribeToEvents()
+        public override void EnterState()
         {
-           
-        }
-        
-        protected override void UnsubscribeToEvents()
-        {
-         
+            base.EnterState();
+            NextState = TurnStateMachine.TurnState.TurnStart;
+            EventBus<ModuleDefusedExitStateEvent>.Raise(new ModuleDefusedExitStateEvent());
         }
     }
 }
