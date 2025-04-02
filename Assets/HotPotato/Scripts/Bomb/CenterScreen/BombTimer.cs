@@ -111,6 +111,7 @@ namespace HotPotato.Bomb.CenterScreen
             _isRunning.Value = true;
             _timerExpired = false;
             _timer.StartTimer(_initialTime);
+            _remainingTime = _initialTime;
         }
     
         [ServerRpc(RequireOwnership = false)]

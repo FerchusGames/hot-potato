@@ -15,6 +15,7 @@ namespace HotPotato.GameFlow.TurnStateMachine
         
         public enum TurnState
         {
+            TurnStart,
             BombTicking,
             AbilityPlayed,
             AbilityBlocked,
@@ -28,6 +29,7 @@ namespace HotPotato.GameFlow.TurnStateMachine
         {
             if (!IsServerInitialized) return;
             
+            States[TurnState.TurnStart] = new TurnStartState(this);
             States[TurnState.BombTicking] = new BombTickingState(this);
             States[TurnState.AbilityPlayed] = new AbilityPlayedState(this);
             States[TurnState.AbilityBlocked] = new AbilityBlockedState(this);

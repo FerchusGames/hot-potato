@@ -2,6 +2,9 @@
 
 namespace HotPotato.GameFlow.TurnStateMachine
 {
+    public struct TurnStartEnterStateEvent : IEvent { }
+    public struct TurnStartExitStateEvent : IEvent { }
+    
     public struct BombTickingEnterStateEvent : IEvent { }
     public struct BombTickingExitStateEvent : IEvent { }
     public struct BombTickingUpdateStateEvent : IEvent { }

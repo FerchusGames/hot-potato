@@ -46,7 +46,7 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
                 return;
             }
 
-            NextState = TurnStateMachine.TurnState.BombTicking;
+            NextState = TurnStateMachine.TurnState.TurnStart;
         }
     }
 }
