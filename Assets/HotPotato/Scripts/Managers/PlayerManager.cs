@@ -80,8 +80,7 @@ namespace HotPotato.Managers
                 _remainingPlayers.Add(player);
                 if (_remainingPlayers.Count == 2)
                 {
-                    StartNextTurn();
-                    EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
+                    StartNextRoundServerRpc();
                 }
             }
         }

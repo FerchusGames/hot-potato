@@ -68,18 +68,12 @@ namespace HotPotato.Bomb.CenterScreen
         [ObserversRpc]
         private void UpdateTimer()
         {
-            if (!_isRunning.Value)
-            {
-                _text.text = "END";
-                return;
-            }
-
             _timer.Update();
     
             if (IsClientStarted)
             {
                 var shownTime = Mathf.CeilToInt(_timer.Remaining).ToString();
-                _text.text = _timer.Remaining > 0 ? shownTime : "BOOM!";
+                _text.text = shownTime;
             }
         
             CheckTimer();
