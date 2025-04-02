@@ -7,10 +7,10 @@ namespace HotPotato.GameFlow.StateMachine
         public struct EnterStateEvent : IEvent { }
         public struct ExitStateEvent : IEvent { }
         
-        public abstract void EnterState();
-        public abstract void ExitState();
-        public abstract void UpdateState();
-        public abstract void FixedUpdateState();
+        public void EnterState();
+        public void ExitState();
+        public void UpdateState();
+        public void FixedUpdateState();
         public EState NextState { get; set; }
         public EState StateKey { get; }
     }
