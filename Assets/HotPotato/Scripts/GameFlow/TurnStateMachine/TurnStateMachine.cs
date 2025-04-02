@@ -15,6 +15,7 @@ namespace HotPotato.GameFlow.TurnStateMachine
         
         public enum TurnState
         {
+            WaitingToStart,
             TurnStart,
             BombTicking,
             AbilityPlayed,
@@ -29,6 +30,7 @@ namespace HotPotato.GameFlow.TurnStateMachine
         {
             if (!IsServerInitialized) return;
             
+            States[TurnState.WaitingToStart] = new WaitingToStartState(this);
             States[TurnState.TurnStart] = new TurnStartState(this);
             States[TurnState.BombTicking] = new BombTickingState(this);
             States[TurnState.AbilityPlayed] = new AbilityPlayedState(this);
@@ -38,7 +40,7 @@ namespace HotPotato.GameFlow.TurnStateMachine
             States[TurnState.ModuleExploded] = new ModuleExplodedState(this);
             States[TurnState.MovingBomb] = new MovingBombState(this);
             
-            CurrentState = States[TurnState.BombTicking];
+            CurrentState = States[TurnState.WaitingToStart];
         }
     }
 }

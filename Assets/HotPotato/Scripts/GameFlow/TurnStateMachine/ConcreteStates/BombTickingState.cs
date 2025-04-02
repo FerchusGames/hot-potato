@@ -8,16 +8,21 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
             : base(TurnStateMachine.TurnState.BombTicking, stateMachineData) { }
         
         private EventBinding<ModuleInteractedEvent> _moduleExplodedEventBinding;
+        private EventBinding<TimerExpiredEvent> _timerExpiredEventBinding;
         
         protected override void SubscribeToEvents()
         {
             _moduleExplodedEventBinding = new EventBinding<ModuleInteractedEvent>(HandleModuleInteractedEvent);
             EventBus<ModuleInteractedEvent>.Register(_moduleExplodedEventBinding);
+            
+            _timerExpiredEventBinding = new EventBinding<TimerExpiredEvent>(HandleTimerExpiredEvent);
+            EventBus<TimerExpiredEvent>.Register(_timerExpiredEventBinding);
         }
         
         protected override void UnsubscribeToEvents()
         {
             EventBus<ModuleInteractedEvent>.Deregister(_moduleExplodedEventBinding);
+            EventBus<TimerExpiredEvent>.Deregister(_timerExpiredEventBinding);
         }
         
         public override void UpdateState()
@@ -31,6 +36,11 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
         {
             _stateMachineData.LastModuleSettings = moduleInteractedEvent.Settings;
             NextState = TurnStateMachine.TurnState.ModuleInteracted;
+        }
+        
+        private void HandleTimerExpiredEvent()
+        {
+            NextState = TurnStateMachine.TurnState.ModuleExploded;
         }
         
         public override void EnterState()

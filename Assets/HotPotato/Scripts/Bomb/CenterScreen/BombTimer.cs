@@ -15,9 +15,7 @@ namespace HotPotato.Bomb.CenterScreen
         private readonly SyncTimer _timer = new();
         private readonly SyncVar<bool> _isRunning = new(true);
     
-        private EventBinding<TurnOwnerChangedEvent> _turnChangedEventBinding;
-        private EventBinding<RoundEndedEvent> _roundEndedEventBinding;
-        private EventBinding<MatchEndedEvent> _matchEndedEventBinding;
+        private EventBinding<TurnStartExitStateEvent> _turnStartExitStateEventBinding;
         
         private EventBinding<BombTickingUpdateStateEvent> _updateStateEventBinding;
         private EventBinding<BombTickingEnterStateEvent> _enterStateEventBinding;
@@ -38,14 +36,8 @@ namespace HotPotato.Bomb.CenterScreen
 
         private void RegisterServerEvents()
         {
-            _turnChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(ResetTimer);
-            EventBus<TurnOwnerChangedEvent>.Register(_turnChangedEventBinding);
-            
-            _roundEndedEventBinding = new EventBinding<RoundEndedEvent>(StopTimerServerRpc);
-            EventBus<RoundEndedEvent>.Register(_roundEndedEventBinding);
-            
-            _matchEndedEventBinding = new EventBinding<MatchEndedEvent>(StopTimerServerRpc);
-            EventBus<MatchEndedEvent>.Register(_matchEndedEventBinding);
+            _turnStartExitStateEventBinding = new EventBinding<TurnStartExitStateEvent>(ResetTimer);
+            EventBus<TurnStartExitStateEvent>.Register(_turnStartExitStateEventBinding);
             
             _updateStateEventBinding = new EventBinding<BombTickingUpdateStateEvent>(UpdateTimer);
             EventBus<BombTickingUpdateStateEvent>.Register(_updateStateEventBinding);
@@ -59,9 +51,7 @@ namespace HotPotato.Bomb.CenterScreen
 
         private void DeregisterServerEvents()
         {
-            EventBus<TurnOwnerChangedEvent>.Deregister(_turnChangedEventBinding);
-            EventBus<RoundEndedEvent>.Deregister(_roundEndedEventBinding);
-            EventBus<MatchEndedEvent>.Deregister(_matchEndedEventBinding);
+            EventBus<TurnStartExitStateEvent>.Deregister(_turnStartExitStateEventBinding);
             EventBus<BombTickingUpdateStateEvent>.Deregister(_updateStateEventBinding);
             EventBus<BombTickingEnterStateEvent>.Deregister(_enterStateEventBinding);
             EventBus<BombTickingExitStateEvent>.Deregister(_exitStateEventBinding);
@@ -108,10 +98,11 @@ namespace HotPotato.Bomb.CenterScreen
         [Server]
         private void ResetTimer()
         {
+            _remainingTime = _initialTime;
             _isRunning.Value = true;
             _timerExpired = false;
             _timer.StartTimer(_initialTime);
-            _remainingTime = _initialTime;
+            SetVisibilityObserversRpc(true);
         }
     
         [ServerRpc(RequireOwnership = false)]

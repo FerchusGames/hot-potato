@@ -7,7 +7,7 @@ namespace HotPotato.GameFlow.TurnStateMachine
     public abstract class TurnState : IBaseState<TurnStateMachine.TurnState>
     {
         public TurnStateMachine.TurnState StateKey { get; }
-        public TurnStateMachine.TurnState NextState { get; protected set; }
+        public TurnStateMachine.TurnState NextState { get; set; }
         protected readonly ITurnStateMachineData _stateMachineData;
         
         protected TurnState(TurnStateMachine.TurnState stateKey, ITurnStateMachineData stateMachineData)

@@ -11,7 +11,7 @@ namespace HotPotato.GameFlow.StateMachine
         public abstract void ExitState();
         public abstract void UpdateState();
         public abstract void FixedUpdateState();
-        public EState NextState { get; }
+        public EState NextState { get; set; }
         public EState StateKey { get; }
     }
 }
