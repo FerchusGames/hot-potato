@@ -20,7 +20,7 @@ namespace HotPotato.Managers
         private EventBinding<StartNextRoundEvent> _startNextRoundEventBinding;
         private EventBinding<StartNextMatchEvent> _startNextMatchEventBinding;
         
-        private EventBinding<TurnStartExitStateEvent> _turnStartExitStateEventBinding;
+        private EventBinding<TurnStartEnterStateEvent> _turnStartEnterStateEventBinding;
         private EventBinding<ModuleExplodedExitStateEvent> _moduleExplodedExitStateEventBinding;
         private EventBinding<ModuleDefusedExitStateEvent> _moduleDefusedExitStateEventBinding;
         
@@ -47,8 +47,8 @@ namespace HotPotato.Managers
             _startNextMatchEventBinding = new EventBinding<StartNextMatchEvent>(StartNextMatchServerRpc);
             EventBus<StartNextMatchEvent>.Register(_startNextMatchEventBinding);
             
-            _turnStartExitStateEventBinding = new EventBinding<TurnStartExitStateEvent>(OnTurnStart);
-            EventBus<TurnStartExitStateEvent>.Register(_turnStartExitStateEventBinding);
+            _turnStartEnterStateEventBinding = new EventBinding<TurnStartEnterStateEvent>(OnTurnStart);
+            EventBus<TurnStartEnterStateEvent>.Register(_turnStartEnterStateEventBinding);
             
             _moduleExplodedExitStateEventBinding = new EventBinding<ModuleExplodedExitStateEvent>(HandleModuleExplodedExitStateEvent);
             EventBus<ModuleExplodedExitStateEvent>.Register(_moduleExplodedExitStateEventBinding);
@@ -63,7 +63,7 @@ namespace HotPotato.Managers
             EventBus<StartNextRoundEvent>.Deregister(_startNextRoundEventBinding);
             EventBus<StartNextMatchEvent>.Deregister(_startNextMatchEventBinding);
             
-            EventBus<TurnStartExitStateEvent>.Deregister(_turnStartExitStateEventBinding);
+            EventBus<TurnStartEnterStateEvent>.Deregister(_turnStartEnterStateEventBinding);
             EventBus<ModuleExplodedExitStateEvent>.Deregister(_moduleExplodedExitStateEventBinding);
             EventBus<ModuleDefusedExitStateEvent>.Deregister(_moduleDefusedExitStateEventBinding);
         }

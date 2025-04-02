@@ -8,27 +8,30 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
         public TurnStartState(ITurnStateMachineData stateMachineData) 
             : base(TurnStateMachine.TurnState.TurnStart, stateMachineData) { }
         
-        protected override void SubscribeToEvents()
-        {
-           
-        }
-        
-        protected override void UnsubscribeToEvents()
-        {
-         
-        }
+        private EventBinding<TurnOwnerChangedEvent> _turnOwnerChangedEventBinding;
 
         public override void EnterState()
         {
             base.EnterState();
+
+            _turnOwnerChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(GoToNextState);
+            EventBus<TurnOwnerChangedEvent>.Register(_turnOwnerChangedEventBinding);
+                
             EventBus<TurnStartEnterStateEvent>.Raise(new TurnStartEnterStateEvent());
-            NextState = TurnStateMachine.TurnState.BombTicking;
         }
 
         public override void ExitState()
         {
             base.ExitState();
+            
+            EventBus<TurnOwnerChangedEvent>.Deregister(_turnOwnerChangedEventBinding);
+            
             EventBus<TurnStartExitStateEvent>.Raise(new TurnStartExitStateEvent());
+        }
+
+        private void GoToNextState()
+        {
+            NextState = TurnStateMachine.TurnState.BombTicking;
         }
     }
 }
