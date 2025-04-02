@@ -63,7 +63,6 @@ namespace HotPotato.UI
         public override void OnStartClient()
         {
             if (IsHostInitialized) return;
-            RequestClueTypeData(LocalConnection); // TODO: Prevent this from being called multiple times when rejoining
         }
 
         [Server]
@@ -120,6 +119,7 @@ namespace HotPotato.UI
             
             var availableClueTypes = _clueTypeData.Keys.ToList();
             var clueType = availableClueTypes[Random.Range(0, availableClueTypes.Count)];
+            
             Dictionary<int, int> clueTypeDictionary = _clueTypeData[clueType];
 
             _clueTypeData.Remove(clueType);

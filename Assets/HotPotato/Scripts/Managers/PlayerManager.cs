@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using HotPotato.GameFlow.TurnStateMachine;
 using HotPotato.Player;
 using UnityEngine;
 
@@ -16,11 +17,12 @@ namespace HotPotato.Managers
         private List<IPlayerController> _remainingPlayers = new();
         
         private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
-        private EventBinding<TimerExpiredEvent> _timerExpiredEventBinding;
-        private EventBinding<ModuleExplodedEvent> _moduleExplodedEventBinding;
-        private EventBinding<ModuleDefusedEvent> _moduleDefusedEventBinding;
         private EventBinding<StartNextRoundEvent> _startNextRoundEventBinding;
         private EventBinding<StartNextMatchEvent> _startNextMatchEventBinding;
+        
+        private EventBinding<TurnStartEnterStateEvent> _turnStartEnterStateEventBinding;
+        private EventBinding<ModuleExplodedExitStateEvent> _moduleExplodedExitStateEventBinding;
+        private EventBinding<ModuleDefusedExitStateEvent> _moduleDefusedExitStateEventBinding;
         
         public override void OnStartServer()
         {
@@ -39,30 +41,31 @@ namespace HotPotato.Managers
             _playerJoinedEventBinding = new EventBinding<PlayerJoinedEvent>(RegisterPlayer);
             EventBus<PlayerJoinedEvent>.Register(_playerJoinedEventBinding);
             
-            _timerExpiredEventBinding = new EventBinding<TimerExpiredEvent>(HandleTimerExpiredEvent);
-            EventBus<TimerExpiredEvent>.Register(_timerExpiredEventBinding);
-            
-            _moduleExplodedEventBinding = new EventBinding<ModuleExplodedEvent>(HandleModuleExplodedEvent);
-            EventBus<ModuleExplodedEvent>.Register(_moduleExplodedEventBinding);
-            
-            _moduleDefusedEventBinding = new EventBinding<ModuleDefusedEvent>(HandelModuleDefusedEvent);
-            EventBus<ModuleDefusedEvent>.Register(_moduleDefusedEventBinding);
-            
             _startNextRoundEventBinding = new EventBinding<StartNextRoundEvent>(StartNextRoundServerRpc);
             EventBus<StartNextRoundEvent>.Register(_startNextRoundEventBinding);
             
             _startNextMatchEventBinding = new EventBinding<StartNextMatchEvent>(StartNextMatchServerRpc);
             EventBus<StartNextMatchEvent>.Register(_startNextMatchEventBinding);
+            
+            _turnStartEnterStateEventBinding = new EventBinding<TurnStartEnterStateEvent>(OnTurnStart);
+            EventBus<TurnStartEnterStateEvent>.Register(_turnStartEnterStateEventBinding);
+            
+            _moduleExplodedExitStateEventBinding = new EventBinding<ModuleExplodedExitStateEvent>(HandleModuleExplodedExitStateEvent);
+            EventBus<ModuleExplodedExitStateEvent>.Register(_moduleExplodedExitStateEventBinding);
+            
+            _moduleDefusedExitStateEventBinding = new EventBinding<ModuleDefusedExitStateEvent>(HandleModuleDefusedExitStateEvent);
+            EventBus<ModuleDefusedExitStateEvent>.Register(_moduleDefusedExitStateEventBinding);
         }
         
         private void DeregisterServerEvents()
         {
             EventBus<PlayerJoinedEvent>.Deregister(_playerJoinedEventBinding);
-            EventBus<TimerExpiredEvent>.Deregister(_timerExpiredEventBinding);
-            EventBus<ModuleExplodedEvent>.Deregister(_moduleExplodedEventBinding);
-            EventBus<ModuleDefusedEvent>.Deregister(_moduleDefusedEventBinding);
             EventBus<StartNextRoundEvent>.Deregister(_startNextRoundEventBinding);
             EventBus<StartNextMatchEvent>.Deregister(_startNextMatchEventBinding);
+            
+            EventBus<TurnStartEnterStateEvent>.Deregister(_turnStartEnterStateEventBinding);
+            EventBus<ModuleExplodedExitStateEvent>.Deregister(_moduleExplodedExitStateEventBinding);
+            EventBus<ModuleDefusedExitStateEvent>.Deregister(_moduleDefusedExitStateEventBinding);
         }
         
         private void RegisterPlayer(PlayerJoinedEvent playerJoinedEvent)
@@ -75,35 +78,41 @@ namespace HotPotato.Managers
             {
                 _matchPlayers.Add(player);
                 _remainingPlayers.Add(player);
-                if (_remainingPlayers.Count == 1)
+                if (_remainingPlayers.Count == 2)
                 {
-                    EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
-                    StartNextTurn();
+                    StartNextRoundServerRpc();
                 }
             }
         }
-        
-        [Server]
-        private void HandleTimerExpiredEvent()
+
+        private void OnTurnStart()
         {
-            HandleModuleExplodedEvent();
-        }
-        
-        [Server]
-        private void HandelModuleDefusedEvent()
-        {
-            _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _remainingPlayers.Count;
             CheckForNextTurn();
         }
         
-        [Server]
-        private void HandleModuleExplodedEvent()
+        private void OnDefuseBomb()
+        {
+            _currentPlayerIndex.Value = (_currentPlayerIndex.Value + 1) % _remainingPlayers.Count;
+        }
+
+        private void OnExplodeBomb()
         {
             if (_remainingPlayers.Count <= 1) return;
             _remainingPlayers[_currentPlayerIndex.Value].Lose();
             _remainingPlayers.RemoveAt(_currentPlayerIndex.Value);
             _currentPlayerIndex.Value %= _remainingPlayers.Count;
-            CheckForNextTurn();
+        }
+        
+        [Server]
+        private void HandleModuleExplodedExitStateEvent(ModuleExplodedExitStateEvent moduleExplodedExitStateEvent)
+        {
+            OnExplodeBomb();
+        }
+        
+        [Server]
+        private void HandleModuleDefusedExitStateEvent(ModuleDefusedExitStateEvent moduleDefusedExitStateEvent)
+        {
+            OnDefuseBomb();
         }
         
         private void ResetPlayers()
