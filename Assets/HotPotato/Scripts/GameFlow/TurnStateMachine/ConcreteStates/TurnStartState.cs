@@ -21,8 +21,8 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
         public override void EnterState()
         {
             base.EnterState();
-            NextState = TurnStateMachine.TurnState.BombTicking;
             EventBus<TurnStartEnterStateEvent>.Raise(new TurnStartEnterStateEvent());
+            NextState = TurnStateMachine.TurnState.BombTicking;
         }
 
         public override void ExitState()

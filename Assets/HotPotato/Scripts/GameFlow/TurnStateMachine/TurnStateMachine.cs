@@ -13,6 +13,8 @@ namespace HotPotato.GameFlow.TurnStateMachine
     {
         public BombModuleSettings LastModuleSettings { get; set; }
         
+        private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
+        
         public enum TurnState
         {
             WaitingToStart,
@@ -41,6 +43,22 @@ namespace HotPotato.GameFlow.TurnStateMachine
             States[TurnState.MovingBomb] = new MovingBombState(this);
             
             CurrentState = States[TurnState.WaitingToStart];
+        }
+
+        public override void OnStartServer()
+        {
+            _roundStartedEventBinding = new EventBinding<RoundStartedEvent>(HandleRoundStartedEvent);
+            EventBus<RoundStartedEvent>.Register(_roundStartedEventBinding);
+        }
+        
+        public override void OnStopServer()
+        {
+            EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
+        }
+
+        private void HandleRoundStartedEvent(RoundStartedEvent roundStartedEvent)
+        {
+            CurrentState.NextState = TurnState.TurnStart;
         }
     }
 }

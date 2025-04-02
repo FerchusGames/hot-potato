@@ -27,8 +27,6 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
         
         public override void UpdateState()
         {
-            base.UpdateState();
-            
             EventBus<BombTickingUpdateStateEvent>.Raise(new BombTickingUpdateStateEvent());
         }
 

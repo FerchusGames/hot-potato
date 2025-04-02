@@ -105,20 +105,14 @@ namespace HotPotato.Bomb.CenterScreen
             SetVisibilityObserversRpc(true);
         }
     
-        [ServerRpc(RequireOwnership = false)]
+        [Server]
         private void StopTimerServerRpc()
         {
-            StopTimer();
-            StopTimerClientRpc();
-        }
-
-        [Server]
-        private void StopTimer()
-        {
+            SetVisibilityObserversRpc(false);
             _isRunning.Value = false;
             _remainingTime = _timer.Remaining;
             _timer.StopTimer();
-            SetVisibilityObserversRpc(false);
+            StopTimerClientRpc();
         }
 
         [ObserversRpc]
