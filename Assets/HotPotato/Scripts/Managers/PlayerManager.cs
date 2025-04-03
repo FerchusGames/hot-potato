@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using HotPotato.GameFlow.TurnStateMachine;
@@ -117,8 +118,17 @@ namespace HotPotato.Managers
         
         private void ResetPlayers()
         {
+            IPlayerController standingPlayer = _remainingPlayers[0];
+            
             _remainingPlayers.Clear();
             _remainingPlayers.AddRange(_matchPlayers);
+            
+            var standingIndex = _remainingPlayers.IndexOf(standingPlayer);
+            var reorderedList = 
+                _remainingPlayers.Skip(standingIndex).Concat(_remainingPlayers.Take(standingIndex)).ToList();
+            
+            _remainingPlayers = reorderedList;
+            
             _currentPlayerIndex.Value = 0;
         }
         

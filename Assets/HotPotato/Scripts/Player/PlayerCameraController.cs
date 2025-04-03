@@ -15,6 +15,7 @@ namespace HotPotato.Player
 
         private EventBinding<TurnOwnerChangedEvent> _turnOwnerChangedEventBinding;
         private EventBinding<ModuleClickedEvent> _moduleClickedEventBinding;
+        private EventBinding<LoseRoundEvent> _loseRoundEventBinding;
         
         public override void OnStartClient()
         {
@@ -41,12 +42,16 @@ namespace HotPotato.Player
             
             _moduleClickedEventBinding = new EventBinding<ModuleClickedEvent>(ReturnToDefaultCamera);
             EventBus<ModuleClickedEvent>.Register(_moduleClickedEventBinding);
+            
+            _loseRoundEventBinding = new EventBinding<LoseRoundEvent>(ReturnToDefaultCamera);
+            EventBus<LoseRoundEvent>.Register(_loseRoundEventBinding);
         }
         
         private void DeregisterClientEvents()
         {
             EventBus<TurnOwnerChangedEvent>.Deregister(_turnOwnerChangedEventBinding);
             EventBus<ModuleClickedEvent>.Deregister(_moduleClickedEventBinding);
+            EventBus<LoseRoundEvent>.Deregister(_loseRoundEventBinding);
         }
 
         private static void SetCameraAsLive(CinemachineCamera camera)
