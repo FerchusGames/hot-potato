@@ -19,6 +19,12 @@ namespace HotPotato.Player
             });
         }
 
+        [ServerRpc]
+        public void SetOrderIndex(int orderIndex)
+        {
+            // TODO: Set rotation or something else idk
+        }
+        
         [Server]
         public void ResetMatchStats()
         {

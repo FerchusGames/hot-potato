@@ -15,6 +15,7 @@ namespace HotPotato.Managers
         private readonly SyncVar<int> _currentPlayerIndex = new();
 
         private int _initialPlayerCount;
+        private int _currentPlayerCount;
         
         private List<IPlayerController> _matchPlayers = new();
         private List<IPlayerController> _remainingPlayers = new();
@@ -79,6 +80,7 @@ namespace HotPotato.Managers
         private void SetPlayerCount(TransportingClientsToSceneEvent transportingClientsToSceneEvent)
         {
             _initialPlayerCount = transportingClientsToSceneEvent.PlayerCount;
+            _currentPlayerCount = 0;
         }
         
         private void RegisterPlayer(PlayerJoinedEvent playerJoinedEvent)
@@ -87,17 +89,57 @@ namespace HotPotato.Managers
 
             var player = playerJoinedEvent.PlayerController;
             
+            if (_matchPlayers.Count == 0)
+            {
+                _matchPlayers = new List<IPlayerController>(new IPlayerController[10]);
+                _remainingPlayers = new List<IPlayerController>(new IPlayerController[10]);
+            }
+            
             if (!_matchPlayers.Contains(player))
             {
-                _matchPlayers.Add(player);
-                _remainingPlayers.Add(player);
-                if (_remainingPlayers.Count == _initialPlayerCount)
-                {
-                    StartNextRoundServerRpc();
-                }
+                AddPlayer(player);
+                
+                if (_currentPlayerCount != _initialPlayerCount) return;
+                
+                RemoveEmptyPlayersFromLists();
+                StartNextRoundServerRpc();
             }
         }
 
+        private void AddPlayer(IPlayerController playerController)
+        {
+            int orderIndex = 0;
+
+            switch (_currentPlayerCount)
+            {
+                case 0:
+                    orderIndex = 0;
+                    break;
+                case 1:
+                    orderIndex = 2;
+                    break;
+                case 2:
+                    orderIndex = 1;
+                    break;
+                case 3:
+                    orderIndex = 3;
+                    break;
+            }
+            
+            _matchPlayers[orderIndex] = playerController;
+            _remainingPlayers[orderIndex] = playerController;
+            
+            playerController.SetOrderIndex(orderIndex);
+            
+            _currentPlayerCount++;
+        }
+
+        private void RemoveEmptyPlayersFromLists()
+        {
+            _matchPlayers.RemoveAll(item => item == null);
+            _remainingPlayers.RemoveAll(item => item == null);
+        }
+        
         private void OnTurnStart()
         {
             CheckForNextTurn();
