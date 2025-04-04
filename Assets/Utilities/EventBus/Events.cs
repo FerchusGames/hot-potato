@@ -49,7 +49,12 @@ public struct LoseMatchEvent : IEvent { }
 public struct StartNextRoundEvent : IEvent { }
 public struct StartNextMatchEvent : IEvent { }
 public struct TimerExpiredEvent : IEvent { }
-public struct ChangeSceneEvent : IEvent
+public struct ChangeSceneRequestEvent : IEvent
 {
     public string SceneToLoadName;
+}
+
+public struct TransportingClientsToSceneEvent : IEvent
+{
+    public int PlayerCount;
 }

@@ -266,6 +266,8 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 5966435908232110368}
   _networkObjectCache: {fileID: 0}
+  _canvasGroup: {fileID: 4209639313882847717}
+  _text: {fileID: 8072315936674553212}
 --- !u!1 &4703740488790596946
 GameObject:
   m_ObjectHideFlags: 0

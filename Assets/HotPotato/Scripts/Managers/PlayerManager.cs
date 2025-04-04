@@ -13,10 +13,13 @@ namespace HotPotato.Managers
         [SerializeField] private int _roundsToWin = 3;
         
         private readonly SyncVar<int> _currentPlayerIndex = new();
+
+        private int _initialPlayerCount;
         
         private List<IPlayerController> _matchPlayers = new();
         private List<IPlayerController> _remainingPlayers = new();
         
+        private EventBinding<TransportingClientsToSceneEvent> _transportingClientsToSceneEventBinding;
         private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
         private EventBinding<StartNextRoundEvent> _startNextRoundEventBinding;
         private EventBinding<StartNextMatchEvent> _startNextMatchEventBinding;
@@ -39,6 +42,9 @@ namespace HotPotato.Managers
 
         private void RegisterServerEvents()
         {
+            _transportingClientsToSceneEventBinding = new EventBinding<TransportingClientsToSceneEvent>(SetPlayerCount);
+            EventBus<TransportingClientsToSceneEvent>.Register(_transportingClientsToSceneEventBinding);
+            
             _playerJoinedEventBinding = new EventBinding<PlayerJoinedEvent>(RegisterPlayer);
             EventBus<PlayerJoinedEvent>.Register(_playerJoinedEventBinding);
             
@@ -60,6 +66,7 @@ namespace HotPotato.Managers
         
         private void DeregisterServerEvents()
         {
+            EventBus<TransportingClientsToSceneEvent>.Deregister(_transportingClientsToSceneEventBinding);
             EventBus<PlayerJoinedEvent>.Deregister(_playerJoinedEventBinding);
             EventBus<StartNextRoundEvent>.Deregister(_startNextRoundEventBinding);
             EventBus<StartNextMatchEvent>.Deregister(_startNextMatchEventBinding);
@@ -67,6 +74,11 @@ namespace HotPotato.Managers
             EventBus<TurnStartEnterStateEvent>.Deregister(_turnStartEnterStateEventBinding);
             EventBus<ModuleExplodedExitStateEvent>.Deregister(_moduleExplodedExitStateEventBinding);
             EventBus<ModuleDefusedExitStateEvent>.Deregister(_moduleDefusedExitStateEventBinding);
+        }
+
+        private void SetPlayerCount(TransportingClientsToSceneEvent transportingClientsToSceneEvent)
+        {
+            _initialPlayerCount = transportingClientsToSceneEvent.PlayerCount;
         }
         
         private void RegisterPlayer(PlayerJoinedEvent playerJoinedEvent)
@@ -79,7 +91,7 @@ namespace HotPotato.Managers
             {
                 _matchPlayers.Add(player);
                 _remainingPlayers.Add(player);
-                if (_remainingPlayers.Count == 2)
+                if (_remainingPlayers.Count == _initialPlayerCount)
                 {
                     StartNextRoundServerRpc();
                 }
