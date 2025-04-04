@@ -2,6 +2,7 @@
 using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
+using UnityEngine;
 
 public interface IEvent { }
 
@@ -49,7 +50,18 @@ public struct LoseMatchEvent : IEvent { }
 public struct StartNextRoundEvent : IEvent { }
 public struct StartNextMatchEvent : IEvent { }
 public struct TimerExpiredEvent : IEvent { }
-public struct ChangeSceneEvent : IEvent
+public struct ChangeSceneRequestEvent : IEvent
 {
     public string SceneToLoadName;
 }
+
+public struct TransportingClientsToSceneEvent : IEvent
+{
+    public int PlayerCount;
+}
+
+public struct MoveBombToPlayerEvent : IEvent
+{
+    public Vector3 PlayerPosition;
+}
+public struct BombHasReachedPlayerEvent : IEvent { }

@@ -2,6 +2,7 @@
 {
     public interface IPlayerController
     {
+        public void RequestToMoveBomb();
         public void StartTurn();
         public void StartRound();
         public void Lose();

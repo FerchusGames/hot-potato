@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using HotPotato.GameFlow.TurnStateMachine;
@@ -12,14 +13,21 @@ namespace HotPotato.Managers
         [SerializeField] private int _roundsToWin = 3;
         
         private readonly SyncVar<int> _currentPlayerIndex = new();
+
+        private int _initialPlayerCount;
+        private int _currentPlayerCount;
         
         private List<IPlayerController> _matchPlayers = new();
         private List<IPlayerController> _remainingPlayers = new();
+
+        private IPlayerController CurrentPlayer => _remainingPlayers[_currentPlayerIndex.Value];
         
+        private EventBinding<TransportingClientsToSceneEvent> _transportingClientsToSceneEventBinding;
         private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
         private EventBinding<StartNextRoundEvent> _startNextRoundEventBinding;
         private EventBinding<StartNextMatchEvent> _startNextMatchEventBinding;
         
+        private EventBinding<MovingBombEnterStateEvent> _movingBombEnterStateEventBinding;
         private EventBinding<TurnStartEnterStateEvent> _turnStartEnterStateEventBinding;
         private EventBinding<ModuleExplodedExitStateEvent> _moduleExplodedExitStateEventBinding;
         private EventBinding<ModuleDefusedExitStateEvent> _moduleDefusedExitStateEventBinding;
@@ -38,6 +46,9 @@ namespace HotPotato.Managers
 
         private void RegisterServerEvents()
         {
+            _transportingClientsToSceneEventBinding = new EventBinding<TransportingClientsToSceneEvent>(SetPlayerCount);
+            EventBus<TransportingClientsToSceneEvent>.Register(_transportingClientsToSceneEventBinding);
+            
             _playerJoinedEventBinding = new EventBinding<PlayerJoinedEvent>(RegisterPlayer);
             EventBus<PlayerJoinedEvent>.Register(_playerJoinedEventBinding);
             
@@ -46,6 +57,9 @@ namespace HotPotato.Managers
             
             _startNextMatchEventBinding = new EventBinding<StartNextMatchEvent>(StartNextMatchServerRpc);
             EventBus<StartNextMatchEvent>.Register(_startNextMatchEventBinding);
+            
+            _movingBombEnterStateEventBinding = new EventBinding<MovingBombEnterStateEvent>(StartMovingBomb);
+            EventBus<MovingBombEnterStateEvent>.Register(_movingBombEnterStateEventBinding);
             
             _turnStartEnterStateEventBinding = new EventBinding<TurnStartEnterStateEvent>(OnTurnStart);
             EventBus<TurnStartEnterStateEvent>.Register(_turnStartEnterStateEventBinding);
@@ -59,13 +73,21 @@ namespace HotPotato.Managers
         
         private void DeregisterServerEvents()
         {
+            EventBus<TransportingClientsToSceneEvent>.Deregister(_transportingClientsToSceneEventBinding);
             EventBus<PlayerJoinedEvent>.Deregister(_playerJoinedEventBinding);
             EventBus<StartNextRoundEvent>.Deregister(_startNextRoundEventBinding);
             EventBus<StartNextMatchEvent>.Deregister(_startNextMatchEventBinding);
             
+            EventBus<MovingBombEnterStateEvent>.Deregister(_movingBombEnterStateEventBinding);
             EventBus<TurnStartEnterStateEvent>.Deregister(_turnStartEnterStateEventBinding);
             EventBus<ModuleExplodedExitStateEvent>.Deregister(_moduleExplodedExitStateEventBinding);
             EventBus<ModuleDefusedExitStateEvent>.Deregister(_moduleDefusedExitStateEventBinding);
+        }
+
+        private void SetPlayerCount(TransportingClientsToSceneEvent transportingClientsToSceneEvent)
+        {
+            _initialPlayerCount = transportingClientsToSceneEvent.PlayerCount;
+            _currentPlayerCount = 0;
         }
         
         private void RegisterPlayer(PlayerJoinedEvent playerJoinedEvent)
@@ -74,17 +96,55 @@ namespace HotPotato.Managers
 
             var player = playerJoinedEvent.PlayerController;
             
+            if (_matchPlayers.Count == 0)
+            {
+                _matchPlayers = new List<IPlayerController>(new IPlayerController[10]);
+                _remainingPlayers = new List<IPlayerController>(new IPlayerController[10]);
+            }
+            
             if (!_matchPlayers.Contains(player))
             {
-                _matchPlayers.Add(player);
-                _remainingPlayers.Add(player);
-                if (_remainingPlayers.Count == 2)
-                {
-                    StartNextRoundServerRpc();
-                }
+                AddPlayer(player);
+                
+                if (_currentPlayerCount != _initialPlayerCount) return;
+                
+                RemoveEmptyPlayersFromLists();
+                StartNextRoundServerRpc();
             }
         }
 
+        private void AddPlayer(IPlayerController playerController)
+        {
+            int orderIndex = 0;
+
+            switch (_currentPlayerCount)
+            {
+                case 0:
+                    orderIndex = 0;
+                    break;
+                case 1:
+                    orderIndex = 2;
+                    break;
+                case 2:
+                    orderIndex = 1;
+                    break;
+                case 3:
+                    orderIndex = 3;
+                    break;
+            }
+            
+            _matchPlayers[orderIndex] = playerController;
+            _remainingPlayers[orderIndex] = playerController;
+            
+            _currentPlayerCount++;
+        }
+
+        private void RemoveEmptyPlayersFromLists()
+        {
+            _matchPlayers.RemoveAll(item => item == null);
+            _remainingPlayers.RemoveAll(item => item == null);
+        }
+        
         private void OnTurnStart()
         {
             CheckForNextTurn();
@@ -117,8 +177,17 @@ namespace HotPotato.Managers
         
         private void ResetPlayers()
         {
+            IPlayerController standingPlayer = _remainingPlayers[0];
+            
             _remainingPlayers.Clear();
             _remainingPlayers.AddRange(_matchPlayers);
+            
+            var standingIndex = _remainingPlayers.IndexOf(standingPlayer);
+            var reorderedList = 
+                _remainingPlayers.Skip(standingIndex).Concat(_remainingPlayers.Take(standingIndex)).ToList();
+            
+            _remainingPlayers = reorderedList;
+            
             _currentPlayerIndex.Value = 0;
         }
         
@@ -140,12 +209,17 @@ namespace HotPotato.Managers
                 EndRound();
             }
         }
+
+        [Server]
+        private void StartMovingBomb()
+        {
+            CurrentPlayer.RequestToMoveBomb();
+        }
         
         [Server]
         private void StartNextTurn()
         {
-            IPlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
-            currentPlayer.StartTurn();
+            CurrentPlayer.StartTurn();
         }
         
         [ServerRpc(RequireOwnership = false)]

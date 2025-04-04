@@ -5,27 +5,32 @@ namespace HotPotato.Managers
 {
     public class SceneManager : NetworkBehaviour
     {
-        private EventBinding<ChangeSceneEvent> _loadSceneEventBinding;
+        private EventBinding<ChangeSceneRequestEvent> _changeSceneRequestEventBinding;
         
         public override void OnStartServer()
         {
-            _loadSceneEventBinding = new EventBinding<ChangeSceneEvent>(ChangeScene);
-            EventBus<ChangeSceneEvent>.Register(_loadSceneEventBinding);
+            _changeSceneRequestEventBinding = new EventBinding<ChangeSceneRequestEvent>(ChangeScene);
+            EventBus<ChangeSceneRequestEvent>.Register(_changeSceneRequestEventBinding);
         }
 
         public override void OnStopServer()
         {
-            EventBus<ChangeSceneEvent>.Deregister(_loadSceneEventBinding);
+            EventBus<ChangeSceneRequestEvent>.Deregister(_changeSceneRequestEventBinding);
         }
 
         [Server]
-        private void ChangeScene(ChangeSceneEvent changeSceneEvent)
+        private void ChangeScene(ChangeSceneRequestEvent changeSceneRequestEvent)
         {
-            var sceneLoadData = new SceneLoadData(changeSceneEvent.SceneToLoadName)
+            var sceneLoadData = new SceneLoadData(changeSceneRequestEvent.SceneToLoadName)
             {
                 ReplaceScenes = ReplaceOption.All,
             };
-            
+
+            EventBus<TransportingClientsToSceneEvent>.Raise(new TransportingClientsToSceneEvent
+            {
+                PlayerCount = base.NetworkManager.ClientManager.Clients.Count
+            });
+
             base.SceneManager.LoadGlobalScenes(sceneLoadData);
         }
     }

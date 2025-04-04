@@ -11,16 +11,6 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
         private const float TimeToShowModule = 3f;
         
         private float _timeElapsed;
-        
-        protected override void SubscribeToEvents()
-        {
-           
-        }
-        
-        protected override void UnsubscribeToEvents()
-        {
-         
-        }
 
         public override void EnterState()
         {

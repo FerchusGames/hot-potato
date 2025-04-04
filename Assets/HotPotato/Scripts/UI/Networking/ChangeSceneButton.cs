@@ -21,7 +21,7 @@ namespace HotPotato.UI.GameFlow
         [Server]
         private void ChangeScene()
         {
-            EventBus<ChangeSceneEvent>.Raise(new ChangeSceneEvent
+            EventBus<ChangeSceneRequestEvent>.Raise(new ChangeSceneRequestEvent
             {
                 SceneToLoadName = _sceneToLoadName
             });
