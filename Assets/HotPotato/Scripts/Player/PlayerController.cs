@@ -23,9 +23,9 @@ namespace HotPotato.Player
         [Server]
         public void RequestToMoveBomb()
         {
-            EventBus<MoveBombToPlayerRotationEvent>.Raise(new MoveBombToPlayerRotationEvent
+            EventBus<MoveBombToPlayerEvent>.Raise(new MoveBombToPlayerEvent
             {
-                PlayerYRotation =transform.rotation.eulerAngles.y 
+                PlayerPosition = transform.position,
             });
         }
         

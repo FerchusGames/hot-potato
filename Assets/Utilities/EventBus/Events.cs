@@ -2,6 +2,7 @@
 using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
+using UnityEngine;
 
 public interface IEvent { }
 
@@ -59,8 +60,8 @@ public struct TransportingClientsToSceneEvent : IEvent
     public int PlayerCount;
 }
 
-public struct MoveBombToPlayerRotationEvent : IEvent
+public struct MoveBombToPlayerEvent : IEvent
 {
-    public float PlayerYRotation;
+    public Vector3 PlayerPosition;
 }
 public struct BombHasReachedPlayerEvent : IEvent { }
