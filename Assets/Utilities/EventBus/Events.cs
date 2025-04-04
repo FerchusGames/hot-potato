@@ -58,3 +58,9 @@ public struct TransportingClientsToSceneEvent : IEvent
 {
     public int PlayerCount;
 }
+
+public struct MoveBombToPlayerRotationEvent : IEvent
+{
+    public float PlayerYRotation;
+}
+public struct BombHasReachedPlayerEvent : IEvent { }

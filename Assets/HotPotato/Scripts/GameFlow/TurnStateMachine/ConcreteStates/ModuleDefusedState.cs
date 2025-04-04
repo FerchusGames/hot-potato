@@ -8,7 +8,7 @@
         public override void EnterState()
         {
             base.EnterState();
-            NextState = TurnStateMachine.TurnState.TurnStart;
+            NextState = TurnStateMachine.TurnState.MovingBomb;
             EventBus<ModuleDefusedExitStateEvent>.Raise(new ModuleDefusedExitStateEvent());
         }
     }

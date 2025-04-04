@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using Unity.VisualScripting;
 
 namespace HotPotato.Player
 {
@@ -18,11 +19,14 @@ namespace HotPotato.Player
                 PlayerController = this
             });
         }
-
-        [ServerRpc]
-        public void SetOrderIndex(int orderIndex)
+        
+        [Server]
+        public void RequestToMoveBomb()
         {
-            // TODO: Set rotation or something else idk
+            EventBus<MoveBombToPlayerRotationEvent>.Raise(new MoveBombToPlayerRotationEvent
+            {
+                PlayerYRotation =transform.rotation.eulerAngles.y 
+            });
         }
         
         [Server]
@@ -39,6 +43,7 @@ namespace HotPotato.Player
             EventBus<MatchResetEvent>.Raise(new MatchResetEvent());
         }
 
+        [Server]
         public void StartRound()
         {
             StartRoundObserversRpc();
@@ -51,6 +56,7 @@ namespace HotPotato.Player
             EventBus<RoundStartedEvent>.Raise(new RoundStartedEvent());
         }
 
+        [Server]
         public void StartTurn()
         {
             StartTurnObserversRpc();

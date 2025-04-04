@@ -19,12 +19,15 @@ namespace HotPotato.Managers
         
         private List<IPlayerController> _matchPlayers = new();
         private List<IPlayerController> _remainingPlayers = new();
+
+        private IPlayerController CurrentPlayer => _remainingPlayers[_currentPlayerIndex.Value];
         
         private EventBinding<TransportingClientsToSceneEvent> _transportingClientsToSceneEventBinding;
         private EventBinding<PlayerJoinedEvent> _playerJoinedEventBinding;
         private EventBinding<StartNextRoundEvent> _startNextRoundEventBinding;
         private EventBinding<StartNextMatchEvent> _startNextMatchEventBinding;
         
+        private EventBinding<MovingBombEnterStateEvent> _movingBombEnterStateEventBinding;
         private EventBinding<TurnStartEnterStateEvent> _turnStartEnterStateEventBinding;
         private EventBinding<ModuleExplodedExitStateEvent> _moduleExplodedExitStateEventBinding;
         private EventBinding<ModuleDefusedExitStateEvent> _moduleDefusedExitStateEventBinding;
@@ -55,6 +58,9 @@ namespace HotPotato.Managers
             _startNextMatchEventBinding = new EventBinding<StartNextMatchEvent>(StartNextMatchServerRpc);
             EventBus<StartNextMatchEvent>.Register(_startNextMatchEventBinding);
             
+            _movingBombEnterStateEventBinding = new EventBinding<MovingBombEnterStateEvent>(StartMovingBomb);
+            EventBus<MovingBombEnterStateEvent>.Register(_movingBombEnterStateEventBinding);
+            
             _turnStartEnterStateEventBinding = new EventBinding<TurnStartEnterStateEvent>(OnTurnStart);
             EventBus<TurnStartEnterStateEvent>.Register(_turnStartEnterStateEventBinding);
             
@@ -72,6 +78,7 @@ namespace HotPotato.Managers
             EventBus<StartNextRoundEvent>.Deregister(_startNextRoundEventBinding);
             EventBus<StartNextMatchEvent>.Deregister(_startNextMatchEventBinding);
             
+            EventBus<MovingBombEnterStateEvent>.Deregister(_movingBombEnterStateEventBinding);
             EventBus<TurnStartEnterStateEvent>.Deregister(_turnStartEnterStateEventBinding);
             EventBus<ModuleExplodedExitStateEvent>.Deregister(_moduleExplodedExitStateEventBinding);
             EventBus<ModuleDefusedExitStateEvent>.Deregister(_moduleDefusedExitStateEventBinding);
@@ -128,8 +135,6 @@ namespace HotPotato.Managers
             
             _matchPlayers[orderIndex] = playerController;
             _remainingPlayers[orderIndex] = playerController;
-            
-            playerController.SetOrderIndex(orderIndex);
             
             _currentPlayerCount++;
         }
@@ -204,12 +209,17 @@ namespace HotPotato.Managers
                 EndRound();
             }
         }
+
+        [Server]
+        private void StartMovingBomb()
+        {
+            CurrentPlayer.RequestToMoveBomb();
+        }
         
         [Server]
         private void StartNextTurn()
         {
-            IPlayerController currentPlayer = _remainingPlayers[_currentPlayerIndex.Value];
-            currentPlayer.StartTurn();
+            CurrentPlayer.StartTurn();
         }
         
         [ServerRpc(RequireOwnership = false)]
