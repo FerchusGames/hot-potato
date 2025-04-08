@@ -5,14 +5,28 @@
         public AbilityPlayedState(ITurnStateMachineData stateMachineData) 
             : base(TurnStateMachine.TurnState.AbilityPlayed, stateMachineData) { }
 
-        protected override void SubscribeToEvents()
-        {
-           
-        }
+        private EventBinding<AbilityFinishedEvent> _abilityFinishedEventBinding;
         
-        protected override void UnsubscribeToEvents()
+        public override void EnterState()
         {
-         
+            base.EnterState();
+           
+            _abilityFinishedEventBinding = new EventBinding<AbilityFinishedEvent>(GoToNextState);
+            EventBus<AbilityFinishedEvent>.Register(_abilityFinishedEventBinding);
+
+            _stateMachineData.Ability.Execute().Forget();
+        }
+
+        public override void ExitState()
+        {
+            EventBus<AbilityFinishedEvent>.Deregister(_abilityFinishedEventBinding);
+            
+            base.ExitState();
+        }
+
+        private void GoToNextState()
+        {
+            NextState = TurnStateMachine.TurnState.BombTicking;
         }
     }
 }

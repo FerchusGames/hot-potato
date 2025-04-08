@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HotPotato.AbilitySystem;
 using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
@@ -9,6 +10,7 @@ public interface IEvent { }
 public struct TurnOwnerChangedEvent : IEvent
 {
     public bool IsMyTurn;
+    public IAbility Ability;
 }
 public struct PlayerJoinedEvent : IEvent
 {
@@ -65,3 +67,5 @@ public struct MoveBombToPlayerEvent : IEvent
     public Vector3 PlayerPosition;
 }
 public struct BombHasReachedPlayerEvent : IEvent { }
+
+public struct AbilityFinishedEvent : IEvent { }

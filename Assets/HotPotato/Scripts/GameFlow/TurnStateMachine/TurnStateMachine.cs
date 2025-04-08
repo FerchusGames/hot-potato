@@ -1,4 +1,5 @@
-﻿using HotPotato.Bomb;
+﻿using HotPotato.AbilitySystem;
+using HotPotato.Bomb;
 using HotPotato.GameFlow.StateMachine;
 using HotPotato.GameFlow.TurnStateMachine.ConcreteStates;
 
@@ -7,11 +8,13 @@ namespace HotPotato.GameFlow.TurnStateMachine
     public interface ITurnStateMachineData
     {
         public BombModuleSettings LastModuleSettings { get; set; }
+        public IAbility Ability { get; set; }
     }
     
     public class TurnStateMachine : NetworkStateMachine<TurnStateMachine.TurnState>, ITurnStateMachineData
     {
         public BombModuleSettings LastModuleSettings { get; set; }
+        public IAbility Ability { get; set; }
         
         private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
         

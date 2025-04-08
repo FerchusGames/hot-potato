@@ -1,5 +1,6 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using HotPotato.AbilitySystem;
 using Unity.VisualScripting;
 
 namespace HotPotato.Player
@@ -9,6 +10,8 @@ namespace HotPotato.Player
         public int WinCount => _winCount.Value;
 
         private readonly SyncVar<int> _winCount = new();
+        
+        private IAbility _currentAbility = new NoAbility(); 
 
         public override void OnStartClient()
         {
@@ -67,7 +70,8 @@ namespace HotPotato.Player
         {
             EventBus<TurnOwnerChangedEvent>.Raise(new TurnOwnerChangedEvent
             {
-                IsMyTurn = IsOwner
+                IsMyTurn = IsOwner, 
+                Ability = _currentAbility,
             });
         }
         
