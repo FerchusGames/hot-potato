@@ -5,6 +5,8 @@ namespace HotPotato.AbilitySystem
 {
     public class NoAbility : IAbility
     {
+        public string Message { get; } = "No ability played";
+
         public async UniTaskVoid Execute()
         {
             Debug.Log("No ability executed"); 

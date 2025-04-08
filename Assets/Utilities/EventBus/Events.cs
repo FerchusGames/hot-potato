@@ -68,4 +68,8 @@ public struct MoveBombToPlayerEvent : IEvent
 }
 public struct BombHasReachedPlayerEvent : IEvent { }
 
+public struct AbilityStartedEvent : IEvent
+{
+    public IAbility Ability;
+}
 public struct AbilityFinishedEvent : IEvent { }
