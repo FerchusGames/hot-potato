@@ -8,13 +8,11 @@ namespace HotPotato.GameFlow.TurnStateMachine
     public interface ITurnStateMachineData
     {
         public BombModuleSettings LastModuleSettings { get; set; }
-        public IAbility Ability { get; set; }
     }
     
     public class TurnStateMachine : NetworkStateMachine<TurnStateMachine.TurnState>, ITurnStateMachineData
     {
         public BombModuleSettings LastModuleSettings { get; set; }
-        public IAbility Ability { get; set; }
         
         private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
         

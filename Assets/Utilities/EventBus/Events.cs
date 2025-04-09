@@ -10,7 +10,6 @@ public interface IEvent { }
 public struct TurnOwnerChangedEvent : IEvent
 {
     public bool IsMyTurn;
-    public IAbility Ability;
 }
 public struct PlayerJoinedEvent : IEvent
 {
@@ -68,8 +67,10 @@ public struct MoveBombToPlayerEvent : IEvent
 }
 public struct BombHasReachedPlayerEvent : IEvent { }
 
-public struct AbilityStartedEvent : IEvent
+
+public struct AbilityPlayingEvent : IEvent
 {
     public IAbility Ability;
 }
+
 public struct AbilityFinishedEvent : IEvent { }

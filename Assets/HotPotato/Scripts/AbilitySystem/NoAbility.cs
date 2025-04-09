@@ -9,7 +9,11 @@ namespace HotPotato.AbilitySystem
 
         public async UniTaskVoid Execute()
         {
-            Debug.Log("No ability executed"); 
+            EventBus<AbilityPlayingEvent>.Raise(new AbilityPlayingEvent
+            {
+                Ability = this,
+            });
+            
             await UniTask.Delay(1000);
             EventBus<AbilityFinishedEvent>.Raise(new AbilityFinishedEvent());
         }

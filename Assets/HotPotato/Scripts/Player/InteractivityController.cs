@@ -1,10 +1,11 @@
-﻿using HotPotato.GameFlow.TurnStateMachine;
+﻿using FishNet.Object;
+using HotPotato.GameFlow.TurnStateMachine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace HotPotato.Player
 {
-    public class InteractivityController : MonoBehaviour
+    public class InteractivityController : NetworkBehaviour
     {
         [SerializeField] private LayerMask _notOnTurnEventMask;
 
@@ -25,46 +26,67 @@ namespace HotPotato.Player
             _physicsRaycaster = Camera.main.GetComponent<PhysicsRaycaster>();
             _physicsRaycaster.eventMask = _notOnTurnEventMask;
         }
-
-        private void Start()
+        
+        public override void OnStartServer()
         {
-            RegisterEvents();
+            RegisterServerEvents();
+        }
+        
+        public override void OnStopServer()
+        {
+            DeregisterServerEvents();
+        }
+        
+        public override void OnStartClient()
+        {
+            RegisterClientEvents();
         }
 
-        private void OnDestroy()
+        public override void OnStopClient()
         {
-            DeregisterEvents();
+            DeregisterClientEvents();
         }
-
-        private void RegisterEvents()
+        
+        [Server]
+        private void RegisterServerEvents()
         {
-            _turnOwnerChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(HandleTurnOwnerChangedEvent);
-            EventBus<TurnOwnerChangedEvent>.Register(_turnOwnerChangedEventBinding);
-            
-            _loseRoundEventBinding = new EventBinding<LoseRoundEvent>(DisableModuleInteractivity);
-            EventBus<LoseRoundEvent>.Register(_loseRoundEventBinding);
-            
-            _winRoundEventBinding = new EventBinding<WinRoundEvent>(DisableModuleInteractivity);
-            EventBus<WinRoundEvent>.Register(_winRoundEventBinding);
-            
-            _winMatchEventBinding = new EventBinding<WinMatchEvent>(HandleWinMatchEvent);
-            EventBus<WinMatchEvent>.Register(_winMatchEventBinding);
-            
-            _moduleClickedEventBinding = new EventBinding<ModuleClickedEvent>(DisableModuleInteractivity);
-            EventBus<ModuleClickedEvent>.Register(_moduleClickedEventBinding);
-            
             _bombTickingEnterStateEventBinding = new EventBinding<BombTickingEnterStateEvent>(HandleBombTickingEnterStateEvent);
             EventBus<BombTickingEnterStateEvent>.Register(_bombTickingEnterStateEventBinding);
         }
         
-        private void DeregisterEvents()
+        [Server]
+        private void DeregisterServerEvents()
+        {
+            EventBus<BombTickingEnterStateEvent>.Deregister(_bombTickingEnterStateEventBinding);
+        }
+        
+        [Client]
+        private void RegisterClientEvents()
+        {
+            _turnOwnerChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(HandleTurnOwnerChangedEvent);
+            EventBus<TurnOwnerChangedEvent>.Register(_turnOwnerChangedEventBinding);
+
+            _loseRoundEventBinding = new EventBinding<LoseRoundEvent>(DisableModuleInteractivity);
+            EventBus<LoseRoundEvent>.Register(_loseRoundEventBinding);
+
+            _winRoundEventBinding = new EventBinding<WinRoundEvent>(DisableModuleInteractivity);
+            EventBus<WinRoundEvent>.Register(_winRoundEventBinding);
+
+            _winMatchEventBinding = new EventBinding<WinMatchEvent>(HandleWinMatchEvent);
+            EventBus<WinMatchEvent>.Register(_winMatchEventBinding);
+
+            _moduleClickedEventBinding = new EventBinding<ModuleClickedEvent>(DisableModuleInteractivity);
+            EventBus<ModuleClickedEvent>.Register(_moduleClickedEventBinding);
+        }
+
+        [Client]
+        private void DeregisterClientEvents()
         {
             EventBus<TurnOwnerChangedEvent>.Deregister(_turnOwnerChangedEventBinding);
             EventBus<LoseRoundEvent>.Deregister(_loseRoundEventBinding);
             EventBus<WinRoundEvent>.Deregister(_winRoundEventBinding);
             EventBus<WinMatchEvent>.Deregister(_winMatchEventBinding);
             EventBus<ModuleClickedEvent>.Deregister(_moduleClickedEventBinding);
-            EventBus<BombTickingEnterStateEvent>.Deregister(_bombTickingEnterStateEventBinding);
         }
         
         private void SetModuleInteractivity(bool interactive)
@@ -83,7 +105,14 @@ namespace HotPotato.Player
             _isMyTurn = turnOwnerChangedEvent.IsMyTurn;
         }
         
+        [Server]
         private void HandleBombTickingEnterStateEvent()
+        {
+            HandleBombTickingEnterStateEventObserversRpc();
+        }
+        
+        [ObserversRpc]
+        private void HandleBombTickingEnterStateEventObserversRpc()
         {
             SetModuleInteractivity(_isMyTurn);
         }

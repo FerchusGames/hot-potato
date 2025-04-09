@@ -21,4 +21,6 @@ namespace HotPotato.GameFlow.TurnStateMachine
     public struct ModuleDefusedExitStateEvent : IEvent { }
     
     public struct MovingBombEnterStateEvent : IEvent { }
+    
+    public struct AbilityPlayingEnterStateEvent : IEvent { }
 }

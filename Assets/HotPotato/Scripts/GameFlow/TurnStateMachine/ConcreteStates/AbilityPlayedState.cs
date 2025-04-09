@@ -14,11 +14,7 @@
             _abilityFinishedEventBinding = new EventBinding<AbilityFinishedEvent>(GoToNextState);
             EventBus<AbilityFinishedEvent>.Register(_abilityFinishedEventBinding);
 
-            EventBus<AbilityStartedEvent>.Raise(new AbilityStartedEvent
-            {
-                Ability = _stateMachineData.Ability,
-            });
-            _stateMachineData.Ability.Execute().Forget();
+            EventBus<AbilityPlayingEnterStateEvent>.Raise(new AbilityPlayingEnterStateEvent { });
         }
 
         public override void ExitState()
@@ -31,6 +27,11 @@
         private void GoToNextState()
         {
             NextState = TurnStateMachine.TurnState.BombTicking;
+        }
+
+        private void SkipTurn()
+        {
+            NextState = TurnStateMachine.TurnState.ModuleDefused;
         }
     }
 }

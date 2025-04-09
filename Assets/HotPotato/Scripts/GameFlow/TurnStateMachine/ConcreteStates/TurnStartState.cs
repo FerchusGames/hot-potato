@@ -31,7 +31,6 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
 
         private void GoToNextState(TurnOwnerChangedEvent turnOwnerChangedEvent)
         {
-            _stateMachineData.Ability = turnOwnerChangedEvent.Ability;
             NextState = TurnStateMachine.TurnState.AbilityPlayed;
         }
     }

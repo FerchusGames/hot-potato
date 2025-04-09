@@ -14,7 +14,7 @@ namespace HotPotato.Bomb.CenterScreen
         [Required]
         [SerializeField] private TextMeshProUGUI _text;
         
-        EventBinding<AbilityStartedEvent> _abilityStartedEventBinding;
+        EventBinding<AbilityPlayingEvent> _abilityPlayingEventBinding;
         EventBinding<AbilityFinishedEvent> _abilityFinishedEventBinding;
 
         public override void OnStartServer()
@@ -29,8 +29,8 @@ namespace HotPotato.Bomb.CenterScreen
 
         private void RegisterServerEvents()
         {
-            _abilityStartedEventBinding = new EventBinding<AbilityStartedEvent>(DisplayAbility);
-            EventBus<AbilityStartedEvent>.Register(_abilityStartedEventBinding);
+            _abilityPlayingEventBinding = new EventBinding<AbilityPlayingEvent>(DisplayAbility);
+            EventBus<AbilityPlayingEvent>.Register(_abilityPlayingEventBinding);
             
             _abilityFinishedEventBinding = new EventBinding<AbilityFinishedEvent>(HideAbility);
             EventBus<AbilityFinishedEvent>.Register(_abilityFinishedEventBinding);
@@ -38,14 +38,14 @@ namespace HotPotato.Bomb.CenterScreen
         
         private void DeregisterServerEvents()
         {
-            EventBus<AbilityStartedEvent>.Deregister(_abilityStartedEventBinding);
+            EventBus<AbilityPlayingEvent>.Deregister(_abilityPlayingEventBinding);
             EventBus<AbilityFinishedEvent>.Deregister(_abilityFinishedEventBinding);
         }
 
         [Server]
-        private void DisplayAbility(AbilityStartedEvent abilityStartedEvent)
+        private void DisplayAbility(AbilityPlayingEvent abilityPlayingEvent)
         {
-            string abilityMessage = abilityStartedEvent.Ability.Message;
+            string abilityMessage = abilityPlayingEvent.Ability.Message;
             
             DisplayAbilityObserversRpc(abilityMessage);
         }

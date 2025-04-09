@@ -1,7 +1,9 @@
 ﻿using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using HotPotato.AbilitySystem;
+using Sirenix.OdinInspector;
 using Unity.VisualScripting;
+using UnityEngine;
 
 namespace HotPotato.Player
 {
@@ -11,8 +13,11 @@ namespace HotPotato.Player
 
         private readonly SyncVar<int> _winCount = new();
         
-        private IAbility _currentAbility = new NoAbility(); 
+        [Required]
+        [SerializeField] private AbilityController _abilityControllerObject;
 
+        private IAbilityController AbilityController => _abilityControllerObject as IAbilityController;
+        
         public override void OnStartClient()
         {
             if (!IsServerInitialized) return;
@@ -62,6 +67,7 @@ namespace HotPotato.Player
         [Server]
         public void StartTurn()
         {
+            AbilityController.EnableAbility();
             StartTurnObserversRpc();
         }
         
@@ -71,7 +77,6 @@ namespace HotPotato.Player
             EventBus<TurnOwnerChangedEvent>.Raise(new TurnOwnerChangedEvent
             {
                 IsMyTurn = IsOwner, 
-                Ability = _currentAbility,
             });
         }
         
