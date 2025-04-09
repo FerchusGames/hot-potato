@@ -1,11 +1,12 @@
 ﻿using FishNet.Object;
+using HotPotato.AbilitySystem.Abilities;
 using HotPotato.GameFlow.TurnStateMachine;
 
 namespace HotPotato.AbilitySystem
 {
     public class AbilityController : NetworkBehaviour, IAbilityController
     {
-        public IAbility CurrentAbility { get; private set; } = new NoAbility();
+        public IAbility CurrentAbility { get; private set; } = new SkipAbility();
         
         private EventBinding<AbilityPlayingEnterStateEvent> _abilityPlayingEnterStateEventBinding;
         

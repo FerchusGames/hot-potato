@@ -65,7 +65,10 @@ namespace HotPotato.Player
             if (turnOwnerChangedEvent.IsMyTurn)
             {
                 SetCameraAsLive(_onTurnCamera);   
+                return;
             }
+            
+            ReturnToDefaultCamera();
         }
         
         private void ReturnToDefaultCamera()

@@ -1,10 +1,10 @@
 ﻿using Cysharp.Threading.Tasks;
-using UnityEngine;
 
-namespace HotPotato.AbilitySystem
+namespace HotPotato.AbilitySystem.Abilities
 {
     public class NoAbility : IAbility
     {
+        public AbilityType AbilityType { get; private set; } = AbilityType.NoAbility;
         public string Message { get; } = "No ability played";
 
         public async UniTaskVoid Execute()
@@ -14,7 +14,7 @@ namespace HotPotato.AbilitySystem
                 Ability = this,
             });
             
-            await UniTask.Delay(1000);
+            await UniTask.Delay(2000);
             EventBus<AbilityFinishedEvent>.Raise(new AbilityFinishedEvent());
         }
     }

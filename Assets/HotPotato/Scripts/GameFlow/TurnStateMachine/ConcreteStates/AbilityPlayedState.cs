@@ -1,4 +1,7 @@
-﻿namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
+﻿using HotPotato.AbilitySystem;
+using HotPotato.AbilitySystem.Abilities;
+
+namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
 {
     public class AbilityPlayedState : TurnState
     {
@@ -11,27 +14,38 @@
         {
             base.EnterState();
            
-            _abilityFinishedEventBinding = new EventBinding<AbilityFinishedEvent>(GoToNextState);
-            EventBus<AbilityFinishedEvent>.Register(_abilityFinishedEventBinding);
+            RegisterEvents();
 
             EventBus<AbilityPlayingEnterStateEvent>.Raise(new AbilityPlayingEnterStateEvent { });
         }
 
         public override void ExitState()
         {
-            EventBus<AbilityFinishedEvent>.Deregister(_abilityFinishedEventBinding);
-            
+            DeregisterEvents();
+
             base.ExitState();
         }
-
-        private void GoToNextState()
+        
+        private void RegisterEvents()
         {
-            NextState = TurnStateMachine.TurnState.BombTicking;
+            _abilityFinishedEventBinding = new EventBinding<AbilityFinishedEvent>(GoToNextState);
+            EventBus<AbilityFinishedEvent>.Register(_abilityFinishedEventBinding);
         }
-
-        private void SkipTurn()
+        
+        private void DeregisterEvents()
         {
-            NextState = TurnStateMachine.TurnState.ModuleDefused;
+            EventBus<AbilityFinishedEvent>.Deregister(_abilityFinishedEventBinding);
+        }
+        
+        private void GoToNextState(AbilityFinishedEvent abilityFinishedEvent)
+        {
+            if (abilityFinishedEvent.AbilityType == AbilityType.SkipTurn)
+            {
+                NextState = TurnStateMachine.TurnState.ModuleDefused;
+                return;
+            }
+            
+            NextState = TurnStateMachine.TurnState.BombTicking;
         }
     }
 }
