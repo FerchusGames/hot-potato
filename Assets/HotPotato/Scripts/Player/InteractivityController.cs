@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using HotPotato.GameFlow.TurnStateMachine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace HotPotato.Player
@@ -12,9 +13,12 @@ namespace HotPotato.Player
         private EventBinding<WinRoundEvent> _winRoundEventBinding;
         private EventBinding<WinMatchEvent> _winMatchEventBinding;
         private EventBinding<ModuleClickedEvent> _moduleClickedEventBinding;
+        private EventBinding<BombTickingEnterStateEvent> _bombTickingEnterStateEventBinding;
         
         private PhysicsRaycaster _physicsRaycaster = null;
         private static readonly LayerMask EverythingMask = ~0;
+        
+        private bool _isMyTurn = false;
         
         private void Awake()
         {   
@@ -32,32 +36,6 @@ namespace HotPotato.Player
             DeregisterEvents();
         }
 
-        private void SetModuleInteractivity(bool interactive)
-        {
-            if (interactive)
-            {
-                _physicsRaycaster.eventMask = EverythingMask; 
-                return;
-            }
-
-            _physicsRaycaster.eventMask = _notOnTurnEventMask;
-        }
-        
-        private void HandleTurnOwnerChangedEvent(TurnOwnerChangedEvent turnOwnerChangedEvent)
-        {
-            SetModuleInteractivity(turnOwnerChangedEvent.IsMyTurn);
-        }
-        
-        private void HandleWinMatchEvent(WinMatchEvent winMatchEvent)
-        {
-            DisableModuleInteractivity();
-        }
-        
-        private void DisableModuleInteractivity()
-        {
-            SetModuleInteractivity(false);
-        }
-        
         private void RegisterEvents()
         {
             _turnOwnerChangedEventBinding = new EventBinding<TurnOwnerChangedEvent>(HandleTurnOwnerChangedEvent);
@@ -74,6 +52,9 @@ namespace HotPotato.Player
             
             _moduleClickedEventBinding = new EventBinding<ModuleClickedEvent>(DisableModuleInteractivity);
             EventBus<ModuleClickedEvent>.Register(_moduleClickedEventBinding);
+            
+            _bombTickingEnterStateEventBinding = new EventBinding<BombTickingEnterStateEvent>(HandleBombTickingEnterStateEvent);
+            EventBus<BombTickingEnterStateEvent>.Register(_bombTickingEnterStateEventBinding);
         }
         
         private void DeregisterEvents()
@@ -83,6 +64,38 @@ namespace HotPotato.Player
             EventBus<WinRoundEvent>.Deregister(_winRoundEventBinding);
             EventBus<WinMatchEvent>.Deregister(_winMatchEventBinding);
             EventBus<ModuleClickedEvent>.Deregister(_moduleClickedEventBinding);
+            EventBus<BombTickingEnterStateEvent>.Deregister(_bombTickingEnterStateEventBinding);
+        }
+        
+        private void SetModuleInteractivity(bool interactive)
+        {
+            if (interactive)
+            {
+                _physicsRaycaster.eventMask = EverythingMask; 
+                return;
+            }
+
+            _physicsRaycaster.eventMask = _notOnTurnEventMask;
+        }
+        
+        private void HandleTurnOwnerChangedEvent(TurnOwnerChangedEvent turnOwnerChangedEvent)
+        {
+            _isMyTurn = turnOwnerChangedEvent.IsMyTurn;
+        }
+        
+        private void HandleBombTickingEnterStateEvent()
+        {
+            SetModuleInteractivity(_isMyTurn);
+        }
+        
+        private void HandleWinMatchEvent(WinMatchEvent winMatchEvent)
+        {
+            DisableModuleInteractivity();
+        }
+        
+        private void DisableModuleInteractivity()
+        {
+            SetModuleInteractivity(false);
         }
     }
 }
