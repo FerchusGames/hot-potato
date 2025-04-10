@@ -5,7 +5,7 @@ namespace HotPotato.AbilitySystem
     public enum AbilityType
     {
         NoAbility,
-        SkipTurn,
+        SkipAbility,
     }
     
     public interface IAbility

@@ -4,7 +4,7 @@ namespace HotPotato.AbilitySystem.Abilities
 {
     public class SkipAbility : IAbility
     {
-        public AbilityType AbilityType { get; private set; } = AbilityType.SkipTurn;
+        public AbilityType AbilityType { get; private set; } = AbilityType.SkipAbility;
         public string Message { get; } = "Skipping turn...";
         public async UniTaskVoid Execute()
         {

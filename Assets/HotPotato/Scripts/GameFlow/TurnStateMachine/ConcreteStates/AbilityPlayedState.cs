@@ -39,7 +39,7 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
         
         private void GoToNextState(AbilityFinishedEvent abilityFinishedEvent)
         {
-            if (abilityFinishedEvent.AbilityType == AbilityType.SkipTurn)
+            if (abilityFinishedEvent.AbilityType == AbilityType.SkipAbility)
             {
                 NextState = TurnStateMachine.TurnState.ModuleDefused;
                 return;

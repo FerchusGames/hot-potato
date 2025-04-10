@@ -72,8 +72,19 @@ public struct AbilityPlayingEvent : IEvent
 {
     public IAbility Ability;
 }
-
 public struct AbilityFinishedEvent : IEvent
+{
+    public AbilityType AbilityType;
+}
+
+public struct AbilitySelectRequestedEvent : IEvent
+{
+    public AbilityType AbilityType;
+}
+
+public struct AbilityDeselectRequestedEvent : IEvent { }
+
+public struct AbilitySelectedEvent : IEvent
 {
     public AbilityType AbilityType;
 }

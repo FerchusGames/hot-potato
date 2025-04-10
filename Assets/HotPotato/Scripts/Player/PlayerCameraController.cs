@@ -32,6 +32,8 @@ namespace HotPotato.Player
         
         public override void OnStopClient()
         {
+            if (!IsOwner) return;
+            
             DeregisterClientEvents();
         }
 
