@@ -14,14 +14,11 @@ namespace HotPotato.Bomb.CenterScreen
     
         private readonly SyncTimer _timer = new();
         private readonly SyncVar<bool> _isRunning = new(true);
-    
-        private EventBinding<TurnStartExitStateEvent> _turnStartExitStateEventBinding;
         
         private EventBinding<BombTickingUpdateStateEvent> _updateStateEventBinding;
         private EventBinding<BombTickingEnterStateEvent> _enterStateEventBinding;
         private EventBinding<BombTickingExitStateEvent> _exitStateEventBinding;
-    
-        private float _remainingTime;
+        
         private bool _timerExpired = false;
     
         public override void OnStartServer()
@@ -36,13 +33,10 @@ namespace HotPotato.Bomb.CenterScreen
 
         private void RegisterServerEvents()
         {
-            _turnStartExitStateEventBinding = new EventBinding<TurnStartExitStateEvent>(ResetTimer);
-            EventBus<TurnStartExitStateEvent>.Register(_turnStartExitStateEventBinding);
-            
             _updateStateEventBinding = new EventBinding<BombTickingUpdateStateEvent>(UpdateTimer);
             EventBus<BombTickingUpdateStateEvent>.Register(_updateStateEventBinding);
             
-            _enterStateEventBinding = new EventBinding<BombTickingEnterStateEvent>(ReturnToTimer);
+            _enterStateEventBinding = new EventBinding<BombTickingEnterStateEvent>(ResetTimer);
             EventBus<BombTickingEnterStateEvent>.Register(_enterStateEventBinding);
             
             _exitStateEventBinding = new EventBinding<BombTickingExitStateEvent>(StopTimerServerRpc);
@@ -51,18 +45,9 @@ namespace HotPotato.Bomb.CenterScreen
 
         private void DeregisterServerEvents()
         {
-            EventBus<TurnStartExitStateEvent>.Deregister(_turnStartExitStateEventBinding);
             EventBus<BombTickingUpdateStateEvent>.Deregister(_updateStateEventBinding);
             EventBus<BombTickingEnterStateEvent>.Deregister(_enterStateEventBinding);
             EventBus<BombTickingExitStateEvent>.Deregister(_exitStateEventBinding);
-        }
-
-        private void ReturnToTimer()
-        {
-            _isRunning.Value = true;
-            _timerExpired = false;
-            _timer.StartTimer(Mathf.Ceil(_remainingTime));
-            SetVisibilityObserversRpc(true);
         }
         
         [ObserversRpc]
@@ -92,7 +77,6 @@ namespace HotPotato.Bomb.CenterScreen
         [Server]
         private void ResetTimer()
         {
-            _remainingTime = _initialTime;
             _isRunning.Value = true;
             _timerExpired = false;
             _timer.StartTimer(_initialTime);
@@ -104,7 +88,6 @@ namespace HotPotato.Bomb.CenterScreen
         {
             SetVisibilityObserversRpc(false);
             _isRunning.Value = false;
-            _remainingTime = _timer.Remaining;
             _timer.StopTimer();
             StopTimerClientRpc();
         }

@@ -1,4 +1,5 @@
-﻿using HotPotato.Bomb;
+﻿using HotPotato.AbilitySystem;
+using HotPotato.Bomb;
 using HotPotato.GameFlow.StateMachine;
 using HotPotato.GameFlow.TurnStateMachine.ConcreteStates;
 

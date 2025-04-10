@@ -8,7 +8,7 @@
       "hash": "8042b29ff87dd5506d7aad72bd6d8d7405985f27"
     },
     "com.github-glitchenzo.nugetforunity": {
-      "version": "4.2.0",
+      "version": "4.3.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -83,7 +83,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.31",
+      "version": "3.0.35",
       "depth": 0,
       "source": "registry",
       "dependencies": {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HotPotato.AbilitySystem;
 using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
@@ -65,3 +66,25 @@ public struct MoveBombToPlayerEvent : IEvent
     public Vector3 PlayerPosition;
 }
 public struct BombHasReachedPlayerEvent : IEvent { }
+
+
+public struct AbilityPlayingEvent : IEvent
+{
+    public IAbility Ability;
+}
+public struct AbilityFinishedEvent : IEvent
+{
+    public AbilityType AbilityType;
+}
+
+public struct AbilitySelectRequestedEvent : IEvent
+{
+    public AbilityType AbilityType;
+}
+
+public struct AbilityDeselectRequestedEvent : IEvent { }
+
+public struct AbilitySelectedEvent : IEvent
+{
+    public AbilityType AbilityType;
+}

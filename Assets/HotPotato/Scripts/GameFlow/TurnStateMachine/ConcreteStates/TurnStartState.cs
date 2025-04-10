@@ -29,9 +29,9 @@ namespace HotPotato.GameFlow.TurnStateMachine.ConcreteStates
             EventBus<TurnStartExitStateEvent>.Raise(new TurnStartExitStateEvent());
         }
 
-        private void GoToNextState()
+        private void GoToNextState(TurnOwnerChangedEvent turnOwnerChangedEvent)
         {
-            NextState = TurnStateMachine.TurnState.BombTicking;
+            NextState = TurnStateMachine.TurnState.AbilityPlayed;
         }
     }
 }
