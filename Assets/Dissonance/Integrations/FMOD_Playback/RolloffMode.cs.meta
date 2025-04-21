@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 91302b35b3fcd054ab6609cae4640b9d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 213415
+  packageName: Dissonance For FMOD (Playback)
+  packageVersion: 9.0.7
+  assetPath: Assets/Dissonance/Integrations/FMOD_Playback/RolloffMode.cs
+  uploadId: 740527

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d54d003eeb678f9489694f7088ef7a1c
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 213415
+  packageName: Dissonance For FMOD (Playback)
+  packageVersion: 9.0.7
+  assetPath: Assets/Dissonance/Integrations/FMOD_Playback/FMODPlaybackPrefab.prefab
+  uploadId: 740527
