@@ -19,7 +19,9 @@ namespace Linework.WideOutline
         // Shared settings.
         public MaterialType materialType;
         public Material customMaterial;
-        [Range(0.0f, 100.0f)] public float width = 30.0f;
+        public WidthControl widthControl = WidthControl.Shared;
+        [Range(0.0f, 100.0f)] public float sharedWidth = 20.0f;
+        [Range(0.0f, 1.0f)] public float gap = 0.0f;
         public BlendingMode blendMode;
         public bool customDepthBuffer;
         [ColorUsage(true, true)] public Color occludedColor = Color.red;
@@ -33,6 +35,7 @@ namespace Linework.WideOutline
             foreach (var outline in outlines)
             {
                 outline.SetAdvancedOcclusionEnabled(customDepthBuffer);
+                outline.SetWidthControl(widthControl);
             }
             OnSettingsChanged?.Invoke();
         }

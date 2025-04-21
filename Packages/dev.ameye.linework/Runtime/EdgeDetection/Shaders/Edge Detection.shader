@@ -32,10 +32,14 @@
         _OutlineColorShadow ("Outline Color Shadow", Color) = (1, 1, 1, 1)
         _BackgroundColor ("Background Color", Color) = (0, 0, 0, 0)
         _FillColor ("Fill Color", Color) = (0, 0, 0, 1)
-        [Toggle(FADE_IN_DISTANCE)] _FadeInDistance ("Fade Outline In Distance", Float) = 0
-        _FadeStart ("Fade Start", Float) = 100
-        _FadeDistance ("Fade Distance", Float) = 10
-        _FadeColor ("Fade Color", Color) = (0, 0, 0, 0)
+        [Toggle(FADE_BY_DISTANCE)] _FadeByDistance ("Fade Outline by Distance", Float) = 0
+        _DistanceFadeStart ("Distance Fade Start", Float) = 100
+        _DistanceFadeDistance ("Distance Fade Distance", Float) = 10
+        _DistanceFadeColor ("Distance Fade Color", Color) = (0, 0, 0, 0)
+         [Toggle(FADE_BY_HEIGHT)] _FadeInDistance ("Fade Outline by height", Float) = 0
+        _HeightFadeStart ("Height Fade Start", Float) = 100
+        _HeightFadeDistance ("Height Fade Distance", Float) = 10
+        _HeightFadeColor ("Height Fade Color", Color) = (0, 0, 0, 0)
 
         _SrcBlend ("_SrcBlend", Int) = 0
         _DstBlend ("_DstBlend", Int) = 0
@@ -60,7 +64,8 @@
 
         #pragma multi_compile_local _ OVERRIDE_SHADOW
         #pragma multi_compile_local _ SCALE_WITH_RESOLUTION
-        #pragma multi_compile_local _ FADE_IN_DISTANCE
+        #pragma multi_compile_local _ FADE_BY_DISTANCE
+        #pragma multi_compile_local _ FADE_BY_HEIGHT
         #pragma multi_compile_local _ SECTIONS_MASK
         #pragma multi_compile_local _ DEPTH_MASK
         #pragma multi_compile_local _ NORMALS_MASK
@@ -81,7 +86,7 @@
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
-            #if defined(DEPTH) || defined(OVERRIDE_SHADOW) || defined(FADE_IN_DISTANCE) || defined(DEBUG_DEPTH)
+            #if defined(DEPTH) || defined(OVERRIDE_SHADOW) || defined(FADE_BY_DISTANCE) || defined(FADE_BY_HEIGHT) || defined(DEBUG_DEPTH)
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
             #endif
 
@@ -96,11 +101,12 @@
             #include "Packages/dev.ameye.linework/Runtime/EdgeDetection/Shaders/DeclareSectioningTexture.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-            float4 _BackgroundColor, _OutlineColor, _FillColor, _OutlineColorShadow, _FadeColor;
+            float4 _BackgroundColor, _OutlineColor, _FillColor, _OutlineColorShadow, _DistanceFadeColor, _HeightFadeColor;
             float _OverrideOutlineColorShadow;
             float _OutlineThickness;
             float _ReferenceResolution;
-            float _FadeStart, _FadeDistance;
+            float _DistanceFadeStart, _DistanceFadeDistance;
+            float _HeightFadeStart, _HeightFadeDistance;
             float _DepthSensitivity, _DepthDistanceModulation, _GrazingAngleMaskPower, _GrazingAngleMaskHardness;
             float _NormalSensitivity;
             float _LuminanceSensitivity;
@@ -166,7 +172,7 @@
                 /// DISCONTINUITY SOURCES
                 ///
 
-                #if defined(DEPTH) || defined(OVERRIDE_SHADOW) || defined(FADE_IN_DISTANCE) || defined(DEBUG_DEPTH)
+                #if defined(DEPTH) || defined(OVERRIDE_SHADOW) || defined(FADE_BY_DISTANCE) || defined(FADE_BY_HEIGHT) || defined(DEBUG_DEPTH)
                 float center_depth = SampleSceneDepth(uv);
                 #if !UNITY_REVERSED_Z // Transform depth from [0, 1] to [-1, 1] on OpenGL.
                 center_depth = lerp(UNITY_NEAR_CLIP_VALUE, 1.0, center_depth); // Alternatively: depth = 1.0 - depth
@@ -351,8 +357,8 @@
                 //    and the view direction are almost perpendicular, the depth threshold should be increased.
                 float3 viewWS = normalize(_WorldSpaceCameraPos.xyz - positionWS);
                 float fresnel = pow(1.0 - dot(normalize(center_normal), normalize(viewWS)), 1.0);
-                float grazingAngleMask = saturate((fresnel + _GrazingAngleMaskPower - 1) / _GrazingAngleMaskPower); // a mask between 0 and 1
-                depth_threshold = depth_threshold * (1 + _GrazingAngleMaskHardness * grazingAngleMask);
+                float grazingAngleMask = _GrazingAngleMaskHardness * saturate((fresnel + _GrazingAngleMaskPower - 1) / _GrazingAngleMaskPower); // a mask between 0 and 1
+                depth_threshold = depth_threshold * (1 + grazingAngleMask);
                 
                 edge_depth = edge_depth > depth_threshold ? 1 : 0;
                 #endif
@@ -386,7 +392,7 @@
                 #endif
 
                 #if defined(DEBUG_LUMINANCE)
-                half3 luminance = SampleSceneLuminance(uv);
+                half luminance = SampleSceneLuminance(uv);
                 return lerp(half4(luminance, luminance, luminance, 1), half4(1,0,0,1), edge_luminance);
                 #endif
 
@@ -408,8 +414,10 @@
                 /// COMPOSITE EDGES
                 ///
 
+                // if (fill) return _FillColor;
+                
                 float4 line_color = _OutlineColor;
-
+                
                 // Shadows.
                 #if defined(OVERRIDE_SHADOW)
                 float shadow = 1 - SampleShadowmap(
@@ -421,11 +429,16 @@
                 line_color = lerp(line_color, _OutlineColorShadow, shadow);
                 #endif
 
-                #if defined(FADE_IN_DISTANCE)
+                #if defined(FADE_BY_DISTANCE)
                 float distance = length(positionWS - _WorldSpaceCameraPos);
-                float fade = 1.0 - saturate(1.0 - (distance - _FadeStart) / _FadeDistance);
-                float4 fade_color = lerp(line_color, _FadeColor * _FadeColor.a, fade);
-                return lerp(_BackgroundColor, fade_color, edge);
+                float distance_fade = 1.0 - saturate(1.0 - (distance - _DistanceFadeStart) / _DistanceFadeDistance);
+                line_color = lerp(line_color, _DistanceFadeColor * _DistanceFadeColor.a, distance_fade);
+                #endif
+
+                #if defined(FADE_BY_HEIGHT)
+                float height = positionWS.y;
+                float height_fade = 1.0 - saturate(1.0 - (height - _HeightFadeStart) / _HeightFadeDistance);
+                line_color = lerp(line_color, _HeightFadeColor * _HeightFadeColor.a, height_fade);
                 #endif
 
                 return lerp(_BackgroundColor, line_color, edge);

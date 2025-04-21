@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 #if UNITY_6000_0_OR_NEWER
+using System.Collections.Generic;
 using UnityEngine.Rendering.RenderGraphModule;
 #endif
 using UnityEngine.Rendering.Universal;
@@ -16,13 +17,13 @@ namespace Linework.EdgeDetection
     [SupportedOnRenderer(typeof(UniversalRendererData))]
 #endif
     [Tooltip("Edge Detection renders outlines by detecting edges and discontinuities within the scene.")]
-    [HelpURL("https://linework.ameye.dev/outlines/edge-detection")]
+    [HelpURL("https://linework.ameye.dev/edge-detection")]
     public class EdgeDetection : ScriptableRendererFeature
     {
         private class EdgeDetectionPass : ScriptableRenderPass
         {
             private EdgeDetectionSettings settings;
-            private Material outline, section;
+            private Material section, mask, outline;
             private readonly ProfilingSampler sectionSampler, outlineSampler;
             
             public EdgeDetectionPass()
@@ -32,10 +33,11 @@ namespace Linework.EdgeDetection
                 outlineSampler = new ProfilingSampler(ShaderPassName.Outline);
             }
 
-            public bool Setup(ref EdgeDetectionSettings edgeDetectionSettings, ref Material sectionMaterial, ref Material outlineMaterial)
+            public bool Setup(ref EdgeDetectionSettings edgeDetectionSettings, ref Material sectionMaterial, ref Material sectionMaskMaterial, ref Material outlineMaterial)
             {
                 settings = edgeDetectionSettings;
                 section = sectionMaterial;
+                mask = sectionMaskMaterial;
                 outline = outlineMaterial;
                 renderPassEvent = (RenderPassEvent) edgeDetectionSettings.InjectionPoint;
 
@@ -239,20 +241,27 @@ namespace Linework.EdgeDetection
                 }
                 
                 // Distance fade.
-                if (edgeDetectionSettings.fadeInDistance) outline.EnableKeyword(ShaderFeature.FadeInDistance);
-                else outline.DisableKeyword(ShaderFeature.FadeInDistance);
-                outline.SetFloat(ShaderPropertyId.FadeStart, edgeDetectionSettings.fadeStart);
-                outline.SetFloat(ShaderPropertyId.FadeDistance, edgeDetectionSettings.fadeDistance);
-                outline.SetColor(ShaderPropertyId.FadeColor, edgeDetectionSettings.fadeColor);
+                if (edgeDetectionSettings.fadeByDistance) outline.EnableKeyword(ShaderFeature.FadeByDistance);
+                else outline.DisableKeyword(ShaderFeature.FadeByDistance);
+                outline.SetFloat(ShaderPropertyId.DistanceFadeStart, edgeDetectionSettings.distanceFadeStart);
+                outline.SetFloat(ShaderPropertyId.DistanceFadeDistance, edgeDetectionSettings.distanceFadeDistance);
+                outline.SetColor(ShaderPropertyId.DistanceFadeColor, edgeDetectionSettings.distanceFadeColor);
+                
+                // Height fade.
+                if (edgeDetectionSettings.fadeByHeight) outline.EnableKeyword(ShaderFeature.FadeByHeight);
+                else outline.DisableKeyword(ShaderFeature.FadeByHeight);
+                outline.SetFloat(ShaderPropertyId.HeightFadeStart, edgeDetectionSettings.heightFadeStart);
+                outline.SetFloat(ShaderPropertyId.HeightFadeDistance, edgeDetectionSettings.heightFadeDistance);
+                outline.SetColor(ShaderPropertyId.HeightFadeColor, edgeDetectionSettings.heightFadeColor);
                 
                 // Masks.
-                if (edgeDetectionSettings.sectionsMask) outline.EnableKeyword(ShaderFeature.SectionsMask);
+                if (settings.maskInfluence.HasFlag(MaskInfluence.Sections)) outline.EnableKeyword(ShaderFeature.SectionsMask);
                 else outline.DisableKeyword(ShaderFeature.SectionsMask);
-                if (edgeDetectionSettings.depthMask) outline.EnableKeyword(ShaderFeature.DepthMask);
+                if (settings.maskInfluence.HasFlag(MaskInfluence.Depth)) outline.EnableKeyword(ShaderFeature.DepthMask);
                 else outline.DisableKeyword(ShaderFeature.DepthMask);
-                if (edgeDetectionSettings.normalsMask) outline.EnableKeyword(ShaderFeature.NormalsMask);
+                if (settings.maskInfluence.HasFlag(MaskInfluence.Normals)) outline.EnableKeyword(ShaderFeature.NormalsMask);
                 else outline.DisableKeyword(ShaderFeature.NormalsMask);
-                if (edgeDetectionSettings.luminanceMask) outline.EnableKeyword(ShaderFeature.LuminanceMask);
+                if (settings.maskInfluence.HasFlag(MaskInfluence.Luminance)) outline.EnableKeyword(ShaderFeature.LuminanceMask);
                 else outline.DisableKeyword(ShaderFeature.LuminanceMask);
                 
                 outline.SetColor(ShaderPropertyId.BackgroundColor, edgeDetectionSettings.backgroundColor);
@@ -272,15 +281,16 @@ namespace Linework.EdgeDetection
             private class PassData
             {
                 internal RendererListHandle SectionRendererListHandle;
+                internal RendererListHandle SectionMaskRendererListHandle;
+                internal List<RendererListHandle> AdditionalSectionRendererListHandles = new();
             }
             
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
             {
                 var resourceData = frameData.Get<UniversalResourceData>();
-                var cameraData = frameData.Get<UniversalCameraData>();
 
-                CreateRenderGraphTextures(renderGraph, cameraData, out var sectionHandle);
-
+                CreateRenderGraphTextures(renderGraph, resourceData, out var sectionHandle, settings.sectionMapPrecision, settings.sectionMapClearValue);
+                
                 // 1. Section.
                 // -> Render section map.
                 using (var builder = renderGraph.AddRasterRenderPass<PassData>(ShaderPassName.Section, out var passData))
@@ -291,28 +301,47 @@ namespace Linework.EdgeDetection
 
                     InitSectionRendererList(renderGraph, frameData, ref passData);
                     builder.UseRendererList(passData.SectionRendererListHandle);
+                    if (settings.SectionMaskRenderingLayer != 0 && settings.maskInfluence != MaskInfluence.Nothing)
+                    {
+                        builder.UseRendererList(passData.SectionMaskRendererListHandle);
+                    }
+                    foreach (var handle in passData.AdditionalSectionRendererListHandles)
+                    {
+                        builder.UseRendererList(handle);
+                    }
                     
-                    if (settings.sectionMapInput == SectionMapInput.Custom) builder.AllowGlobalStateModification(true);
+                    var setSectionPassKeyword = settings.sectionMapInput == SectionMapInput.Custom 
+                                                || passData.AdditionalSectionRendererListHandles.Count > 0;
+                    if (setSectionPassKeyword) builder.AllowGlobalStateModification(true);
 
                     builder.AllowPassCulling(false);
 
                     builder.SetRenderFunc((PassData data, RasterGraphContext context) =>
                     {
-                        // TODO: better conditions here
-                        // if (!settings.discontinuityInput.HasFlag(DiscontinuityInput.SectionMap)) return;
-                        
                         // Enable section pass.
-                        if (settings.sectionMapInput == SectionMapInput.Custom)
+                        if (setSectionPassKeyword)
                         {
                             context.cmd.DisableKeyword(Keyword.ScreenSpaceOcclusion);
                             context.cmd.EnableKeyword(Keyword.SectionPass);
                         }
-
-                        // Render sections.
+                        
+                        // Section pass.
                         context.cmd.DrawRendererList(data.SectionRendererListHandle);
-                      
+
+                        // Section mask pass.
+                        if (settings.SectionMaskRenderingLayer != 0 && settings.maskInfluence != MaskInfluence.Nothing)
+                        {
+                            context.cmd.DrawRendererList(data.SectionMaskRendererListHandle);
+                        }
+                        
+                        // Additional section passes.
+                        foreach (var handle in data.AdditionalSectionRendererListHandles)
+                        {
+                            context.cmd.DrawRendererList(handle);   
+                        }
+                        
                         // Disable section map.
-                        if (settings.sectionMapInput == SectionMapInput.Custom)
+                        if (setSectionPassKeyword)
                         {
                             context.cmd.EnableKeyword(Keyword.ScreenSpaceOcclusion);
                             context.cmd.DisableKeyword(Keyword.SectionPass);
@@ -338,35 +367,72 @@ namespace Linework.EdgeDetection
 
             private void InitSectionRendererList(RenderGraph renderGraph, ContextContainer frameData, ref PassData passData)
             {
+                passData.AdditionalSectionRendererListHandles.Clear();
+                
                 var universalRenderingData = frameData.Get<UniversalRenderingData>();
                 var cameraData = frameData.Get<UniversalCameraData>();
                 var lightData = frameData.Get<UniversalLightData>();
-
+                
                 var sortingCriteria = cameraData.defaultOpaqueSortFlags;
                 var renderQueueRange = RenderQueueRange.opaque;
-
                 var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, universalRenderingData, cameraData, lightData, sortingCriteria);
-
                 var filteringSettings = new FilteringSettings(renderQueueRange, -1, settings.SectionRenderingLayer);
-
+                var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
+                
+                // Section pass.
                 if (settings.sectionMapInput is SectionMapInput.None or SectionMapInput.SectionTexture or SectionMapInput.VertexColors)
                 {
                     drawingSettings.overrideMaterial = section;
                 }
-
-                var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
                 RenderUtils.CreateRendererListWithRenderStateBlock(renderGraph, ref universalRenderingData.cullResults, drawingSettings, filteringSettings, renderStateBlock,
                     ref passData.SectionRendererListHandle);
+                
+                // Section mask pass.
+                if (settings.SectionMaskRenderingLayer != 0 && settings.maskInfluence != MaskInfluence.Nothing)
+                {
+                    filteringSettings = new FilteringSettings(renderQueueRange, -1, settings.SectionMaskRenderingLayer);
+                    drawingSettings.overrideMaterial = mask;
+                    RenderUtils.CreateRendererListWithRenderStateBlock(renderGraph, ref universalRenderingData.cullResults, drawingSettings, filteringSettings, renderStateBlock,
+                        ref passData.SectionMaskRendererListHandle);
+                }
+                
+                // Additional section passes.
+                foreach (var additionalSectionPass in settings.additionalSectionPasses)
+                {
+                    filteringSettings = new FilteringSettings(renderQueueRange, -1, additionalSectionPass.RenderingLayer);
+                    if (settings.sectionMapInput is SectionMapInput.None or SectionMapInput.SectionTexture or SectionMapInput.VertexColors)
+                    {
+                        drawingSettings.overrideMaterial = additionalSectionPass.customSectionMaterial;
+                    }
+                    var handle = new RendererListHandle();
+                    RenderUtils.CreateRendererListWithRenderStateBlock(renderGraph, ref universalRenderingData.cullResults, drawingSettings, filteringSettings, renderStateBlock, ref handle);
+                    passData.AdditionalSectionRendererListHandles.Add(handle);
+                }
             }
-
-            private void CreateRenderGraphTextures(RenderGraph renderGraph, UniversalCameraData cameraData, out TextureHandle sectionHandle)
+            
+            private void CreateRenderGraphTextures(RenderGraph renderGraph, UniversalResourceData resourceData, out TextureHandle sectionHandle, SectionMapPrecision precision, int clearValue)
             {
+                var cameraDescriptor = resourceData.activeColorTexture.GetDescriptor(renderGraph);
+                
+                const float renderTextureScale = 1.0f;
+                var width = (int) (cameraDescriptor.width * renderTextureScale);
+                var height = (int) (cameraDescriptor.height * renderTextureScale);
+
+                var baseDescriptor = new TextureDesc(width, height)
+                {
+                    dimension = TextureDimension.Tex2D,
+                    msaaSamples = cameraDescriptor.msaaSamples,
+                    useMipMap = false,
+                    autoGenerateMips = false
+                };
+                
                 // Section buffer.
-                var sectionBufferDescriptor = cameraData.cameraTargetDescriptor;
-                sectionBufferDescriptor.graphicsFormat = GraphicsFormat.R16_UNorm;
-                sectionBufferDescriptor.depthBufferBits = (int) DepthBits.None;
-                sectionBufferDescriptor.msaaSamples = 1;
-                sectionHandle = UniversalRenderer.CreateRenderGraphTexture(renderGraph, sectionBufferDescriptor, Buffer.Section, false);
+                baseDescriptor.name = Buffer.Section;
+                baseDescriptor.colorFormat = GetSectionBufferFormat(precision); // TODO: Changed to format somewhere in Unity 6 cycle?
+                baseDescriptor.depthBufferBits = (int) DepthBits.None;
+                baseDescriptor.clearColor = new Color((float) clearValue / 256, 0.0f, 0.0f, 0.0f);
+                baseDescriptor.wrapMode = TextureWrapMode.Clamp;
+                sectionHandle = renderGraph.CreateTexture(baseDescriptor);
             }
 #endif
             private RTHandle cameraDepthRTHandle, sectionRTHandle;
@@ -382,71 +448,103 @@ namespace Linework.EdgeDetection
                 handles[0] = sectionRTHandle;
                 
                 ConfigureTarget(handles, cameraDepthRTHandle);
-                ConfigureClear(ClearFlag.Color, Color.clear);
+                ConfigureClear(ClearFlag.Color, new Color((float) settings.sectionMapClearValue / 256, 0.0f, 0.0f, 0.0f));
             }
             
             public void CreateHandles(RenderingData renderingData)
             {
                 // Section buffer.
                 var sectionBufferDescriptor = renderingData.cameraData.cameraTargetDescriptor;
-                sectionBufferDescriptor.graphicsFormat = GraphicsFormat.R8_UNorm;
+                sectionBufferDescriptor.graphicsFormat = GetSectionBufferFormat(settings.sectionMapPrecision);
                 sectionBufferDescriptor.depthBufferBits = (int) DepthBits.None;
                 sectionBufferDescriptor.msaaSamples = 1;
                 RenderingUtils.ReAllocateIfNeeded(ref sectionRTHandle, sectionBufferDescriptor, FilterMode.Point, TextureWrapMode.Clamp, name: Buffer.Section);
+            }
+
+            private static GraphicsFormat GetSectionBufferFormat(SectionMapPrecision precision)
+            {
+                switch (precision)
+                {
+                    case SectionMapPrecision._8bit:
+                        return GraphicsFormat.R8_UNorm;
+                    case SectionMapPrecision._16bit:
+#if UNITY_2023_2_OR_NEWER
+                        // WebGPU does not support R16_UNorm.
+                        return SystemInfo.graphicsDeviceType == GraphicsDeviceType.WebGPU ? GraphicsFormat.R32_SFloat : GraphicsFormat.R16_UNorm;
+#else
+                        return GraphicsFormat.R16_UNorm;
+#endif
+                    default:
+                        throw new NotImplementedException();
+                }
             }
 
             public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
             {
                 // 1. Section.
                 // -> Render section map.
-                // TODO: better conditions here
-                if (true || settings.discontinuityInput.HasFlag(DiscontinuityInput.Sections))
+                var sectionCmd = CommandBufferPool.Get();
+
+                using (new ProfilingScope(sectionCmd, sectionSampler))
                 {
-                    var sectionCmd = CommandBufferPool.Get();
+                    context.ExecuteCommandBuffer(sectionCmd);
+                    sectionCmd.Clear();
 
-                    using (new ProfilingScope(sectionCmd, sectionSampler))
+                    var sortingCriteria = renderingData.cameraData.defaultOpaqueSortFlags;
+                    var renderQueueRange = RenderQueueRange.opaque;
+                    var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, ref renderingData, sortingCriteria);
+                    var filteringSettings = new FilteringSettings(renderQueueRange, -1, settings.SectionRenderingLayer);
+                    var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
+
+                    var setSectionPassKeyword = settings.sectionMapInput == SectionMapInput.Custom
+                                                        || settings.additionalSectionPasses.Count > 0;
+                    
+                    // Enable section pass.
+                    if (setSectionPassKeyword)
                     {
-                        context.ExecuteCommandBuffer(sectionCmd);
-                        sectionCmd.Clear();
+                        sectionCmd.DisableKeyword(Keyword.ScreenSpaceOcclusion);
+                        sectionCmd.EnableKeyword(Keyword.SectionPass);
+                    }
+                    context.ExecuteCommandBuffer(sectionCmd);
+                    
+                    // Section pass.
+                    if (settings.sectionMapInput is SectionMapInput.None or SectionMapInput.SectionTexture or SectionMapInput.VertexColors)
+                    {
+                        drawingSettings.overrideMaterial = section;
+                    }
+                    context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref filteringSettings, ref renderStateBlock);
 
-                        var sortingCriteria = renderingData.cameraData.defaultOpaqueSortFlags;
-                        var renderQueueRange = RenderQueueRange.opaque;
-
-                        var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, ref renderingData, sortingCriteria);
-
-                        var filteringSettings = new FilteringSettings(renderQueueRange, -1, settings.SectionRenderingLayer);
-
+                    // Section mask pass.
+                    if (settings.SectionMaskRenderingLayer != 0 && settings.maskInfluence != MaskInfluence.Nothing)
+                    {
+                        filteringSettings = new FilteringSettings(renderQueueRange, -1, settings.SectionMaskRenderingLayer);
+                        drawingSettings.overrideMaterial = mask;
+                    }
+                    context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref filteringSettings, ref renderStateBlock);
+                    
+                    // Additional section passes.
+                    foreach (var additionalSectionPass in settings.additionalSectionPasses)
+                    {
+                        filteringSettings = new FilteringSettings(renderQueueRange, -1, additionalSectionPass.RenderingLayer);
                         if (settings.sectionMapInput is SectionMapInput.None or SectionMapInput.SectionTexture or SectionMapInput.VertexColors)
                         {
-                            drawingSettings.overrideMaterial = section;
+                            drawingSettings.overrideMaterial = additionalSectionPass.customSectionMaterial;
                         }
-
-                        var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
-                        
-                        // Enable section pass.
-                        if (settings.sectionMapInput == SectionMapInput.Custom)
-                        {
-                            sectionCmd.DisableKeyword(Keyword.ScreenSpaceOcclusion);
-                            sectionCmd.EnableKeyword(Keyword.SectionPass);
-                        }
-                        context.ExecuteCommandBuffer(sectionCmd);
-
-                        // Render sections.
                         context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref filteringSettings, ref renderStateBlock);
-
-                        // Disable section map.
-                        if (settings.sectionMapInput == SectionMapInput.Custom)
-                        {
-                            sectionCmd.EnableKeyword(Keyword.ScreenSpaceOcclusion);
-                            sectionCmd.DisableKeyword(Keyword.SectionPass);
-                        }
-                        context.ExecuteCommandBuffer(sectionCmd);
                     }
-
-                    sectionCmd.SetGlobalTexture(ShaderPropertyId.CameraSectioningTexture, sectionRTHandle.nameID);
+                    
+                    // Disable section map.
+                    if (setSectionPassKeyword)
+                    {
+                        sectionCmd.EnableKeyword(Keyword.ScreenSpaceOcclusion);
+                        sectionCmd.DisableKeyword(Keyword.SectionPass);
+                    }
                     context.ExecuteCommandBuffer(sectionCmd);
-                    CommandBufferPool.Release(sectionCmd);
                 }
+
+                sectionCmd.SetGlobalTexture(ShaderPropertyId.CameraSectioningTexture, sectionRTHandle.nameID);
+                context.ExecuteCommandBuffer(sectionCmd);
+                CommandBufferPool.Release(sectionCmd);
 
                 // 2. Composite outline.
                 // -> Add the outline to the scene.
@@ -492,7 +590,7 @@ namespace Linework.EdgeDetection
 
         [SerializeField] private EdgeDetectionSettings settings;
         [SerializeField] private ShaderResources shaders;
-        private Material sectionMaterial, outlineMaterial;
+        private Material sectionMaterial, sectionMaskMaterial, outlineMaterial;
         private EdgeDetectionPass edgeDetectionPass;
 
         /// <summary>
@@ -517,7 +615,7 @@ namespace Linework.EdgeDetection
         /// </summary>
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (settings == null) return;
+            if (settings == null || edgeDetectionPass == null) return;
 
             // Don't render for some views.
             if (renderingData.cameraData.cameraType == CameraType.Preview
@@ -545,7 +643,7 @@ namespace Linework.EdgeDetection
             {
                 input |= ScriptableRenderPassInput.Color;
             }
-            if (settings.discontinuityInput.HasFlag(DiscontinuityInput.Normals))
+            if (settings.discontinuityInput.HasFlag(DiscontinuityInput.Normals) || settings.discontinuityInput.HasFlag(DiscontinuityInput.Depth))
             {
                 input |= ScriptableRenderPassInput.Normal;
             }
@@ -555,7 +653,7 @@ namespace Linework.EdgeDetection
             // NOTE: This is needed because the shader needs the current screen contents as input texture, but also needs to write to it, so a copy is needed.
             edgeDetectionPass.requiresIntermediateTexture = true;
 #endif
-            var render = edgeDetectionPass.Setup(ref settings, ref sectionMaterial, ref outlineMaterial);
+            var render = edgeDetectionPass.Setup(ref settings, ref sectionMaterial, ref sectionMaskMaterial, ref outlineMaterial);
             if (render) renderer.EnqueuePass(edgeDetectionPass);
         }
         
@@ -563,7 +661,8 @@ namespace Linework.EdgeDetection
         
         public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
         {
-            if (settings == null || renderingData.cameraData.cameraType == CameraType.SceneView && !settings.ShowInSceneView) return;
+            if (settings == null || edgeDetectionPass == null || renderingData.cameraData.cameraType == CameraType.SceneView && !settings.ShowInSceneView) return;
+            if (renderingData.cameraData.cameraType is CameraType.Preview or CameraType.Reflection) return;
 
             edgeDetectionPass.CreateHandles(renderingData);
             edgeDetectionPass.SetTarget(renderer.cameraDepthTargetHandle);
@@ -590,6 +689,7 @@ namespace Linework.EdgeDetection
         private void DestroyMaterials()
         {
             CoreUtils.Destroy(sectionMaterial);
+            CoreUtils.Destroy(sectionMaskMaterial);
             CoreUtils.Destroy(outlineMaterial);
         }
 
@@ -599,13 +699,18 @@ namespace Linework.EdgeDetection
             {
                 sectionMaterial = CoreUtils.CreateEngineMaterial(shaders.section);
             }
+            
+            if (sectionMaskMaterial == null)
+            {
+                sectionMaskMaterial = CoreUtils.CreateEngineMaterial(shaders.sectionMask);
+            }
 
             if (outlineMaterial == null)
             {
                 outlineMaterial = CoreUtils.CreateEngineMaterial(shaders.outline);
             }
 
-            return sectionMaterial != null && outlineMaterial != null;
+            return sectionMaterial != null && sectionMaskMaterial != null && outlineMaterial != null;
         }
     }
 }

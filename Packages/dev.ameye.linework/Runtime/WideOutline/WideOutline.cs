@@ -18,20 +18,22 @@ namespace Linework.WideOutline
     [SupportedOnRenderer(typeof(UniversalRendererData))]
 #endif
     [Tooltip("Wide Outline renders an outline by generating a signed distance field (SDF) for each object and then sampling it. This creates consistent outlines that smoothly follows the shape of an object.")]
-    [HelpURL("https://linework.ameye.dev/outlines/wide-outline")]
+    [HelpURL("https://linework.ameye.dev/wide-outline")]
     public class WideOutline : ScriptableRendererFeature
     {
         private class WideOutlinePass : ScriptableRenderPass
         {
             private WideOutlineSettings settings;
             private Material mask, silhouetteBase, silhouetteInstancedBase, composite;
-            private readonly ProfilingSampler maskSampler, silhouetteSampler, floodSampler, outlineSampler;
+            private readonly ProfilingSampler maskSampler, silhouetteSampler, informationSampler, floodSampler, outlineSampler;
+            private float maxwidth;
 
             public WideOutlinePass()
             {
                 profilingSampler = new ProfilingSampler(nameof(WideOutlinePass));
                 maskSampler = new ProfilingSampler(ShaderPassName.Mask);
                 silhouetteSampler = new ProfilingSampler(ShaderPassName.Silhouette);
+                informationSampler = new ProfilingSampler(ShaderPassName.Information);
                 floodSampler = new ProfilingSampler(ShaderPassName.Flood);
                 outlineSampler = new ProfilingSampler(ShaderPassName.Outline);
             }
@@ -47,7 +49,7 @@ namespace Linework.WideOutline
 
                 foreach (var outline in settings.Outlines)
                 {
-                    if (outline.material == null || outline.materialInstanced == null)
+                    if (outline.silhouetteMaterial == null || outline.silhouetteMaterialInstanced == null || outline.informationMaterial == null || outline.informationMaterialInstanced == null)
                     {
                         outline.AssignMaterials(silhouetteBase, silhouetteInstancedBase);
                     }
@@ -60,7 +62,8 @@ namespace Linework.WideOutline
                         continue;
                     }
                     
-                    var silhouette = outline.gpuInstancing ? outline.materialInstanced : outline.material;
+                    var silhouette = outline.gpuInstancing ? outline.silhouetteMaterialInstanced : outline.silhouetteMaterial;
+                    var information = outline.gpuInstancing ? outline.informationMaterialInstanced : outline.informationMaterial;
                     
                     silhouette.SetColor(CommonShaderPropertyId.OutlineColor, outline.color);
                     if (outline.occlusion == WideOutlineOcclusion.AsMask) silhouette.SetColor(CommonShaderPropertyId.OutlineColor, Color.clear);
@@ -69,6 +72,7 @@ namespace Linework.WideOutline
                     else silhouette.DisableKeyword(ShaderFeature.AlphaCutout);
                     silhouette.SetTexture(CommonShaderPropertyId.AlphaCutoutTexture, outline.alphaCutoutTexture);
                     silhouette.SetFloat(CommonShaderPropertyId.AlphaCutoutThreshold, outline.alphaCutoutThreshold);
+                    silhouette.SetVector(CommonShaderPropertyId.AlphaCutoutUVTransform, outline.alphaCutoutUVTransform);
 
                     switch (outline.cullingMode)
                     {
@@ -106,6 +110,12 @@ namespace Linework.WideOutline
                     }
 
                     silhouette.SetFloat(CommonShaderPropertyId.ZWrite, settings.customDepthBuffer ? 1.0f : 0.0f);
+
+                    // Information buffer.
+                    if (settings.widthControl == WidthControl.PerOutline) information.EnableKeyword(ShaderFeature.InformationBuffer);
+                    else information.DisableKeyword(ShaderFeature.InformationBuffer);
+                    if (outline.width > maxwidth) maxwidth = outline.width;
+                    information.SetVector(CommonShaderPropertyId.Information, new Vector4(outline.width / 100.0f, 0.0f, 0.0f, 0.0f));
                 }
 
                 // Set outline material properties.
@@ -113,16 +123,21 @@ namespace Linework.WideOutline
                 composite.SetInt(CommonShaderPropertyId.BlendModeSource, sourceBlend);
                 composite.SetInt(CommonShaderPropertyId.BlendModeDestination, destinationBlend);
                 composite.SetColor(ShaderPropertyId.OutlineOccludedColor, settings.occludedColor);
-                composite.SetFloat(ShaderPropertyId.OutlineWidth, settings.width);
+                composite.SetFloat(ShaderPropertyId.OutlineWidth, settings.sharedWidth);
+                composite.SetFloat(ShaderPropertyId.OutlineGap, settings.gap);
                 composite.SetFloat(ShaderPropertyId.RenderScale, renderScale);
+                
                 if (settings.customDepthBuffer) composite.EnableKeyword(ShaderFeature.CustomDepth);
                 else composite.DisableKeyword(ShaderFeature.CustomDepth);
+                
+                if (settings.widthControl == WidthControl.PerOutline) composite.EnableKeyword(ShaderFeature.InformationBuffer);
+                else composite.DisableKeyword(ShaderFeature.InformationBuffer);
 
                 // Set custom material properties.
-                // if (settings.materialType == MaterialType.Custom && settings.customMaterial != null)
-                // {
-                //     settings.customMaterial.SetFloat(ShaderPropertyId.OutlineWidth, settings.width);
-                // }
+                if (settings.materialType == MaterialType.Custom && settings.customMaterial != null)
+                {
+                    settings.customMaterial.SetFloat(ShaderPropertyId.OutlineWidth, settings.sharedWidth);
+                }
 
                 return settings.Outlines.Any(ShouldRenderOutline);
             }
@@ -142,6 +157,7 @@ namespace Linework.WideOutline
             {
                 internal readonly List<RendererListHandle> MaskRendererListHandles = new();
                 internal readonly List<(RendererListHandle handle, bool vertexAnimated)> SilhouetteRendererListHandles = new();
+                internal readonly List<(RendererListHandle handle, bool vertexAnimated)> InformationRendererListHandles = new();
             }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -152,8 +168,8 @@ namespace Linework.WideOutline
                 // Ensure that the render pass doesn't blit from the back buffer.
                 if (resourceData.isActiveTargetBackBuffer) return;
 
-                CreateRenderGraphTextures(renderGraph, cameraData, out var silhouetteHandle, out var silhouetteDepthHandle, out var pingHandle, out var pongHandle);
-                if (!silhouetteHandle.IsValid() || !silhouetteDepthHandle.IsValid() || !pingHandle.IsValid() || !pongHandle.IsValid()) return;
+                CreateRenderGraphTextures(renderGraph, resourceData, out var silhouetteHandle, out var silhouetteDepthHandle, out var informationHandle, out var pingHandle, out var pongHandle);
+                if (!silhouetteHandle.IsValid() || !silhouetteDepthHandle.IsValid() || !informationHandle.IsValid() || !pingHandle.IsValid() || !pongHandle.IsValid()) return;
                 
                 // 1. Mask.
                 // -> Render a mask to the stencil buffer.
@@ -217,6 +233,36 @@ namespace Linework.WideOutline
                     });
                 }
                 
+             
+                
+                // 3. Information.
+                // -> Render the information.
+                if (settings.widthControl == WidthControl.PerOutline)
+                {
+                    using var builder = renderGraph.AddRasterRenderPass<PassData>(ShaderPassName.Information, out var passData);
+                    builder.SetRenderAttachment(informationHandle, 0);
+                    // builder.SetRenderAttachmentDepth(resourceData.activeDepthTexture);
+
+                    builder.SetGlobalTextureAfterPass(informationHandle, ShaderPropertyId.InformationBuffer);
+                     
+                    InitInformationRendererList(renderGraph, frameData, ref passData);
+                    foreach (var rendererListHandle in passData.InformationRendererListHandles)
+                    {
+                        builder.UseRendererList(rendererListHandle.handle);
+                    }
+                        
+                    builder.AllowGlobalStateModification(true); // vertex animation
+                    builder.AllowPassCulling(false);
+
+                    builder.SetRenderFunc((PassData data, RasterGraphContext context) =>
+                    {
+                        foreach (var handle in data.InformationRendererListHandles)
+                        {
+                            context.cmd.DrawRendererList(handle.handle);
+                        }
+                    });
+                }
+                
                 // 3. Flood.
                 // -> Flood the silhouette.
                 using (var builder = renderGraph.AddUnsafePass<PassData>(ShaderPassName.Flood, out _))
@@ -232,8 +278,8 @@ namespace Linework.WideOutline
                         var cmd = CommandBufferHelpers.GetNativeCommandBuffer(context.cmd);
                 
                         Blitter.BlitCameraTexture(cmd, silhouetteHandle, pingHandle, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, composite, ShaderPass.FloodInit);
-                        
-                        var width = settings.width * cameraData.renderScale;
+
+                        var width = (settings.widthControl == WidthControl.Shared ? settings.sharedWidth : maxwidth) * cameraData.renderScale;
                         var numberOfMips = Mathf.CeilToInt(Mathf.Log(width + 1.0f, 2.0f));
                 
                         for (var i = numberOfMips - 1; i >= 0; i--)
@@ -252,8 +298,9 @@ namespace Linework.WideOutline
                 // -> Render an outline.
                 using (var builder = renderGraph.AddRasterRenderPass<PassData>(ShaderPassName.Outline, out _))
                 {
+                    builder.UseTexture(informationHandle); // FIXME: needed only for scene view? Need information handle to survive until this pass.
                     builder.UseTexture(pingHandle);
-
+                
                     builder.SetRenderAttachment(resourceData.activeColorTexture, 0);
                     builder.SetRenderAttachmentDepth(settings.customDepthBuffer ? silhouetteDepthHandle : resourceData.activeDepthTexture);
                     
@@ -261,7 +308,15 @@ namespace Linework.WideOutline
                     
                     builder.SetRenderFunc((PassData _, RasterGraphContext context) =>
                     {
-                        Blitter.BlitTexture(context.cmd, pingHandle, Vector2.one, composite, ShaderPass.Outline);
+                        switch (settings.materialType)  
+                        {  
+                            case MaterialType.Basic:  
+                                Blitter.BlitTexture(context.cmd, pingHandle, Vector2.one, composite, ShaderPass.Outline);  
+                                break;  
+                            case MaterialType.Custom when settings.customMaterial != null:  
+                                Blitter.BlitTexture(context.cmd, pingHandle, Vector2.one, settings.customMaterial, 0);  
+                                break;  
+                        }
                     });
                 }
             }
@@ -275,7 +330,6 @@ namespace Linework.WideOutline
                 var lightData = frameData.Get<UniversalLightData>();
 
                 var sortingCriteria = cameraData.defaultOpaqueSortFlags;
-                var renderQueueRange = RenderQueueRange.opaque;
 
                 var i = 0;
                 foreach (var outline in settings.Outlines)
@@ -289,8 +343,16 @@ namespace Linework.WideOutline
                     var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, renderingData, cameraData, lightData, sortingCriteria);
                     drawingSettings.overrideMaterial = mask;
                     drawingSettings.overrideShaderPassIndex = ShaderPass.Mask;
+                    
+                    var renderQueueRange = outline.renderQueue switch
+                    {
+                        OutlineRenderQueue.Opaque => RenderQueueRange.opaque,
+                        OutlineRenderQueue.Transparent => RenderQueueRange.transparent,
+                        OutlineRenderQueue.OpaqueAndTransparent => RenderQueueRange.all,
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
 
-                    var filteringSettings = new FilteringSettings(renderQueueRange, -1, outline.RenderingLayer);
+                    var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
                     var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
 
                     var blendState = BlendState.defaultValue;
@@ -325,7 +387,6 @@ namespace Linework.WideOutline
                 var lightData = frameData.Get<UniversalLightData>();
 
                 var sortingCriteria = cameraData.defaultOpaqueSortFlags;
-                var renderQueueRange = RenderQueueRange.opaque;
 
                 var i = 0;
                 foreach (var outline in settings.Outlines)
@@ -339,12 +400,102 @@ namespace Linework.WideOutline
                     var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, universalRenderingData, cameraData, lightData, sortingCriteria);
                     if (!outline.vertexAnimation)
                     {
-                        drawingSettings.overrideMaterial = outline.gpuInstancing ? outline.materialInstanced : outline.material;
+                        drawingSettings.overrideMaterial = outline.gpuInstancing ? outline.silhouetteMaterialInstanced : outline.silhouetteMaterial;
                         drawingSettings.overrideMaterialPassIndex = ShaderPass.Silhouette;
                         drawingSettings.enableInstancing = outline.gpuInstancing;
                     }
+
+                    var renderQueueRange = outline.renderQueue switch
+                    {
+                        OutlineRenderQueue.Opaque => RenderQueueRange.opaque,
+                        OutlineRenderQueue.Transparent => RenderQueueRange.transparent,
+                        OutlineRenderQueue.OpaqueAndTransparent => RenderQueueRange.all,
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
                     
-                    var filteringSettings = new FilteringSettings(renderQueueRange, -1, outline.RenderingLayer);
+                    var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
+
+                    var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
+
+                    var stencilState = StencilState.defaultValue;
+                    stencilState.enabled = true;
+                    stencilState.SetCompareFunction(outline.occlusion == WideOutlineOcclusion.WhenOccluded ? CompareFunction.NotEqual : CompareFunction.Always);
+                    stencilState.SetPassOperation(StencilOp.Replace);
+                    stencilState.SetFailOperation(StencilOp.Keep);
+                    stencilState.SetZFailOperation(outline.closedLoop ? StencilOp.Keep : StencilOp.Replace);
+                    
+                    stencilState.readMask = (byte) (1 << i);
+                    stencilState.writeMask = (byte) (1 << i);
+                    renderStateBlock.mask |= RenderStateMask.Stencil;
+                    renderStateBlock.stencilReference = 1 << i;
+                    renderStateBlock.stencilState = stencilState;
+                   
+                    if (outline.vertexAnimation)
+                    {
+                        var depthState = DepthState.defaultValue;
+                        switch (outline.occlusion)
+                        {
+                            case WideOutlineOcclusion.Always:
+                                depthState.compareFunction = CompareFunction.Always;
+                                break;
+                            case WideOutlineOcclusion.WhenOccluded:
+                                depthState.compareFunction = CompareFunction.Greater;
+                                break;
+                            case WideOutlineOcclusion.WhenNotOccluded:
+                                depthState.compareFunction = CompareFunction.LessEqual;
+                                break;
+                            case WideOutlineOcclusion.AsMask:
+                                depthState.compareFunction = CompareFunction.Always;
+                                break;
+                        }
+                        renderStateBlock.mask |= RenderStateMask.Depth;
+                        renderStateBlock.depthState = depthState;
+                    }
+
+                    var handle = new RendererListHandle();
+                    RenderUtils.CreateRendererListWithRenderStateBlock(renderGraph, ref universalRenderingData.cullResults, drawingSettings, filteringSettings, renderStateBlock, ref handle);
+                    passData.SilhouetteRendererListHandles.Add((handle, outline.vertexAnimation));
+
+                    i++;
+                }
+            }
+            
+            private void InitInformationRendererList(RenderGraph renderGraph, ContextContainer frameData, ref PassData passData)
+            {
+                passData.InformationRendererListHandles.Clear();
+
+                var universalRenderingData = frameData.Get<UniversalRenderingData>();
+                var cameraData = frameData.Get<UniversalCameraData>();
+                var lightData = frameData.Get<UniversalLightData>();
+
+                var sortingCriteria = cameraData.defaultOpaqueSortFlags;
+
+                var i = 0;
+                foreach (var outline in settings.Outlines)
+                {
+                    if (!outline.IsActive())
+                    {
+                        i++;
+                        continue;
+                    }
+
+                    var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, universalRenderingData, cameraData, lightData, sortingCriteria);
+                    if (!outline.vertexAnimation)
+                    {
+                        drawingSettings.overrideMaterial = outline.gpuInstancing ? outline.informationMaterialInstanced : outline.informationMaterial;
+                        drawingSettings.overrideMaterialPassIndex = ShaderPass.Information;
+                        drawingSettings.enableInstancing = outline.gpuInstancing;
+                    }
+                    
+                    var renderQueueRange = outline.renderQueue switch
+                    {
+                        OutlineRenderQueue.Opaque => RenderQueueRange.opaque,
+                        OutlineRenderQueue.Transparent => RenderQueueRange.transparent,
+                        OutlineRenderQueue.OpaqueAndTransparent => RenderQueueRange.all,
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                    
+                    var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
 
                     var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
 
@@ -384,42 +535,62 @@ namespace Linework.WideOutline
 
                     var handle = new RendererListHandle();
                     RenderUtils.CreateRendererListWithRenderStateBlock(renderGraph, ref universalRenderingData.cullResults, drawingSettings, filteringSettings, renderStateBlock, ref handle);
-                    passData.SilhouetteRendererListHandles.Add((handle, outline.vertexAnimation));
+                    passData.InformationRendererListHandles.Add((handle, outline.vertexAnimation));
 
                     i++;
                 }
             }
 
-            private static void CreateRenderGraphTextures(RenderGraph renderGraph, UniversalCameraData cameraData,
+            private static void CreateRenderGraphTextures(RenderGraph renderGraph, UniversalResourceData resourceData,
                 out TextureHandle silhouetteHandle,
                 out TextureHandle silhouetteDepthHandle,
+                out TextureHandle informationHandle,
                 out TextureHandle pingHandle,
                 out TextureHandle pongHandle)
             {
+                var cameraDescriptor = resourceData.activeColorTexture.GetDescriptor(renderGraph);
+                
+                const float renderTextureScale = 1.0f;
+                var width = (int) (cameraDescriptor.width * renderTextureScale);
+                var height = (int) (cameraDescriptor.height * renderTextureScale);
+                
+                var baseDescriptor = new TextureDesc(width, height)
+                {
+                    dimension = TextureDimension.Tex2D,
+                    msaaSamples = cameraDescriptor.msaaSamples,
+                    useMipMap = false,
+                    autoGenerateMips = false
+                };
+                
                 // Silhouette buffer.
-                var silhouetteDescriptor = cameraData.cameraTargetDescriptor;
-                silhouetteDescriptor.graphicsFormat = GraphicsFormat.R8G8B8A8_UNorm;
-                silhouetteDescriptor.depthBufferBits = (int) DepthBits.None;
-                silhouetteDescriptor.sRGB = false;
-                silhouetteDescriptor.useMipMap = false;
-                silhouetteDescriptor.autoGenerateMips = false;
-                //silhouetteDescriptor.bindMS = silhouetteDescriptor.msaaSamples > 1;
-                silhouetteHandle = UniversalRenderer.CreateRenderGraphTexture(renderGraph, silhouetteDescriptor, Buffer.Silhouette, false);
+                baseDescriptor.name = Buffer.Silhouette;
+                baseDescriptor.colorFormat = GraphicsFormat.R8G8B8A8_UNorm; // TODO: Changed to format somewhere in Unity 6 cycle?
+                baseDescriptor.depthBufferBits = DepthBits.None;
+                silhouetteHandle = renderGraph.CreateTexture(baseDescriptor);
 
                 // Silhouette depth buffer.
-                var silhouetteDepthDescriptor = cameraData.cameraTargetDescriptor;
-                silhouetteDepthDescriptor.graphicsFormat = GraphicsFormat.None;
-                silhouetteDepthDescriptor.depthBufferBits = (int) DepthBits.Depth32;
-                silhouetteDepthHandle = UniversalRenderer.CreateRenderGraphTexture(renderGraph, silhouetteDepthDescriptor, Buffer.SilhouetteDepth, false);
+                baseDescriptor.name = Buffer.SilhouetteDepth;
+                baseDescriptor.colorFormat = GraphicsFormat.None; // TODO: Changed to format somewhere in Unity 6 cycle?
+                baseDescriptor.depthBufferBits = DepthBits.Depth32;
+                silhouetteDepthHandle = renderGraph.CreateTexture(baseDescriptor);
 
+                // Information buffer.
+                baseDescriptor.name = Buffer.Information;
+                baseDescriptor.colorFormat = SystemInfo.IsFormatSupported(GraphicsFormat.R16_SNorm, GraphicsFormatUsage.Render)
+                    ? GraphicsFormat.R16_SNorm
+                    : GraphicsFormat.R16_SFloat; // TODO: Changed to format somewhere in Unity 6 cycle?
+                baseDescriptor.depthBufferBits = (int) DepthBits.None;
+                informationHandle = renderGraph.CreateTexture(baseDescriptor);
+   
                 // Ping pong buffers.
-                var pingPongDescriptor = cameraData.cameraTargetDescriptor;
-                pingPongDescriptor.graphicsFormat = SystemInfo.IsFormatSupported(GraphicsFormat.R16G16_SNorm, GraphicsFormatUsage.Render)
+                baseDescriptor.name = Buffer.Ping;
+                baseDescriptor.colorFormat = SystemInfo.IsFormatSupported(GraphicsFormat.R16G16_SNorm, GraphicsFormatUsage.Render)
                     ? GraphicsFormat.R16G16_SNorm
-                    : GraphicsFormat.R32G32_SFloat;
-                pingPongDescriptor.depthBufferBits = (int) DepthBits.None;
-                pingHandle = UniversalRenderer.CreateRenderGraphTexture(renderGraph, pingPongDescriptor, Buffer.Ping, false);
-                pongHandle = UniversalRenderer.CreateRenderGraphTexture(renderGraph, pingPongDescriptor, Buffer.Pong, false);
+                    : GraphicsFormat.R32G32_SFloat; // TODO: Changed to format somewhere in Unity 6 cycle?
+                baseDescriptor.depthBufferBits = (int) DepthBits.None;
+                pingHandle = renderGraph.CreateTexture(baseDescriptor);
+                baseDescriptor.name = Buffer.Pong;
+                pongHandle = renderGraph.CreateTexture(baseDescriptor);
             }
 #endif
             private RTHandle cameraDepthRTHandle, silhouetteRTHandle, silhouetteDepthRTHandle, pingRTHandle, pongRTHandle;
@@ -480,7 +651,6 @@ namespace Linework.WideOutline
                     maskCmd.Clear();
 
                     var sortingCriteria = renderingData.cameraData.defaultOpaqueSortFlags;
-                    var renderQueueRange = RenderQueueRange.opaque;
 
                     var maskIndex = 0;
                     foreach (var outline in settings.Outlines)
@@ -490,11 +660,19 @@ namespace Linework.WideOutline
                             maskIndex++;
                             continue;
                         }
+                        
+                        var renderQueueRange = outline.renderQueue switch
+                        {
+                            OutlineRenderQueue.Opaque => RenderQueueRange.opaque,
+                            OutlineRenderQueue.Transparent => RenderQueueRange.transparent,
+                            OutlineRenderQueue.OpaqueAndTransparent => RenderQueueRange.all,
+                            _ => throw new ArgumentOutOfRangeException()
+                        };
 
                         var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, ref renderingData, sortingCriteria);
                         drawingSettings.overrideMaterial = mask;
 
-                        var filteringSettings = new FilteringSettings(renderQueueRange, -1, outline.RenderingLayer);
+                        var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
                         var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
 
                         var blendState = BlendState.defaultValue;
@@ -533,7 +711,6 @@ namespace Linework.WideOutline
                     silhouetteCmd.Clear();
 
                     var sortingCriteria = renderingData.cameraData.defaultOpaqueSortFlags;
-                    var renderQueueRange = RenderQueueRange.opaque;
 
                     var i = 0;
                     foreach (var outline in settings.Outlines)
@@ -543,16 +720,24 @@ namespace Linework.WideOutline
                             i++;
                             continue;
                         }
+                        
+                        var renderQueueRange = outline.renderQueue switch
+                        {
+                            OutlineRenderQueue.Opaque => RenderQueueRange.opaque,
+                            OutlineRenderQueue.Transparent => RenderQueueRange.transparent,
+                            OutlineRenderQueue.OpaqueAndTransparent => RenderQueueRange.all,
+                            _ => throw new ArgumentOutOfRangeException()
+                        };
 
                         var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, ref renderingData, sortingCriteria);
                         if (!outline.vertexAnimation)
                         {
-                            drawingSettings.overrideMaterial = outline.gpuInstancing ? outline.materialInstanced : outline.material;
+                            drawingSettings.overrideMaterial = outline.gpuInstancing ? outline.silhouetteMaterialInstanced : outline.silhouetteMaterial;
                             drawingSettings.overrideMaterialPassIndex = ShaderPass.Silhouette;
                             drawingSettings.enableInstancing = outline.gpuInstancing;
                         }
                         
-                        var filteringSettings = new FilteringSettings(renderQueueRange, -1, outline.RenderingLayer);
+                        var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
                         
                         var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
 
@@ -612,21 +797,21 @@ namespace Linework.WideOutline
                 // 3. Flood.
                 // -> Flood the silhouette.
                 var floodCmd = CommandBufferPool.Get();
-
+                
                 using (new ProfilingScope(floodCmd, floodSampler))
                 {
                     context.ExecuteCommandBuffer(floodCmd);
                     floodCmd.Clear();
-
+                
                     Blitter.BlitCameraTexture(floodCmd, silhouetteRTHandle, pingRTHandle, composite, ShaderPass.FloodInit);
-
-                    var width = settings.width * renderingData.cameraData.renderScale;
+                
+                    var width = settings.sharedWidth * renderingData.cameraData.renderScale;
                     var numberOfMips = Mathf.CeilToInt(Mathf.Log(width + 1.0f, 2f));
-
+                
                     for (var passIndex = numberOfMips - 1; passIndex >= 0; passIndex--)
                     {
                         var stepWidth = Mathf.Pow(2, passIndex) + 0.5f;
-
+                
                         floodCmd.SetGlobalVector(ShaderPropertyId.AxisWidthId, new Vector2(stepWidth, 0f));
                         Blitter.BlitCameraTexture(floodCmd, pingRTHandle, pongRTHandle, composite, ShaderPass.FloodJump);
                         floodCmd.SetGlobalVector(ShaderPropertyId.AxisWidthId, new Vector2(0f, stepWidth));
@@ -640,19 +825,19 @@ namespace Linework.WideOutline
                 // 4. Outline.
                 // -> Render an outline.
                 var outlineCmd = CommandBufferPool.Get();
-
+                
                 using (new ProfilingScope(outlineCmd, outlineSampler))
                 {
                     context.ExecuteCommandBuffer(outlineCmd);
                     outlineCmd.Clear();
-
+                
                     CoreUtils.SetRenderTarget(outlineCmd, renderingData.cameraData.renderer.cameraColorTargetHandle,
                         settings.customDepthBuffer
                             ? silhouetteDepthRTHandle
                             : cameraDepthRTHandle); // if using cameraColorRTHandle this does not render in scene view when rendering after post-processing with post-processing enabled
                     Blitter.BlitTexture(outlineCmd, pingRTHandle, Vector2.one, composite, ShaderPass.Outline);
                 }
-
+                
                 context.ExecuteCommandBuffer(outlineCmd);
                 CommandBufferPool.Release(outlineCmd);
             }
@@ -711,7 +896,7 @@ namespace Linework.WideOutline
         /// </summary>
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (settings == null) return;
+            if (settings == null || wideOutlinePass == null) return;
 
             // Don't render for some views.
             if (renderingData.cameraData.cameraType == CameraType.Preview
@@ -737,8 +922,9 @@ namespace Linework.WideOutline
         #pragma warning disable 618, 672
         public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
         {
-            if (settings == null) return;
-
+            if (settings == null || wideOutlinePass == null || renderingData.cameraData.cameraType == CameraType.SceneView && !settings.ShowInSceneView) return;
+            if (renderingData.cameraData.cameraType is CameraType.Preview or CameraType.Reflection) return;
+            
             wideOutlinePass.CreateHandles(renderingData);
             wideOutlinePass.ConfigureInput(ScriptableRenderPassInput.Color);
             wideOutlinePass.ConfigureInput(ScriptableRenderPassInput.Depth);
@@ -781,7 +967,7 @@ namespace Linework.WideOutline
             {
                 silhouetteMaterial = CoreUtils.CreateEngineMaterial(shaders.silhouette);
             }
-            
+
             if (silhouetteInstancedMaterial == null)
             {
                 silhouetteInstancedMaterial = CoreUtils.CreateEngineMaterial(shaders.silhouetteInstanced);

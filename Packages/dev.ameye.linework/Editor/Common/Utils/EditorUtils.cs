@@ -20,17 +20,21 @@ namespace Linework.Editor.Common.Utils
             public static readonly GUIContent AlphaCutout = EditorGUIUtility.TrTextContent("Alpha Cutout", "Enable alpha cutout.");
             public static readonly GUIContent AlphaCutoutTexture = EditorGUIUtility.TrTextContent("Texture", "The alpha cutout texture.");
             public static readonly GUIContent AlphaCutoutThreshold = EditorGUIUtility.TrTextContent("Threshold", "The alpha clip threshold.");
+            public static readonly GUIContent AlphaCutoutUVTransform = EditorGUIUtility.TrTextContent("UV Transform", "The transform applied to the UVs (tiling x, tiling y, offset x, offset y).");
             public static readonly GUIContent CullMode = EditorGUIUtility.TrTextContent("Cull", "For which occlusion states to render the outline.");
+            public static readonly GUIContent OutlineOccludedColor = EditorGUIUtility.TrTextContent("Occluded Color", "The color of the outline when it is occluded.");
 
             // Shared outlines.
             public static readonly GUIContent Outlines = EditorGUIUtility.TrTextContent("Outlines", "The list of outlines to render.");
-            public static readonly GUIContent OutlineLayer = EditorGUIUtility.TrTextContent("Layer", "The rendering layer(s) which will get an outline rendered for them.");
+            public static readonly GUIContent OutlineLayer = EditorGUIUtility.TrTextContent("Rendering Layer", "Only mesh renderers on this rendering layer will receive an outline.");
+            public static readonly GUIContent LayerMask = EditorGUIUtility.TrTextContent("Layer Mask", "Only gameobjects on this layer will receive an outline.");
+            public static readonly GUIContent RenderQueue = EditorGUIUtility.TrTextContent("Queue", "Only gameobjects using this render queue will receive an outline.");
             public static readonly GUIContent OutlineOcclusion = EditorGUIUtility.TrTextContent("Render", "For which occlusion states to render the outline.");
             public static readonly GUIContent OutlineBlendMode = EditorGUIUtility.TrTextContent("Blend", "How to blend the outline with the rest of the scene.");
             public static readonly GUIContent BackgroundColor = EditorGUIUtility.TrTextContent("Background Color", "The color of the background.");
             public static readonly GUIContent OutlineColor = EditorGUIUtility.TrTextContent("Color", "The color of the outline.");
-            public static readonly GUIContent OutlineOccludedColor = EditorGUIUtility.TrTextContent("Occluded Color", "The color of the outline when it is occluded.");
             public static readonly GUIContent OutlineWidth = EditorGUIUtility.TrTextContent("Width", "The width of the outline.");
+            public static readonly GUIContent OutlineGap = EditorGUIUtility.TrTextContent("Gap", "The gap between the object and the outline.");
             public static readonly GUIContent ScaleWithResolution = EditorGUIUtility.TrTextContent("Scale With Resolution", "Scale the thickness of the outline with the resolution of the screen.");
             public static readonly GUIContent VertexAnimation = EditorGUIUtility.TrTextContent("Vertex Animation", "Make the outline follow the vertex animation of the mesh.");
             public static readonly GUIContent GpuInstancing = EditorGUIUtility.TrTextContent("GPU Instancing", "Use GPU instancing to render this outline layer.");
@@ -69,12 +73,14 @@ namespace Linework.Editor.Common.Utils
             public static readonly GUIContent Spread = EditorGUIUtility.TrTextContent("Spread", "The spread of the Gaussian kernel (Gaussian Blur).");
             public static readonly GUIContent Passes = EditorGUIUtility.TrTextContent("Passes", "How many blur passes to perform (Kawase Blur).");
             public static readonly GUIContent KernelSize = EditorGUIUtility.TrTextContent("Width (pixels)", "The width of the outline.");
+            public static readonly GUIContent Gap = EditorGUIUtility.TrTextContent("Gap", "The size of the gap between the object and the outline.");
 
             // Wide outline.
-            public static readonly GUIContent CustomDepthBuffer = EditorGUIUtility.TrTextContent("Custom Depth (Experimental)", "Use a custom depth buffer to determine the occlusion state of the outlined pixels.");
+            public static readonly GUIContent FixBleeding = EditorGUIUtility.TrTextContent("Fix Bleeding (Experimental)", "Use a custom depth buffer to determine the occlusion state of the outlined pixels.");
             public static readonly GUIContent MaterialType = EditorGUIUtility.TrTextContent("Type", "The alpha clip threshold.");
             public static readonly GUIContent CustomMaterial = EditorGUIUtility.TrTextContent("Material", "The alpha clip threshold.");
-            
+            public static readonly GUIContent WidthControl = EditorGUIUtility.TrTextContent("Width Control", "Use a shared width or a width per outline.");
+
             // Edge detection.
             public static readonly GUIContent DiscontinuityInput = EditorGUIUtility.TrTextContent("Sources", "Which inputs to use as discontinuity sources for the edge detection.");
             public static readonly GUIContent Sensitivity = EditorGUIUtility.TrTextContent("Sensitivity", "The sensitivity used to detect this type of discontinuity.");
@@ -83,10 +89,13 @@ namespace Linework.Editor.Common.Utils
             public static readonly GUIContent GrazingAngleMaskHardness = EditorGUIUtility.TrTextContent("Sharp Angle Mask Multiplier", "Helps prevent edges from being falsely detected when the camera views a surface at a shallow angle.");
             public static readonly GUIContent SectionsRawValues = EditorGUIUtility.TrTextContent("Raw Values", "Renderers on these layers which will render to the section map.");
             public static readonly GUIContent SectionLayer = EditorGUIUtility.TrTextContent("Layer", "Renderers on these layers which will render to the section map.");
+            public static readonly GUIContent MaskLayer = EditorGUIUtility.TrTextContent("Exclude", "Renderers on these layers which will render to the section map as a mask.");
+            public static readonly GUIContent MaskInfluence = EditorGUIUtility.TrTextContent("From", "Use the section map to mask out regions where edges should not show up.");
             public static readonly GUIContent ObjectId = EditorGUIUtility.TrTextContent("Object ID", "Whether to render each object with a unique ID to the section map.");
             public static readonly GUIContent Particles = EditorGUIUtility.TrTextContent("Particles", "Whether to render each object with a unique ID to the section map.");
-            public static readonly GUIContent SectionMask = EditorGUIUtility.TrTextContent("Section Mask", "Use the section map to mask out regions where edges should not show up.");
             public static readonly GUIContent SectionMapInput = EditorGUIUtility.TrTextContent("Source", "The input used for the section map.");
+            public static readonly GUIContent SectionMapPrecision = EditorGUIUtility.TrTextContent("Precision", "The precision of the section map.");
+            public static readonly GUIContent SectionMapClearValue = EditorGUIUtility.TrTextContent("Skybox Value", "The clear value of the section map.");
             public static readonly GUIContent VertexColorChannel = EditorGUIUtility.TrTextContent("Channel", "Which vertex color channel to render to the section map.");
             public static readonly GUIContent SectionTexture = EditorGUIUtility.TrTextContent("Texture", "Which texture to sample when rendering to the section map.");
             public static readonly GUIContent SectionTextureUVSet = EditorGUIUtility.TrTextContent("UV Set", "Which UV set to use when sampling the section texture.");
@@ -96,9 +105,10 @@ namespace Linework.Editor.Common.Utils
             public static readonly GUIContent EdgeColor = EditorGUIUtility.TrTextContent("Edge Color", "The color of the outline.");
             public static readonly GUIContent OverrideShadow = EditorGUIUtility.TrTextContent("Override Shadow", "The color of the outline when it is in an area that lies within a shadow.");
             public static readonly GUIContent OutlineFillColor = EditorGUIUtility.TrTextContent("Fill Color", "The color of the outline for fill in regions in the section map.");
-            public static readonly GUIContent FadeInDistance = EditorGUIUtility.TrTextContent("Fade In Distance", "Fade the outline in the distance.");
-            public static readonly GUIContent FadeStart = EditorGUIUtility.TrTextContent("Start (meters)", "The distance from which to start fading the outlines.");
-            public static readonly GUIContent FadeDistance = EditorGUIUtility.TrTextContent("Distance (meters)", "The distance over which the outlines are faded.");
+            public static readonly GUIContent FadeByDistance = EditorGUIUtility.TrTextContent("Fade By Distance", "Fade the edges by distance.");
+            public static readonly GUIContent FadeStart = EditorGUIUtility.TrTextContent("Start (meters)", "The distance/height from which to start fading the edges.");
+            public static readonly GUIContent FadeDistance = EditorGUIUtility.TrTextContent("Distance (meters)", "The distance/height over which the edges are faded.");
+            public static readonly GUIContent FadeByHeight = EditorGUIUtility.TrTextContent("Fade By Height", "Fade the edges by height.");
             public static readonly GUIContent FadeColor = EditorGUIUtility.TrTextContent("Color", "The color to fade to.");
         }
 

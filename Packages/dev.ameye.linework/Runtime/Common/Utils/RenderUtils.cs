@@ -64,7 +64,22 @@ namespace Linework.Common.Utils
     public enum MaterialType
     {
         Basic,
+        [InspectorName("Custom (experimental)")]
         Custom
+    }
+    
+    public enum WidthControl
+    {
+        Shared,
+        PerOutline
+    }
+    
+    public enum OutlineRenderQueue
+    {
+        Opaque,
+        Transparent,
+        [InspectorName("Opaque + Transparent")]
+        OpaqueAndTransparent
     }
     
     public static class CommonShaderPropertyId
@@ -87,7 +102,9 @@ namespace Linework.Common.Utils
         public static readonly int OutlineColor = Shader.PropertyToID("_OutlineColor");
         public static readonly int AlphaCutoutTexture = Shader.PropertyToID("_AlphaCutoutTexture");
         public static readonly int AlphaCutoutThreshold = Shader.PropertyToID("_AlphaCutoutThreshold");
+        public static readonly int AlphaCutoutUVTransform = Shader.PropertyToID("_AlphaCutoutUVTransform");
         public static readonly int ReferenceResolution = Shader.PropertyToID("_ReferenceResolution");
+        public static readonly int Information = Shader.PropertyToID("_Information");
     }
 
     public static class RenderUtils

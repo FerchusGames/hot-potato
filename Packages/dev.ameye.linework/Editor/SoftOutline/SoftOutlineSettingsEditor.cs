@@ -18,6 +18,7 @@ namespace Linework.Editor.SoftOutline
         private SerializedProperty hardness;
         private SerializedProperty sharedColor;
         private SerializedProperty intensity;
+        private SerializedProperty gap;
         private SerializedProperty blendMode;
         private SerializedProperty dilationMethod;
         private SerializedProperty kernelSize;
@@ -40,6 +41,7 @@ namespace Linework.Editor.SoftOutline
             hardness = serializedObject.FindProperty(nameof(SoftOutlineSettings.hardness));
             sharedColor = serializedObject.FindProperty(nameof(SoftOutlineSettings.sharedColor));
             intensity = serializedObject.FindProperty(nameof(SoftOutlineSettings.intensity));
+            gap = serializedObject.FindProperty(nameof(SoftOutlineSettings.gap));
             blendMode = serializedObject.FindProperty(nameof(SoftOutlineSettings.blendMode));
             dilationMethod = serializedObject.FindProperty(nameof(SoftOutlineSettings.dilationMethod));
             kernelSize = serializedObject.FindProperty(nameof(SoftOutlineSettings.kernelSize));
@@ -96,16 +98,19 @@ namespace Linework.Editor.SoftOutline
             {
                 case DilationMethod.Box:
                     EditorGUILayout.PropertyField(kernelSize, EditorUtils.CommonStyles.KernelSize);
+                    if((OutlineType) type.intValue == OutlineType.Hard) EditorGUILayout.PropertyField(gap, EditorUtils.CommonStyles.Gap);
                     break;
                 case DilationMethod.Gaussian:
                     EditorGUILayout.PropertyField(kernelSize, EditorUtils.CommonStyles.KernelSize);
                     EditorGUILayout.PropertyField(blurSpread, EditorUtils.CommonStyles.Spread);
+                    if((OutlineType) type.intValue == OutlineType.Hard) EditorGUILayout.PropertyField(gap, EditorUtils.CommonStyles.Gap);
                     break;
                 case DilationMethod.Kawase:
                     EditorGUILayout.PropertyField(blurPasses, EditorUtils.CommonStyles.Passes);
                     break;
                 case DilationMethod.Dilate:
                     EditorGUILayout.PropertyField(kernelSize, EditorUtils.CommonStyles.KernelSize);
+                    if((OutlineType) type.intValue == OutlineType.Hard) EditorGUILayout.PropertyField(gap, EditorUtils.CommonStyles.Gap);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

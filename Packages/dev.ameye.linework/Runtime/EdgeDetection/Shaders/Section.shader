@@ -37,7 +37,7 @@ Shader "Hidden/Outlines/Edge Detection/Section"
             #if UNITY_PLATFORM_ANDROID || UNITY_PLATFORM_WEBGL || UNITY_PLATFORM_UWP
                 #pragma target 3.5 DOTS_INSTANCING_ON
             #else
-            #pragma target 4.5 DOTS_INSTANCING_ON
+                #pragma target 4.5 DOTS_INSTANCING_ON
             #endif
 
             #pragma multi_compile_local _ OBJECT_ID
@@ -115,14 +115,19 @@ Shader "Hidden/Outlines/Edge Detection/Section"
                 return OUT;
             }
 
+            float hash(float3 p) {
+                // return frac(dot(p, p) * 0.3); // collision if dot product is an integer
+                // return frac(dot(p, float3(0.754, 0.569, 0.321)));
+                return frac(sin(dot(p, float3(12.9898, 78.233, 45.164))) * 43758.5453);
+            }
+
             half4 frag(Varyings IN) : SV_TARGET
             {
                 float id = 0.5;
 
                 // Object id.
-                #if defined(OBJECT_ID) // Object id.
-                float3 position = GetAbsolutePositionWS(UNITY_MATRIX_M._m03_m13_m23);
-                id = frac(dot(position, position) * 0.3);
+                #if defined(OBJECT_ID)
+                id = hash(GetAbsolutePositionWS(UNITY_MATRIX_M._m03_m13_m23));
                 #if defined(PARTICLES)
                 float particle_id = frac(dot(IN.uv.zw, IN.uv.zw) * 0.3);
                 id = max(id, particle_id);
