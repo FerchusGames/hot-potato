@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 52268a51f037a964dbf5ed08e348dbf4
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/Base.prefab
+  uploadId: 735963

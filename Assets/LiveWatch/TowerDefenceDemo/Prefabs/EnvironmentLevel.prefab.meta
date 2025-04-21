@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 10eb757f80540ee4582b41d020a010cd
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/EnvironmentLevel.prefab
+  uploadId: 735963

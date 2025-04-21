@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7aee3dcd3c0d5804381400d1c301fae0
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/WatchSaveCanvas.prefab
+  uploadId: 735963

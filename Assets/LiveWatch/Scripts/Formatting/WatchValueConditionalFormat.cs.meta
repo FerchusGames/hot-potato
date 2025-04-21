@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 025a69103d744ba18db7fc8291d3fa84
+timeCreated: 1716998992
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Formatting/WatchValueConditionalFormat.cs
+  uploadId: 735963

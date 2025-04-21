@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ef07de97bed1b4f45af905c8e2c0dbcf
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/TowerLaser.prefab
+  uploadId: 735963

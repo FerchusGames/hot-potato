@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 436eff78170f7c545a94fd4fa5b2a58c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/LevelConfig.asset
+  uploadId: 735963

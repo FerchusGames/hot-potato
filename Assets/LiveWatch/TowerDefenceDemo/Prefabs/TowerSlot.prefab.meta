@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4b6a1a288a01272428a936bc0f37bd06
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/TowerSlot.prefab
+  uploadId: 735963

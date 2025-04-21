@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: af506fca87704f09b836f009d20f8f89
+timeCreated: 1725791044
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Scripts/Mob/MobWaypointMover.cs
+  uploadId: 735963

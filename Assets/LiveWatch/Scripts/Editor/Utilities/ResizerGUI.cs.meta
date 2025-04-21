@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 18f1196977484d65b2374f25347869d2
+timeCreated: 1644830319
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Editor/Utilities/ResizerGUI.cs
+  uploadId: 735963

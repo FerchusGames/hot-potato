@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 1bdd9c5961b399349ba2c45380e596b1
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/BaseAttackFx.prefab
+  uploadId: 735963

@@ -1,0 +1,16 @@
+{
+    "name": "LiveWatch.TowerDefenceDemo",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8bae3fcddb249414ead59707780b36ca"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

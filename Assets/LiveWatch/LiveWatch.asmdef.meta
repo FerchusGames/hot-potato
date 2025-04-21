@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8bae3fcddb249414ead59707780b36ca
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/LiveWatch.asmdef
+  uploadId: 735963

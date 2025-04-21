@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5acaf173387b48bba941b9b4d523a82e, type: 3}
+  m_Name: LevelConfig
+  m_EditorClassIdentifier: 
+  MaxHealth: 20
+  StartGold: 60
+  Waves:
+  - Spawns:
+    - Delay: 0.2
+      MobCount: 5
+      MobPrefab: {fileID: 7203179835970455509, guid: 6b64c132da80d2940b366e171d273e2b, type: 3}
+      SpawnDelayBetween: 1
+    - Delay: 5
+      MobCount: 10
+      MobPrefab: {fileID: 7203179835970455509, guid: 6b64c132da80d2940b366e171d273e2b, type: 3}
+      SpawnDelayBetween: 0.5
+  - Spawns:
+    - Delay: 0.2
+      MobCount: 10
+      MobPrefab: {fileID: 7203179835970455509, guid: 6b64c132da80d2940b366e171d273e2b, type: 3}
+      SpawnDelayBetween: 0.5
+    - Delay: 7
+      MobCount: 15
+      MobPrefab: {fileID: 7203179835970455509, guid: 6b64c132da80d2940b366e171d273e2b, type: 3}
+      SpawnDelayBetween: 1
+  - Spawns:
+    - Delay: 0.2
+      MobCount: 10
+      MobPrefab: {fileID: 7203179835970455509, guid: 6b64c132da80d2940b366e171d273e2b, type: 3}
+      SpawnDelayBetween: 0.5
+    - Delay: 5
+      MobCount: 5
+      MobPrefab: {fileID: 4612277558467579010, guid: dd9c58ca1c52d5d4da071df364ce2637, type: 3}
+      SpawnDelayBetween: 1
+  - Spawns:
+    - Delay: 0.2
+      MobCount: 10
+      MobPrefab: {fileID: 4612277558467579010, guid: dd9c58ca1c52d5d4da071df364ce2637, type: 3}
+      SpawnDelayBetween: 0.5
+    - Delay: 10
+      MobCount: 20
+      MobPrefab: {fileID: 7203179835970455509, guid: 6b64c132da80d2940b366e171d273e2b, type: 3}
+      SpawnDelayBetween: 0.4
+  - Spawns:
+    - Delay: 0.2
+      MobCount: 10
+      MobPrefab: {fileID: 7203179835970455509, guid: 6b64c132da80d2940b366e171d273e2b, type: 3}
+      SpawnDelayBetween: 0.4
+    - Delay: 5
+      MobCount: 20
+      MobPrefab: {fileID: 4612277558467579010, guid: dd9c58ca1c52d5d4da071df364ce2637, type: 3}
+      SpawnDelayBetween: 1
+  - Spawns:
+    - Delay: 0.2
+      MobCount: 10
+      MobPrefab: {fileID: 4612277558467579010, guid: dd9c58ca1c52d5d4da071df364ce2637, type: 3}
+      SpawnDelayBetween: 0.4
+    - Delay: 10
+      MobCount: 5
+      MobPrefab: {fileID: 8079581918886079003, guid: 5ffac649c4099cd498599511cbe33926, type: 3}
+      SpawnDelayBetween: 1
+  - Spawns:
+    - Delay: 0.2
+      MobCount: 10
+      MobPrefab: {fileID: 8079581918886079003, guid: 5ffac649c4099cd498599511cbe33926, type: 3}
+      SpawnDelayBetween: 0.7
+    - Delay: 10
+      MobCount: 5
+      MobPrefab: {fileID: 4612277558467579010, guid: dd9c58ca1c52d5d4da071df364ce2637, type: 3}
+      SpawnDelayBetween: 0.4
+  - Spawns:
+    - Delay: 0.2
+      MobCount: 20
+      MobPrefab: {fileID: 8079581918886079003, guid: 5ffac649c4099cd498599511cbe33926, type: 3}
+      SpawnDelayBetween: 0.4
+    - Delay: 5
+      MobCount: 20
+      MobPrefab: {fileID: 8079581918886079003, guid: 5ffac649c4099cd498599511cbe33926, type: 3}
+      SpawnDelayBetween: 0.4

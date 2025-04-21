@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 511b306726d94ec89e2a370f56e86396
+timeCreated: 1656676186
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Editor/Utilities/ScrollbarGUI.cs
+  uploadId: 735963

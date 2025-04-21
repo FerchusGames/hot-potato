@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: d599e701be64466396a55749b0a7bd5d
+timeCreated: 1727618703
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Editor/WatchCellDividerDrawer.cs
+  uploadId: 735963
