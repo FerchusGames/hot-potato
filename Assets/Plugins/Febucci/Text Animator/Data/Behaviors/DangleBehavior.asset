@@ -9,7 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f226c6469ea044642854c50823f82d5c, type: 3}
-  m_Name: DlibFaceLandmarkDetectorProjectSettings
+  m_Script: {fileID: 11500000, guid: 01a91f0b9c670b242ae5c34286409cd9, type: 3}
+  m_Name: DangleBehavior
   m_EditorClassIdentifier: 
-  showSetupToolsWindowFlag: 0
+  tagID: dangle
+  baseAmplitude: 7.87
+  baseFrequency: 3.37
+  baseWaveSize: 0.306
+  anchorBottom: 0

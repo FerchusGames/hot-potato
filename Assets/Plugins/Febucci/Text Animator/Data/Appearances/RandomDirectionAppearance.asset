@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f226c6469ea044642854c50823f82d5c, type: 3}
-  m_Name: DlibFaceLandmarkDetectorProjectSettings
+  m_Script: {fileID: 11500000, guid: 6a65a9b7775dded41a0295e6f75be25d, type: 3}
+  m_Name: RandomDirectionAppearance
   m_EditorClassIdentifier: 
-  showSetupToolsWindowFlag: 0
+  tagID: rdir
+  baseDuration: 0.5
+  baseAmount: 10
