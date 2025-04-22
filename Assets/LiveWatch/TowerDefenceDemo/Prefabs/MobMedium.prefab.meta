@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: dd9c58ca1c52d5d4da071df364ce2637
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/MobMedium.prefab
+  uploadId: 735963

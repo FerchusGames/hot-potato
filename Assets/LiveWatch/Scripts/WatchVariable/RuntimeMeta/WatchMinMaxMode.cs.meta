@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: adabf14c12104fbaa9e3f985eb3037b9
+timeCreated: 1740415859
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/WatchVariable/RuntimeMeta/WatchMinMaxMode.cs
+  uploadId: 735963

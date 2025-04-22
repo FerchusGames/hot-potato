@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 2a4aa7b9c875416bad38ee8836bb966a
+timeCreated: 1718455091
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/SaveLoad/BinaryWriterWatchSaveLoader.cs
+  uploadId: 735963

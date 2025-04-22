@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 763e786f94dd4758b6777a235568a665
+timeCreated: 1716998144
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/WatchVariable/RuntimeMeta/VariableFormatMeta.cs
+  uploadId: 735963

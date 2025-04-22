@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: cdf1c9c57c2e4f72b640291516cfd619
+timeCreated: 1691088640
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/WatchCachedNamesBuilder.cs
+  uploadId: 735963

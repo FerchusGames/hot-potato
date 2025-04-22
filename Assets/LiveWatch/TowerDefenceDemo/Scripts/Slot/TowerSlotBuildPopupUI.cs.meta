@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 015356ff48f342a0803b25a5ee3d9318
+timeCreated: 1726059535
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Scripts/Slot/TowerSlotBuildPopupUI.cs
+  uploadId: 735963

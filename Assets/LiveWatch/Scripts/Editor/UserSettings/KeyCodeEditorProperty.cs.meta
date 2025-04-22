@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 7b3601a302864c8ca35cb90ea4ec060a
+timeCreated: 1724923745
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Editor/UserSettings/KeyCodeEditorProperty.cs
+  uploadId: 735963

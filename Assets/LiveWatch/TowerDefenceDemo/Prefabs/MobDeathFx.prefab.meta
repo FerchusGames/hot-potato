@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 32059a4ca0bd8df4281d9d37eef63216
+timeCreated: 1499253029
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/MobDeathFx.prefab
+  uploadId: 735963

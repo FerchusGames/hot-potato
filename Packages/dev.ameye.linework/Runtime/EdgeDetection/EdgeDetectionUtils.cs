@@ -8,11 +8,13 @@ namespace Linework.EdgeDetection
     public sealed class ShaderResources
     {
         public Shader section;
+        public Shader sectionMask;
         public Shader outline;
 
         public ShaderResources Load()
         {
             section = Shader.Find(ShaderPath.Section);
+            sectionMask = Shader.Find(ShaderPath.SectionMask);
             outline = Shader.Find(ShaderPath.Outline);
             return this;
         }
@@ -22,6 +24,7 @@ namespace Linework.EdgeDetection
     {
         public const string Outline = "Hidden/Outlines/Edge Detection/Outline";
         public const string Section = "Hidden/Outlines/Edge Detection/Section";
+        public const string SectionMask = "Hidden/Outlines/Edge Detection/Section Mask";
     }
 
     static class Keyword
@@ -44,9 +47,12 @@ namespace Linework.EdgeDetection
         public static readonly int FillColor = Shader.PropertyToID("_FillColor");
         public static readonly int OutlineThickness = Shader.PropertyToID("_OutlineThickness");
         public static readonly int ReferenceResolution = Shader.PropertyToID("_ReferenceResolution");
-        public static readonly int FadeStart = Shader.PropertyToID("_FadeStart");
-        public static readonly int FadeDistance = Shader.PropertyToID("_FadeDistance");
-        public static readonly int FadeColor = Shader.PropertyToID("_FadeColor");
+        public static readonly int DistanceFadeStart = Shader.PropertyToID("_DistanceFadeStart");
+        public static readonly int DistanceFadeDistance = Shader.PropertyToID("_DistanceFadeDistance");
+        public static readonly int DistanceFadeColor = Shader.PropertyToID("_DistanceFadeColor");
+        public static readonly int HeightFadeStart = Shader.PropertyToID("_HeightFadeStart");
+        public static readonly int HeightFadeDistance = Shader.PropertyToID("_HeightFadeDistance");
+        public static readonly int HeightFadeColor = Shader.PropertyToID("_HeightFadeColor");
         
         // Edge detection.
         public static readonly int DepthSensitivity = Shader.PropertyToID("_DepthSensitivity");
@@ -74,6 +80,17 @@ namespace Linework.EdgeDetection
         Normals = 1 << 1,
         Luminance = 1 << 2,
         Sections = 1 << 3,
+        All = ~0,
+    }
+    
+    [Flags]
+    public enum MaskInfluence
+    {
+        Nothing = 0,
+        Sections = 1 << 0,
+        Depth = 1 << 1,
+        Normals = 1 << 2,
+        Luminance = 1 << 3,
         All = ~0,
     }
     
@@ -122,7 +139,8 @@ namespace Linework.EdgeDetection
         public const string DebugSectionsRawValues = "DEBUG_SECTIONS_RAW_VALUES";
         public const string OverrideShadow = "OVERRIDE_SHADOW";
         public const string ScaleWithResolution = "SCALE_WITH_RESOLUTION";
-        public const string FadeInDistance = "FADE_IN_DISTANCE";
+        public const string FadeByDistance = "FADE_BY_DISTANCE";
+        public const string FadeByHeight = "FADE_BY_HEIGHT";
         public const string SectionsMask = "SECTIONS_MASK";
         public const string DepthMask = "DEPTH_MASK";
         public const string NormalsMask = "NORMALS_MASK";
@@ -170,5 +188,13 @@ namespace Linework.EdgeDetection
         _1080,
         [InspectorName("Custom")]
         Custom
+    }
+
+    public enum SectionMapPrecision
+    {
+        [InspectorName("8-bit")]
+        _8bit,
+        [InspectorName("16-bit")]
+        _16bit
     }
 }

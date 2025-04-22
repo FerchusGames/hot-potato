@@ -194,6 +194,7 @@ Shader "Hidden/Outlines/Wide Outline/Outline"
 
             #pragma multi_compile_local _ CUSTOM_DEPTH
             #pragma multi_compile_local _ VERTEX_ANIMATION
+            #pragma multi_compile_local _ INFORMATION_BUFFER
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
@@ -213,6 +214,15 @@ Shader "Hidden/Outlines/Wide Outline/Outline"
                 return SAMPLE_TEXTURE2D(_SilhouetteBuffer, sampler_SilhouetteBuffer, uv).rgba;
             }
 
+            TEXTURE2D(_InformationBuffer);
+            SAMPLER(sampler_InformationBuffer);
+            float4 _InformationBuffer_TexelSize;
+            
+            float SampleInformationBuffer(float2 uv)
+            {
+                return SAMPLE_TEXTURE2D(_InformationBuffer, sampler_InformationBuffer, uv).r;
+            }
+
             #if defined(CUSTOM_DEPTH)
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
 
@@ -230,6 +240,7 @@ Shader "Hidden/Outlines/Wide Outline/Outline"
 
             half4 _OutlineColor;
             float _OutlineWidth;
+            float _OutlineGap;
             float _RenderScale;
 
             half4 frag(Varyings IN) : SV_Target
@@ -264,9 +275,11 @@ Shader "Hidden/Outlines/Wide Outline/Outline"
                 // distance is already in pixels, so this is already perfectly anti-aliased!
 
                 half width = _OutlineWidth;
+                #if defined(INFORMATION_BUFFER)
+                width = SampleInformationBuffer(nearestPos / _ScreenParams.xy) * 100.0f;
+                #endif
                 
-                half outline = saturate(width - dist + 1.0);
-                half inner = 1 - outline;
+                half outline = saturate(width - dist + 1.0) - saturate((_OutlineGap * width) - dist + 1.0);
 
                 #if defined(CUSTOM_DEPTH)
                 half depth1 = SampleSilhouetteDepthBuffer(nearestPos / _ScreenParams.xy);
@@ -283,7 +296,7 @@ Shader "Hidden/Outlines/Wide Outline/Outline"
                 
                 #else
 
-                 #if defined(VERTEX_ANIMATION)
+                #if defined(VERTEX_ANIMATION)
                 half4 color = _OutlineColor;
                 #else
                 half4 color = SampleSilhouetteBuffer(nearestPos / _ScreenParams.xy);

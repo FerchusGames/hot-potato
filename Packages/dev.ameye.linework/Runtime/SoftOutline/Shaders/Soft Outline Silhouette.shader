@@ -7,6 +7,7 @@ Shader "Hidden/Outlines/Soft Outline/Silhouette"
         [Toggle(ALPHA_CUTOUT)] _AlphaCutout ("_AlphaCutout", Float) = 0
         _AlphaCutoutTexture ("_AlphaCutoutTexture", 2D) = "white" {}
         _AlphaCutoutThreshold ("_AlphaCutoutThreshold", Float) = 0.5
+        _AlphaCutoutUVTransform ("_AlphaCutoutUVTransform", Vector) = (1, 1, 0, 0)
 
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0.0
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 0.0
@@ -51,6 +52,7 @@ Shader "Hidden/Outlines/Soft Outline/Silhouette"
             CBUFFER_START(UnityPerMaterial)
                 half4 _OutlineColor;
                 half _AlphaCutoutThreshold;
+                float4 _AlphaCutoutUVTransform;
             CBUFFER_END
 
             struct Attributes
@@ -83,7 +85,7 @@ Shader "Hidden/Outlines/Soft Outline/Silhouette"
 
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 #if defined(ALPHA_CUTOUT)
-                OUT.uv = IN.texcoord;
+                OUT.uv = IN.texcoord * _AlphaCutoutUVTransform.xy + _AlphaCutoutUVTransform.zw;
                 #endif
                 
                 return OUT;

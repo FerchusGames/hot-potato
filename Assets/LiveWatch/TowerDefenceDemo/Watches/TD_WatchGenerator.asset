@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2221fa5e7cc347ca98623ffed9d4bf4c, type: 3}
+  m_Name: TD_WatchGenerator
+  m_EditorClassIdentifier: 
+  OutputNamespaceName: Ingvar.LiveWatch.TowerDefenceDemo
+  OutputClassName: TD_Watches
+  SchemaClassFile: {fileID: 11500000, guid: 0db2c4b107e9341418c16e79cf4cb189, type: 3}
+  OutputClassFile: {fileID: 11500000, guid: 243f2bf33d72ffc4cbc65d096ee681b7, type: 3}
+  OutputClassSettings:
+    IsStatic: 1
+    IsPartial: 0
+    ClassModifier: 0
+  GeneratorSettings:
+    GenerateCollectionsCount: 1
+    GenerateExtensions: 0
+    MaxGenerationDepth: 10
+    MaxPushDepth: 10
+    MaxCollectionSize: 100
+    MaxDictionarySize: 100
+  AutoRegenOnChange: 1
+  PreviousOutputHashcode: 261006127

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 5f7c11f55de32fa428f74bf1a6e9d973
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/LiveWatch.TowerDefenceDemo.asmdef
+  uploadId: 735963

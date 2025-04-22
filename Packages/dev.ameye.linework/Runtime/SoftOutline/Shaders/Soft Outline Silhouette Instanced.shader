@@ -3,11 +3,11 @@ Shader "Hidden/Outlines/Soft Outline/Silhouette Instanced"
     Properties
     {
         _OutlineColor ("_OutlineColor", Color) = (1, 1, 1, 1)
-        _UVTransform ("_UVTransform", Vector) = (1, 1, 0, 0)
         
         [Toggle(ALPHA_CUTOUT)] _AlphaCutout ("_AlphaCutout", Float) = 0
         _AlphaCutoutTexture ("_AlphaCutoutTexture", 2D) = "white" {}
         _AlphaCutoutThreshold ("_AlphaCutoutThreshold", Float) = 0.5
+        _AlphaCutoutUVTransform ("_AlphaCutoutUVTransform", Vector) = (1, 1, 0, 0)
 
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0.0
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 0.0
@@ -53,7 +53,7 @@ Shader "Hidden/Outlines/Soft Outline/Silhouette Instanced"
             
             UNITY_INSTANCING_BUFFER_START(InstancedProperties)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _OutlineColor)
-                UNITY_DEFINE_INSTANCED_PROP(float4, _UVTransform)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _AlphaCutoutUVTransform)
                 UNITY_DEFINE_INSTANCED_PROP(float, _AlphaCutoutThreshold)
             UNITY_INSTANCING_BUFFER_END(InstancedProperties)
 
@@ -88,7 +88,7 @@ Shader "Hidden/Outlines/Soft Outline/Silhouette Instanced"
 
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 #if defined(ALPHA_CUTOUT)
-                float4 uv_transform = UNITY_ACCESS_INSTANCED_PROP(InstancedProperties, _UVTransform);
+                float4 uv_transform = UNITY_ACCESS_INSTANCED_PROP(InstancedProperties, _AlphaCutoutUVTransform);
                 OUT.uv = IN.texcoord * uv_transform.xy + uv_transform.zw;
                 #endif
                 

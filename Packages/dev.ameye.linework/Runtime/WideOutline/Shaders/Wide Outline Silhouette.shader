@@ -3,10 +3,12 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette"
     Properties
     {
         _OutlineColor ("_OutlineColor", Color) = (1, 1, 1, 1)
+        _Information ("_Information", Vector) = (1, 1, 1, 1)
         
         [Toggle(ALPHA_CUTOUT)] _AlphaCutout ("_AlphaCutout", Float) = 0
         _AlphaCutoutTexture ("_AlphaCutoutTexture", 2D) = "white" {}
         _AlphaCutoutThreshold ("_AlphaCutoutThreshold", Float) = 0.5
+        _AlphaCutoutUVTransform ("_AlphaCutoutUVTransform", Vector) = (1, 1, 0, 0)
         
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0.0
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 0.0
@@ -45,6 +47,7 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette"
             #endif
 
             #pragma multi_compile_local _ ALPHA_CUTOUT
+            #pragma multi_compile_local _ INFORMATION_BUFFER
 
             TEXTURE2D(_AlphaCutoutTexture);
             SAMPLER(sampler_AlphaCutoutTexture);
@@ -52,6 +55,8 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette"
             CBUFFER_START(UnityPerMaterial)
                 half4 _OutlineColor;
                 half _AlphaCutoutThreshold;
+                float4 _AlphaCutoutUVTransform;
+                half4 _Information;
             CBUFFER_END
             
             struct Attributes
@@ -86,7 +91,7 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette"
                 float offset = 1.00;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz * offset);
                 #if defined(ALPHA_CUTOUT)
-                OUT.uv = IN.texcoord;
+                OUT.uv = IN.texcoord * _AlphaCutoutUVTransform.xy + _AlphaCutoutUVTransform.zw;
                 #endif
                 
                 return OUT;
@@ -98,8 +103,12 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette"
                 float alpha = SAMPLE_TEXTURE2D(_AlphaCutoutTexture, sampler_AlphaCutoutTexture, IN.uv).a;
                 clip(alpha - _AlphaCutoutThreshold);
                 #endif
-                
+
+                #if defined(INFORMATION_BUFFER)
+                return _Information;
+                #else
                 return _OutlineColor;
+                #endif
             }
             ENDHLSL
         }

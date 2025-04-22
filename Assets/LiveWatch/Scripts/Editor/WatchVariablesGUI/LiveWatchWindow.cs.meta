@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 7f81180f981e90b459cd7620791b6aca
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Editor/WatchVariablesGUI/LiveWatchWindow.cs
+  uploadId: 735963

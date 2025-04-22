@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 35b0bc8d29614c17a7195521d142a91b
+timeCreated: 1637089732
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Editor/Utilities/RectExtensions.cs
+  uploadId: 735963

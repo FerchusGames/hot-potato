@@ -19,12 +19,15 @@ namespace Linework.SoftOutline
         [RenderingLayerMask]
         public uint RenderingLayer = 1;
 #endif
+        public LayerMask layerMask = ~0;
+        public OutlineRenderQueue renderQueue = OutlineRenderQueue.Opaque;
         public SoftOutlineOcclusion occlusion = SoftOutlineOcclusion.Always;
         public CullingMode cullingMode = CullingMode.Back;
         public bool closedLoop;
         public bool alphaCutout;
         public Texture2D alphaCutoutTexture;
         [Range(0.0f, 1.0f)] public float alphaCutoutThreshold = 0.5f;
+        public Vector4 alphaCutoutUVTransform = Vector4.zero;
         public bool gpuInstancing;
         public bool vertexAnimation;
         

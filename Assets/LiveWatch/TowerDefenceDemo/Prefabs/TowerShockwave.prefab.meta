@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 55a114cacede9ed42b6810c5ccd0c8cf
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/TowerShockwave.prefab
+  uploadId: 735963

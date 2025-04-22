@@ -3,11 +3,12 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette Instanced"
     Properties
     {
         _OutlineColor ("_OutlineColor", Color) = (1, 1, 1, 1)
-        _UVTransform ("_UVTransform", Vector) = (1, 1, 0, 0)
+        _Information ("_Information", Vector) = (1, 1, 1, 1)
         
         [Toggle(ALPHA_CUTOUT)] _AlphaCutout ("_AlphaCutout", Float) = 0
         _AlphaCutoutTexture ("_AlphaCutoutTexture", 2D) = "white" {}
         _AlphaCutoutThreshold ("_AlphaCutoutThreshold", Float) = 0.5
+        _AlphaCutoutUVTransform ("_AlphaCutoutUVTransform", Vector) = (1, 1, 0, 0)
         
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0.0
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 0.0
@@ -48,13 +49,15 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette Instanced"
             #endif
 
             #pragma multi_compile_local _ ALPHA_CUTOUT
+            #pragma multi_compile_local _ INFORMATION_BUFFER
 
             TEXTURE2D(_AlphaCutoutTexture);
             SAMPLER(sampler_AlphaCutoutTexture);
             
             UNITY_INSTANCING_BUFFER_START(InstancedProperties)
                 UNITY_DEFINE_INSTANCED_PROP(float4, _OutlineColor)
-                UNITY_DEFINE_INSTANCED_PROP(float4, _UVTransform)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _Information)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _AlphaCutoutUVTransform)
                 UNITY_DEFINE_INSTANCED_PROP(float, _AlphaCutoutThreshold)
             UNITY_INSTANCING_BUFFER_END(InstancedProperties)
             
@@ -91,7 +94,7 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette Instanced"
                 float offset = 1.00;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz * offset);
                 #if defined(ALPHA_CUTOUT)
-                float4 uvTransform = UNITY_ACCESS_INSTANCED_PROP(InstancedProperties, _UVTransform);
+                float4 uvTransform = UNITY_ACCESS_INSTANCED_PROP(InstancedProperties, _AlphaCutoutUVTransform);
                 OUT.uv = IN.texcoord * uvTransform.xy + uvTransform.zw;
                 #endif
                 
@@ -106,8 +109,12 @@ Shader "Hidden/Outlines/Wide Outline/Silhouette Instanced"
                 float alpha = SAMPLE_TEXTURE2D(_AlphaCutoutTexture, sampler_AlphaCutoutTexture, IN.uv).a;
                 clip(alpha - UNITY_ACCESS_INSTANCED_PROP(InstancedProperties, _AlphaCutoutThreshold));
                 #endif
-               
+
+                #if defined(INFORMATION_BUFFER)
+                return UNITY_ACCESS_INSTANCED_PROP(InstancedProperties, _Information);
+                #else
                 return UNITY_ACCESS_INSTANCED_PROP(InstancedProperties, _OutlineColor);
+                #endif
             }
             ENDHLSL
         }

@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: f4c3ee7718d44610bafd7e0860d9ca06
+timeCreated: 1715513207
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Editor/Utilities/TextureDrawGUI.cs
+  uploadId: 735963

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 6b64c132da80d2940b366e171d273e2b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/MobSmall.prefab
+  uploadId: 735963

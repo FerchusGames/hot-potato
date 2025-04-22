@@ -68,6 +68,7 @@ namespace Linework.SoftOutline
         public static readonly int Offset = Shader.PropertyToID("_offset");
         public static readonly int OutlineHardness = Shader.PropertyToID("_OutlineHardness");
         public static readonly int OutlineIntensity = Shader.PropertyToID("_OutlineIntensity");
+        public static readonly int OutlineGap = Shader.PropertyToID("_OutlineGap");
         public static readonly int SilhouetteBuffer = Shader.PropertyToID("_SilhouetteBuffer");
     }
     

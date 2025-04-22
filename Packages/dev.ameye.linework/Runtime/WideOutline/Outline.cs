@@ -8,10 +8,13 @@ namespace Linework.WideOutline
 {
     public class Outline : ScriptableObject
     {
-        [SerializeField, HideInInspector] public Material material;
-        [SerializeField, HideInInspector] public Material materialInstanced;
+        [SerializeField, HideInInspector] public Material silhouetteMaterial;
+        [SerializeField, HideInInspector] public Material silhouetteMaterialInstanced;
+        [SerializeField, HideInInspector] public Material informationMaterial;
+        [SerializeField, HideInInspector] public Material informationMaterialInstanced;
         [SerializeField, HideInInspector] private bool isActive = true;
         [SerializeField, HideInInspector] private bool customDepthEnabled = true;
+        [SerializeField, HideInInspector] private bool disableWidthControl = true;
         
 #if UNITY_6000_0_OR_NEWER
         public RenderingLayerMask RenderingLayer = RenderingLayerMask.defaultRenderingLayerMask;
@@ -19,16 +22,20 @@ namespace Linework.WideOutline
         [RenderingLayerMask]
         public uint RenderingLayer = 1;
 #endif
+        public LayerMask layerMask = ~0;
+        public OutlineRenderQueue renderQueue = OutlineRenderQueue.Opaque;
         public WideOutlineOcclusion occlusion = WideOutlineOcclusion.Always;
         public CullingMode cullingMode = CullingMode.Back;
         public bool closedLoop;
         public bool alphaCutout;
         public Texture2D alphaCutoutTexture;
         [Range(0.0f, 1.0f)] public float alphaCutoutThreshold = 0.5f;
+        public Vector4 alphaCutoutUVTransform = Vector4.zero;
         public bool gpuInstancing;
         public bool vertexAnimation;
         
         [ColorUsage(true, true)] public Color color = Color.green;
+        [Range(0.0f, 100.0f)] public float width = 20.0f;
         
         private void OnEnable()
         {
@@ -37,24 +44,49 @@ namespace Linework.WideOutline
 
         private void EnsureMaterialsAreInitialized()
         {
-            if (material == null)
+            if (silhouetteMaterial == null)
             {
                 var shader = Shader.Find(ShaderPath.Silhouette);
                 if (shader != null)
                 {
-                    material = new Material(shader)
+                    silhouetteMaterial = new Material(shader)
                     {
                         hideFlags = HideFlags.HideAndDontSave
                     };
                 }
             }
             
-            if (materialInstanced == null)
+            if (silhouetteMaterialInstanced == null)
             {
                 var shader = Shader.Find(ShaderPath.SilhouetteInstanced);
                 if (shader != null)
                 {
-                    materialInstanced = new Material(shader)
+                    silhouetteMaterialInstanced = new Material(shader)
+                    {
+                        hideFlags = HideFlags.HideAndDontSave,
+                        enableInstancing = true
+                    };
+                }
+            }
+            
+            if (informationMaterial == null)
+            {
+                var shader = Shader.Find(ShaderPath.Silhouette);
+                if (shader != null)
+                {
+                    informationMaterial = new Material(shader)
+                    {
+                        hideFlags = HideFlags.HideAndDontSave
+                    };
+                }
+            }
+            
+            if (informationMaterialInstanced == null)
+            {
+                var shader = Shader.Find(ShaderPath.SilhouetteInstanced);
+                if (shader != null)
+                {
+                    informationMaterialInstanced = new Material(shader)
                     {
                         hideFlags = HideFlags.HideAndDontSave,
                         enableInstancing = true
@@ -63,13 +95,16 @@ namespace Linework.WideOutline
             }
         }
 
-        public void AssignMaterials(Material copyFrom, Material copyFromInstanced)
+        public void AssignMaterials(Material source, Material sourceInstanced)
         {
             EnsureMaterialsAreInitialized();
             
-            material.CopyPropertiesFromMaterial(copyFrom);
-            materialInstanced.CopyPropertiesFromMaterial(copyFromInstanced);
-            materialInstanced.enableInstancing = gpuInstancing;
+            silhouetteMaterial.CopyPropertiesFromMaterial(source);
+            silhouetteMaterialInstanced.CopyPropertiesFromMaterial(sourceInstanced);
+            silhouetteMaterialInstanced.enableInstancing = gpuInstancing;
+            informationMaterial.CopyPropertiesFromMaterial(source);
+            informationMaterialInstanced.CopyPropertiesFromMaterial(sourceInstanced);
+            informationMaterialInstanced.enableInstancing = gpuInstancing;
         }
         
         public bool IsActive()
@@ -86,19 +121,36 @@ namespace Linework.WideOutline
         {
             customDepthEnabled = enable;
         }
+
+        public void SetWidthControl(WidthControl control)
+        {
+            disableWidthControl = control == WidthControl.Shared;
+        }
         
         public void Cleanup()
         {
-            if (material != null)
+            if (silhouetteMaterial != null)
             {
-                DestroyImmediate(material);
-                material = null;
+                DestroyImmediate(silhouetteMaterial);
+                silhouetteMaterial = null;
             }
             
-            if (materialInstanced != null)
+            if (silhouetteMaterialInstanced != null)
             {
-                DestroyImmediate(materialInstanced);
-                materialInstanced = null;
+                DestroyImmediate(silhouetteMaterialInstanced);
+                silhouetteMaterialInstanced = null;
+            }
+            
+            if (informationMaterial != null)
+            {
+                DestroyImmediate(informationMaterial);
+                informationMaterial = null;
+            }
+            
+            if (informationMaterialInstanced != null)
+            {
+                DestroyImmediate(informationMaterialInstanced);
+                informationMaterialInstanced = null;
             }
         }
     }

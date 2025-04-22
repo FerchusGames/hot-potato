@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: bbc5c46530a74212ba5698b86e986707
+timeCreated: 1717141617
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Utilities/OverridenValue.cs
+  uploadId: 735963

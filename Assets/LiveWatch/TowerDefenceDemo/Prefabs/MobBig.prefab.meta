@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 5ffac649c4099cd498599511cbe33926
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Prefabs/MobBig.prefab
+  uploadId: 735963

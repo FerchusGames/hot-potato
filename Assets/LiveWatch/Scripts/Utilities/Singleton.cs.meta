@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: b717d3e4766a4bbc94186b355c68048c
+timeCreated: 1644152748
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/Utilities/Singleton.cs
+  uploadId: 735963

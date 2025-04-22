@@ -14,8 +14,9 @@ namespace Linework.Editor.Common.Drawers
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
+            var attr = (RenderingLayerMaskAttribute) attribute;
             var renderingLayerMaskNames = new List<string>(GetRenderingLayerMaskNames());
-            var maskField = new MaskField(property.displayName, renderingLayerMaskNames, property.intValue);
+            var maskField = new MaskField(attr.ShowLabel ? property.displayName : string.Empty, renderingLayerMaskNames, property.intValue);
             maskField.AddToClassList(MaskField.alignedFieldUssClassName);
             maskField.BindProperty(property);
             maskField.RegisterValueChangedCallback(x => SetValue(x.newValue, property));
@@ -35,6 +36,7 @@ namespace Linework.Editor.Common.Drawers
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            var attr = (RenderingLayerMaskAttribute) attribute;
             var renderingLayer = (int) property.uintValue;
             var maskNames = GetRenderingLayerMaskNames();
             var maskCount = (int) Mathf.Log(renderingLayer, 2) + 1;
@@ -58,8 +60,15 @@ namespace Linework.Editor.Common.Drawers
             EditorGUI.BeginProperty(position, renderingLayerMaskContent, property);
 
             EditorGUI.BeginChangeCheck();
-            renderingLayerMaskContent.text = property.displayName;
-            renderingLayer = EditorGUI.MaskField(position, renderingLayerMaskContent, renderingLayer, maskNames);
+            if (attr.ShowLabel)
+            {
+                renderingLayerMaskContent.text = property.displayName;
+                renderingLayer = EditorGUI.MaskField(position, renderingLayerMaskContent, renderingLayer, maskNames);
+            }
+            else
+            {
+                renderingLayer = EditorGUI.MaskField(position, GUIContent.none, renderingLayer, maskNames);
+            }
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -68,7 +77,7 @@ namespace Linework.Editor.Common.Drawers
 
             EditorGUI.EndProperty();
         }
-        
+
         private static string[] GetRenderingLayerMaskNames()
         {
 #if UNITY_6000_0_OR_NEWER

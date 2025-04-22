@@ -45,13 +45,15 @@ Shader "Hidden/Outlines/Soft Outline/Outline"
             half4 _OutlineColor;
             half _OutlineHardness;
             half _OutlineIntensity;
+            half _OutlineGap;
 
             half4 frag(Varyings IN) : SV_TARGET
             {
                 #if defined(HARD_OUTLINE)
                 half value = SAMPLE_TEXTURE2D(_BlitTexture, sampler_PointClamp, IN.texcoord).r;
-                float hardOutline = step(0.01, value);
-                float blendedAlpha = lerp(value, hardOutline, _OutlineHardness);
+               
+                float outline = step(0.05, value) - step(1.05 - _OutlineGap, value);
+                float blendedAlpha = lerp(value, outline, _OutlineHardness);
                 return float4(_OutlineColor.rgb * blendedAlpha, saturate(blendedAlpha)) * _OutlineIntensity;
                 #else
                 half4 color = SAMPLE_TEXTURE2D(_BlitTexture, sampler_PointClamp, IN.texcoord).rgba;

@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: e02acdc164ea4da29f2d7515d985ef07
+timeCreated: 1726310399
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Scripts/LevelInitialTowerSpawner.cs
+  uploadId: 735963

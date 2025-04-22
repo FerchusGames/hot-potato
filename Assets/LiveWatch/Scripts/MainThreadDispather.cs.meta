@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 9787f40a843f4962a090fa229ef134ee
+timeCreated: 1719419179
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/Scripts/MainThreadDispather.cs
+  uploadId: 735963

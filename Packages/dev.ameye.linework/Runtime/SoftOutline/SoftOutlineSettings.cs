@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Linework.Common.Utils;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Resolution = Linework.Common.Utils.Resolution;
 
 namespace Linework.SoftOutline
@@ -23,11 +22,12 @@ namespace Linework.SoftOutline
         [Range(0.0f, 1.0f)] public float hardness = 1;
         [ColorUsage(true, true)] public Color sharedColor = Color.green;
         [Range(0.1f, 30.0f)] public float intensity = 1.2f;
+        [Range(0.0f, 1.0f)] public float gap = 0.0f;
         public BlendingMode blendMode = BlendingMode.Additive;
         public DilationMethod dilationMethod = DilationMethod.Dilate;
         [Range(0, 50)] public int kernelSize = 20;
         [Range(0.5f, 50.0f)] public float blurSpread = 1.35f;
-        [Range(2, 10)] public int blurPasses = 1;
+        [Range(2, 10)] public int blurPasses = 2;
         public bool scaleWithResolution = true;
         public Resolution referenceResolution = Resolution._1080;
         public float customResolution;

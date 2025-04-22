@@ -19,7 +19,7 @@ namespace Linework.SoftOutline
     [SupportedOnRenderer(typeof(UniversalRendererData))]
 #endif
     [Tooltip("Soft Outline renders outlines by generating a silhouette of an object and applying a dilation/blur effect, resulting in smooth, soft-edged contours around objects.")]
-    [HelpURL("https://linework.ameye.dev/outlines/soft-outline")]
+    [HelpURL("https://linework.ameye.dev/soft-outline")]
     public class SoftOutline : ScriptableRendererFeature
     {
         private class SoftOutlinePass : ScriptableRenderPass
@@ -71,7 +71,8 @@ namespace Linework.SoftOutline
                     else silhouette.DisableKeyword(ShaderFeature.AlphaCutout);
                     silhouette.SetTexture(CommonShaderPropertyId.AlphaCutoutTexture, outline.alphaCutoutTexture);
                     silhouette.SetFloat(CommonShaderPropertyId.AlphaCutoutThreshold, outline.alphaCutoutThreshold);
-                    
+                    silhouette.SetVector(CommonShaderPropertyId.AlphaCutoutUVTransform, outline.alphaCutoutUVTransform);
+
                     switch (outline.cullingMode)
                     {
                         case CullingMode.Off:
@@ -139,6 +140,7 @@ namespace Linework.SoftOutline
                 composite.SetColor(CommonShaderPropertyId.OutlineColor, settings.sharedColor);
                 composite.SetFloat(ShaderPropertyId.OutlineHardness, settings.hardness);
                 composite.SetFloat(ShaderPropertyId.OutlineIntensity, settings.type == OutlineType.Hard ? 1.0f : settings.intensity);
+                composite.SetFloat(ShaderPropertyId.OutlineGap, settings.dilationMethod is DilationMethod.Box or DilationMethod.Dilate or DilationMethod.Gaussian ? settings.gap : 0.0f);
 
                 if (settings.type == OutlineType.Hard) composite.EnableKeyword(ShaderFeature.HardOutline);
                 else composite.DisableKeyword(ShaderFeature.HardOutline);
@@ -171,7 +173,7 @@ namespace Linework.SoftOutline
                 // Ensure that the render pass doesn't blit from the back buffer.
                 if (resourceData.isActiveTargetBackBuffer) return;
 
-                CreateRenderGraphTextures(renderGraph, cameraData, out var silhouetteHandle, out var blurHandle);
+                CreateRenderGraphTextures(renderGraph, resourceData, out var silhouetteHandle, out var blurHandle);
                 if (!silhouetteHandle.IsValid() || !blurHandle.IsValid()) return;
 
                 // 1. Mask.
@@ -301,7 +303,6 @@ namespace Linework.SoftOutline
                 var lightData = frameData.Get<UniversalLightData>();
                 
                 var sortingCriteria = cameraData.defaultOpaqueSortFlags;
-                var renderQueueRange = RenderQueueRange.opaque;
                 
                 var i = 0;
                 foreach (var outline in settings.Outlines)
@@ -316,7 +317,15 @@ namespace Linework.SoftOutline
                     drawingSettings.overrideMaterial = mask;
                     drawingSettings.overrideShaderPassIndex = ShaderPass.Mask;
 
-                    var filteringSettings = new FilteringSettings(renderQueueRange, -1, outline.RenderingLayer);
+                    var renderQueueRange = outline.renderQueue switch
+                    {
+                        OutlineRenderQueue.Opaque => RenderQueueRange.opaque,
+                        OutlineRenderQueue.Transparent => RenderQueueRange.transparent,
+                        OutlineRenderQueue.OpaqueAndTransparent => RenderQueueRange.all,
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                    
+                    var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
                     var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
 
                     var blendState = BlendState.defaultValue;
@@ -350,7 +359,6 @@ namespace Linework.SoftOutline
                 var lightData = frameData.Get<UniversalLightData>();
 
                 var sortingCriteria = cameraData.defaultOpaqueSortFlags;
-                var renderQueueRange = RenderQueueRange.opaque;
 
                 var i = 0;
                 foreach (var outline in settings.Outlines)
@@ -368,8 +376,16 @@ namespace Linework.SoftOutline
                         drawingSettings.overrideMaterialPassIndex = ShaderPass.Silhouette;
                         drawingSettings.enableInstancing = outline.gpuInstancing;;
                     }
+                    
+                    var renderQueueRange = outline.renderQueue switch
+                    {
+                        OutlineRenderQueue.Opaque => RenderQueueRange.opaque,
+                        OutlineRenderQueue.Transparent => RenderQueueRange.transparent,
+                        OutlineRenderQueue.OpaqueAndTransparent => RenderQueueRange.all,
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
                 
-                    var filteringSettings = new FilteringSettings(renderQueueRange, -1, outline.RenderingLayer);
+                    var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
                     
                     var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
                     
@@ -416,27 +432,30 @@ namespace Linework.SoftOutline
                 }
             }
             
-            private void CreateRenderGraphTextures(RenderGraph renderGraph, UniversalCameraData cameraData, out TextureHandle silhouetteHandle, out TextureHandle blurHandle)
+            private void CreateRenderGraphTextures(RenderGraph renderGraph, UniversalResourceData resourceData, out TextureHandle silhouetteHandle,
+                out TextureHandle blurHandle)
             {
-                const float renderTextureScale = 1.0f; 
-                var width = (int)(cameraData.cameraTargetDescriptor.width * renderTextureScale);
-                var height = (int)(cameraData.cameraTargetDescriptor.height * renderTextureScale);
+                var cameraDescriptor = resourceData.activeColorTexture.GetDescriptor(renderGraph);
                 
-                var descriptor = new RenderTextureDescriptor(width, height)
+                const float renderTextureScale = 1.0f; 
+                var width = (int)(cameraDescriptor.width * renderTextureScale);
+                var height = (int)(cameraDescriptor.height * renderTextureScale);
+                
+                var descriptor = new TextureDesc(width, height)
                 {
                     dimension = TextureDimension.Tex2D,
-                    msaaSamples = cameraData.cameraTargetDescriptor.msaaSamples,
-                    sRGB = false,
+                    msaaSamples = cameraDescriptor.msaaSamples,
                     useMipMap = false,
                     autoGenerateMips = false,
-                    graphicsFormat = settings.dilationMethod == DilationMethod.Dilate ? GraphicsFormat.R8G8B8A8_UNorm :
-                        settings.type == OutlineType.Hard ? GraphicsFormat.R8_UNorm : GraphicsFormat.R8G8B8A8_UNorm,
-                    depthBufferBits = (int) DepthBits.None,
-                    colorFormat = RenderTextureFormat.Default
+                    colorFormat = settings.dilationMethod == DilationMethod.Dilate ? GraphicsFormat.R8G8B8A8_UNorm :
+                        settings.type == OutlineType.Hard ? GraphicsFormat.R8_UNorm : GraphicsFormat.R8G8B8A8_UNorm, // TODO: Changed to format somewhere in Unity 6 cycle?
+                    depthBufferBits = (int) DepthBits.None
                 };
 
-                silhouetteHandle = UniversalRenderer.CreateRenderGraphTexture(renderGraph, descriptor, Buffer.Silhouette, false);
-                blurHandle = UniversalRenderer.CreateRenderGraphTexture(renderGraph, descriptor, Buffer.Blur, false);
+                descriptor.name = Buffer.Silhouette;
+                silhouetteHandle = renderGraph.CreateTexture(descriptor);
+                descriptor.name = Buffer.Blur;
+                blurHandle = renderGraph.CreateTexture(descriptor);
             }
 #endif
             private RTHandle cameraDepthRTHandle, silhouetteRTHandle, blurRTHandle;
@@ -461,7 +480,7 @@ namespace Linework.SoftOutline
                 const float renderTextureScale = 1.0f; 
                 var width = (int)(renderingData.cameraData.cameraTargetDescriptor.width * renderTextureScale);
                 var height = (int)(renderingData.cameraData.cameraTargetDescriptor.height * renderTextureScale);
-
+                
                 var descriptor = new RenderTextureDescriptor(width, height)
                 {
                     dimension = TextureDimension.Tex2D,
@@ -509,7 +528,7 @@ namespace Linework.SoftOutline
                         drawingSettings.overrideMaterial = mask;
                         drawingSettings.overrideShaderPassIndex = ShaderPass.Mask;
 
-                        var filteringSettings = new FilteringSettings(renderQueueRange, -1, outline.RenderingLayer);
+                        var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
                         var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
 
                         var blendState = BlendState.defaultValue;
@@ -567,7 +586,7 @@ namespace Linework.SoftOutline
                             drawingSettings.enableInstancing = outline.gpuInstancing;
                         }
                        
-                        var filteringSettings = new FilteringSettings(renderQueueRange, -1, outline.RenderingLayer);
+                        var filteringSettings = new FilteringSettings(renderQueueRange, outline.layerMask, outline.RenderingLayer);
                         
                         var renderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
                         
@@ -726,7 +745,7 @@ namespace Linework.SoftOutline
         /// </summary>
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (settings == null) return;
+            if (settings == null || softOutlinePass == null) return;
 
             // Don't render for some views.
             if (renderingData.cameraData.cameraType == CameraType.Preview
@@ -752,8 +771,9 @@ namespace Linework.SoftOutline
         #pragma warning disable 618, 672
         public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
         {
-            if (settings == null || renderingData.cameraData.cameraType == CameraType.SceneView && !settings.ShowInSceneView) return;
-
+            if (settings == null || softOutlinePass == null || renderingData.cameraData.cameraType == CameraType.SceneView && !settings.ShowInSceneView) return;
+            if (renderingData.cameraData.cameraType is CameraType.Preview or CameraType.Reflection) return;
+            
             softOutlinePass.CreateHandles(renderingData);
             softOutlinePass.SetTarget(renderer.cameraDepthTargetHandle);
         }

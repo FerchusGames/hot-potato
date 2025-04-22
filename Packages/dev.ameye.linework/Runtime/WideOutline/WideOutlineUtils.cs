@@ -34,16 +34,17 @@ namespace Linework.WideOutline
     {
         public const int Mask = 0;
         public const int Silhouette = 0;
+        public const int Information = 0;
         public const int FloodInit = 1;
         public const int FloodJump = 2;
         public const int Outline = 3;
-        public const int Sdf = 4;
     }
     
     static class ShaderPassName
     {
         public const string Mask = "Mask (Wide Outline)";
         public const string Silhouette = "Silhouette (Wide Outline)";
+        public const string Information = "Information (Wide Outline)";
         public const string Flood = "Flood (Wide Outline)";
         public const string Outline = "Outline (Wide Outline)";
     }
@@ -52,11 +53,12 @@ namespace Linework.WideOutline
     {
         public static readonly int OutlineOccludedColor = Shader.PropertyToID("_OutlineOccludedColor");
         public static readonly int OutlineWidth = Shader.PropertyToID("_OutlineWidth");
+        public static readonly int OutlineGap = Shader.PropertyToID("_OutlineGap");
         public static readonly int RenderScale = Shader.PropertyToID("_RenderScale");
         
         public static readonly int AxisWidthId = Shader.PropertyToID("_AxisWidth");
         public static readonly int SilhouetteBuffer = Shader.PropertyToID("_SilhouetteBuffer");
-        public static readonly int PingBuffer = Shader.PropertyToID("_PingBuffer");
+        public static readonly int InformationBuffer = Shader.PropertyToID("_InformationBuffer");
         public static readonly int SilhouetteDepthBuffer = Shader.PropertyToID("_SilhouetteDepthBuffer");
     }
     
@@ -64,6 +66,7 @@ namespace Linework.WideOutline
     {
         public const string AlphaCutout = "ALPHA_CUTOUT";
         public const string CustomDepth = "CUSTOM_DEPTH";
+        public const string InformationBuffer = "INFORMATION_BUFFER";
     }
     
     static class Keyword
@@ -75,6 +78,7 @@ namespace Linework.WideOutline
     {
         public const string Silhouette = "_SilhouetteBuffer";
         public const string SilhouetteDepth = "_SilhouetteDepthBuffer";
+        public const string Information = "_InformationBuffer";
         public const string Ping = "_PingBuffer";
         public const string Pong = "_PongBuffer";
     }

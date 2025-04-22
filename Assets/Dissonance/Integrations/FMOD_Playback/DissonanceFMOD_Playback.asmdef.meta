@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e7506ad4f7f3a0a4e8be8ceeb55d36f5
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 213415
+  packageName: Dissonance For FMOD (Playback)
+  packageVersion: 9.0.7
+  assetPath: Assets/Dissonance/Integrations/FMOD_Playback/DissonanceFMOD_Playback.asmdef
+  uploadId: 740527

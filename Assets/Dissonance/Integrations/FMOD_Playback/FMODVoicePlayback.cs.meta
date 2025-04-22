@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 1a422df5d1b8f55449b046408ede54bd
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 213415
+  packageName: Dissonance For FMOD (Playback)
+  packageVersion: 9.0.7
+  assetPath: Assets/Dissonance/Integrations/FMOD_Playback/FMODVoicePlayback.cs
+  uploadId: 740527

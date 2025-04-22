@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0189ae7d4b5295e48b6d3463bb400cf7
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Watches/TD_WatchGenerator.asset
+  uploadId: 735963

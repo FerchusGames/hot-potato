@@ -1,10 +1,11 @@
+#if !UNITY_6000_0_OR_NEWER
 using Linework.Common.Attributes;
+#endif
 using System;
+using System.Collections.Generic;
 using Linework.Common.Utils;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.Serialization;
 
 namespace Linework.EdgeDetection
 {
@@ -26,15 +27,8 @@ namespace Linework.EdgeDetection
         [Range(1.0f, 30.0f)] public float grazingAngleMaskHardness = 1.0f;
         [Range(0.0f, 1.0f)] public float normalSensitivity = 0.4f;
         [Range(0.0f, 1.0f)] public float luminanceSensitivity = 0.3f;
-#if UNITY_6000_0_OR_NEWER
-        public RenderingLayerMask SectionRenderingLayer = RenderingLayerMask.defaultRenderingLayerMask;
-#else
-        [RenderingLayerMask]
-        public uint SectionRenderingLayer = 1;
-#endif
         public bool objectId = true;
         public bool particles = false;
-        public bool sectionsMask, depthMask, normalsMask, luminanceMask;
         public SectionMapInput sectionMapInput = SectionMapInput.None;
         public Texture2D sectionTexture;
         public UVSet sectionTextureUvSet;
@@ -52,19 +46,41 @@ namespace Linework.EdgeDetection
         public bool overrideColorInShadow;
         [ColorUsage(true, true)] public Color outlineColorShadow = Color.white;
         [ColorUsage(true, true)] public Color fillColor = Color.black;
-        public bool fadeInDistance;
-        [ColorUsage(true, true)] public Color fadeColor = Color.clear;
-        [Range(0.0f, 200.0f)] public float fadeStart = 100.0f;
-        [Range(0.1f, 20.0f)] public float fadeDistance = 10.0f;
+        public bool fadeByDistance;
+        [ColorUsage(true, true)] public Color distanceFadeColor = Color.clear;
+        [Range(0.0f, 200.0f)] public float distanceFadeStart = 100.0f;
+        [Range(0.1f, 20.0f)] public float distanceFadeDistance = 10.0f;
+        public bool fadeByHeight;
+        [ColorUsage(true, true)] public Color heightFadeColor = Color.clear;
+        [Range(0.0f, 2.0f)] public float heightFadeStart = 1.0f;
+        [Range(0.01f, 2.0f)] public float heightFadeDistance = 0.5f;
         public BlendingMode blendMode;
+        
+        // Section map.
+        public SectionMapPrecision sectionMapPrecision = SectionMapPrecision._16bit;
+        [Range(0, 256)] public int sectionMapClearValue = 1;
+        public List<SectionPass> additionalSectionPasses = new();
+#if UNITY_6000_0_OR_NEWER
+        public RenderingLayerMask SectionRenderingLayer = RenderingLayerMask.defaultRenderingLayerMask;
+#else
+        [RenderingLayerMask]
+        public uint SectionRenderingLayer = 1;
+#endif
+#if UNITY_6000_0_OR_NEWER
+        public RenderingLayerMask SectionMaskRenderingLayer = 0;
+#else
+        [RenderingLayerMask]
+        public uint SectionMaskRenderingLayer = 0;
+#endif
+        public MaskInfluence maskInfluence = MaskInfluence.Sections | MaskInfluence.Depth | MaskInfluence.Normals | MaskInfluence.Luminance;
         
         public InjectionPoint InjectionPoint => injectionPoint;
         public bool ShowInSceneView => showInSceneView;
         public DebugView DebugView => debugView;
-        
+
+        public bool showSectionMapSection;
         public bool showDiscontinuitySection;
         public bool showOutlineSection;
-        public bool showExperimentalSection;
 
         private void OnValidate()
         {

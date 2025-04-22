@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 96c827f63b5004e0583fe6ac7d168334
+timeCreated: 1501861598
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300573
+  packageName: LiveWatch | Debug with full history of changes
+  packageVersion: 1.0.6
+  assetPath: Assets/LiveWatch/TowerDefenceDemo/Materials/Level01_Road.mat
+  uploadId: 735963
