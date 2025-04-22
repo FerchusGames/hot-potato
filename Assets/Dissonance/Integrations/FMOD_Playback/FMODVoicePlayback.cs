@@ -276,9 +276,8 @@ namespace Dissonance.Integrations.FMOD_Playback
         [AOT.MonoPInvokeCallback(typeof(DSP_READ_CALLBACK))]
         private static RESULT ReadDSP(ref DSP_STATE dsp_state, IntPtr inbuffer, IntPtr outbuffer, uint length, int inchannels, ref int outchannels)
         {
-            // FMOD 2.02:
-            var functions = (DSP_STATE_FUNCTIONS)Marshal.PtrToStructure(dsp_state.functions, typeof(DSP_STATE_FUNCTIONS));
-            //var functions = dsp_state.functions;
+            // FMOD 2.02: var functions = (DSP_STATE_FUNCTIONS)Marshal.PtrToStructure(dsp_state.functions, typeof(DSP_STATE_FUNCTIONS));
+            var functions = dsp_state.functions;
 
             // Get the user data, this has a stashed refernce to the audio data source
             var gudResult = functions.getuserdata(ref dsp_state, out var userdata);
@@ -306,9 +305,8 @@ namespace Dissonance.Integrations.FMOD_Playback
         private static RESULT ShouldProcessDSP(ref DSP_STATE dsp_state, bool inputsidle, uint length, CHANNELMASK inmask, int inchannels, SPEAKERMODE speakermode)
         {
             // Get the user data, this has a stashed refernce to the audio data source
-            // FMOD 2.02:
-            var functions = (DSP_STATE_FUNCTIONS)Marshal.PtrToStructure(dsp_state.functions, typeof(DSP_STATE_FUNCTIONS));
-            //var functions = dsp_state.functions;
+            // FMOD 2.02 var functions = (DSP_STATE_FUNCTIONS)Marshal.PtrToStructure(dsp_state.functions, typeof(DSP_STATE_FUNCTIONS));
+            var functions = dsp_state.functions;
 
             var gudResult = functions.getuserdata(ref dsp_state, out var userdata);
             if (gudResult != RESULT.OK || userdata == IntPtr.Zero)
