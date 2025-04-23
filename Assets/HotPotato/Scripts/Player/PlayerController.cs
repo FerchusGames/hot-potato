@@ -18,16 +18,24 @@ namespace HotPotato.Player
 
         private IAbilityController AbilityController => _abilityControllerObject as IAbilityController;
         
-        public override void OnStartClient()
+        public override void OnStartServer()
         {
-            if (!IsServerInitialized) return;
-            
-            EventBus<PlayerJoinedEvent>.Raise(new PlayerJoinedEvent
+            EventBus<PlayerJoinedEvent>.Raise(new PlayerJoinedEvent 
             {
                 PlayerController = this
             });
         }
-        
+
+        public override void OnStartClient()
+        {
+            if (!IsOwner) return;
+            
+            EventBus<OwnedPlayerSpawnedEvent>.Raise(new OwnedPlayerSpawnedEvent
+            {
+                PlayerObject = gameObject,
+            });
+        }
+
         [Server]
         public void RequestToMoveBomb()
         {

@@ -15,6 +15,10 @@ public struct PlayerJoinedEvent : IEvent
 {
     public IPlayerController PlayerController;
 }
+public struct OwnedPlayerSpawnedEvent : IEvent
+{
+    public GameObject PlayerObject;
+}
 public struct GeneratedClueDataEvent : IEvent
 {
     public ClueData ClueData;
