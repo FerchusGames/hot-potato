@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{9eba8748-f03a-47f0-94ed-c22e434f61dd}">
+		<property name="assetPath">
+			<value>FMOD Samples/Ambience/City/ambience_city_traffic_pad.ogg</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>62.5</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{c61c9aa8-a69e-4b61-881f-7e38fc9f4006}</destination>
+		</relationship>
+	</object>
+</objects>

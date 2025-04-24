@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{8a0718e2-7549-4d00-be60-43e6d811a85b}">
+		<property name="assetPath">
+			<value>FMOD Samples/Ambience/amb_noon_loop.ogg</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>6</value>
+		</property>
+		<property name="length">
+			<value>62.734375</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{c61c9aa8-a69e-4b61-881f-7e38fc9f4006}</destination>
+		</relationship>
+	</object>
+</objects>

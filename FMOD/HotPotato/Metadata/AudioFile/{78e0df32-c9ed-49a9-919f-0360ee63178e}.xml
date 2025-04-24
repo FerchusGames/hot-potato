@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{78e0df32-c9ed-49a9-919f-0360ee63178e}">
+		<property name="assetPath">
+			<value>FMOD Samples/Interactables/wooden_collision_1_dry_dull.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.66358276643990932</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{c61c9aa8-a69e-4b61-881f-7e38fc9f4006}</destination>
+		</relationship>
+	</object>
+</objects>

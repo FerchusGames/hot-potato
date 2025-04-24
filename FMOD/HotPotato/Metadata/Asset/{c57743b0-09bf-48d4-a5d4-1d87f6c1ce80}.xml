@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="EncodableAsset" id="{c57743b0-09bf-48d4-a5d4-1d87f6c1ce80}">
+		<property name="assetPath">
+			<value>FMOD Samples/Character/Radio/</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{c61c9aa8-a69e-4b61-881f-7e38fc9f4006}</destination>
+		</relationship>
+	</object>
+</objects>

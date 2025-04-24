@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="EventFolder" id="{73108f91-033c-40db-ae39-19286edc8e50}">
+		<property name="name">
+			<value>FMOD Samples</value>
+		</property>
+		<relationship name="folder">
+			<destination>{367debaf-eaf8-4f1e-8a67-df8ef5c0671f}</destination>
+		</relationship>
+	</object>
+</objects>
