@@ -2,10 +2,10 @@
 <objects serializationModel="Studio.02.03.00">
 	<object class="Event" id="{3bc964ad-e518-4fde-a933-4ebe14372da4}">
 		<property name="name">
-			<value>Heartbeat 2</value>
+			<value>Silence</value>
 		</property>
 		<property name="outputFormat">
-			<value>1</value>
+			<value>0</value>
 		</property>
 		<relationship name="folder">
 			<destination>{dd921f2d-e714-43bd-8957-84b023a942c9}</destination>
@@ -53,17 +53,11 @@
 	<object class="EventAutomatableProperties" id="{6c733baf-edd1-417a-861a-341a44c6c3e4}" />
 	<object class="MarkerTrack" id="{f49190f1-b7d2-4db1-a366-ea5904ba86b1}" />
 	<object class="GroupTrack" id="{825ae53c-7c03-468b-9b8a-b522480ef5cc}">
-		<relationship name="modules">
-			<destination>{575e32ed-8695-442f-9131-3ab125bc4c40}</destination>
-		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{93c7ceb5-1838-42fb-a945-eff849172878}</destination>
 		</relationship>
 	</object>
 	<object class="Timeline" id="{c54f7653-9272-4b73-ba2b-0d4f87dfa74c}">
-		<relationship name="modules">
-			<destination>{575e32ed-8695-442f-9131-3ab125bc4c40}</destination>
-		</relationship>
 		<relationship name="markers">
 			<destination>{c40c0ff9-ff3d-4557-b546-d7874b56d9a0}</destination>
 		</relationship>
@@ -88,14 +82,6 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{5e9bc418-81f5-4a19-8c86-005e6aef567a}" />
-	<object class="SingleSound" id="{575e32ed-8695-442f-9131-3ab125bc4c40}">
-		<property name="length">
-			<value>7.9921541950113379</value>
-		</property>
-		<relationship name="audioFile">
-			<destination>{b47089ba-40bc-43d9-9b19-869cd1710ddb}</destination>
-		</relationship>
-	</object>
 	<object class="EventMixerGroup" id="{93c7ceb5-1838-42fb-a945-eff849172878}">
 		<property name="name">
 			<value>Audio 1</value>
@@ -115,7 +101,7 @@
 			<value>0</value>
 		</property>
 		<property name="length">
-			<value>7.9921541950113397</value>
+			<value>1</value>
 		</property>
 		<relationship name="timeline">
 			<destination>{c54f7653-9272-4b73-ba2b-0d4f87dfa74c}</destination>

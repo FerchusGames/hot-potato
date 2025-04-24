@@ -2,7 +2,8 @@
 {
     public enum MusicTrack
     {
-        SETUP = 0,
-        ROUND = 1,
+        Silence = 0,
+        MainMenu = 1,
+        Gameplay = 2,
     }
 }

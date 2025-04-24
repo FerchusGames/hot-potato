@@ -17,7 +17,7 @@ namespace HotPotato.Audio
         [Range(0, 1)]
         public float ambienceVolume = 1;
         [Range(0, 1)]
-        public float SFXVolume = 1;
+        public float sfxVolume = 1;
 
         [Required]
         [SerializeField] private  EventReferenceSO _ambienceEventReference;
@@ -35,9 +35,11 @@ namespace HotPotato.Audio
 
         private EventInstance _ambienceEventInstance;
         private EventInstance _musicEventInstance;
-        
-        private void Awake()
+
+        protected override void Awake()
         {
+            base.Awake();
+            
             _eventInstances = new List<EventInstance>();
             _eventEmitters = new List<StudioEventEmitter>();
 
@@ -58,7 +60,7 @@ namespace HotPotato.Audio
             _masterBus.setVolume(masterVolume);
             _musicBus.setVolume(musicVolume);
             _ambienceBus.setVolume(ambienceVolume);
-            _sfxBus.setVolume(SFXVolume);
+            _sfxBus.setVolume(sfxVolume);
         }
 
         private void InitializeAmbience(EventReference ambienceEventReference)

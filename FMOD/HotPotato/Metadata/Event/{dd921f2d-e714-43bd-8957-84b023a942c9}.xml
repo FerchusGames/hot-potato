@@ -107,6 +107,9 @@
 		<property name="isCutoff">
 			<value>true</value>
 		</property>
+		<property name="start">
+			<value>1</value>
+		</property>
 		<relationship name="modulators">
 			<destination>{fc6ff9da-101a-496f-93e8-f431e254eff2}</destination>
 		</relationship>
@@ -118,12 +121,6 @@
 		<property name="isCutoff">
 			<value>true</value>
 		</property>
-		<property name="start">
-			<value>1</value>
-		</property>
-		<relationship name="modulators">
-			<destination>{f7ce8577-7f11-4635-830d-4cddd4afc6ea}</destination>
-		</relationship>
 		<relationship name="event">
 			<destination>{3bc964ad-e518-4fde-a933-4ebe14372da4}</destination>
 		</relationship>
@@ -164,17 +161,6 @@
 	<object class="MixerBusPanner" id="{5eacd01a-adda-4494-8775-8e9fd07610ed}" />
 	<object class="MixerBusFader" id="{c22f5e73-f650-49ba-b425-8a0f518e9040}" />
 	<object class="ADSRModulator" id="{fc6ff9da-101a-496f-93e8-f431e254eff2}">
-		<property name="nameOfPropertyBeingModulated">
-			<value>volume</value>
-		</property>
-		<property name="initialValue">
-			<value>-80</value>
-		</property>
-		<property name="finalValue">
-			<value>-80</value>
-		</property>
-	</object>
-	<object class="ADSRModulator" id="{f7ce8577-7f11-4635-830d-4cddd4afc6ea}">
 		<property name="nameOfPropertyBeingModulated">
 			<value>volume</value>
 		</property>
