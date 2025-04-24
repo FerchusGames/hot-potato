@@ -148,10 +148,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d281cb6ae9b94efe81989fc93e48b9e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isPersistent: 0
   masterVolume: 1
   musicVolume: 1
   ambienceVolume: 1
   SFXVolume: 1
+  _ambienceEventReference: {fileID: 11400000, guid: 329ba3ee796e95b4ab953fc40073dc74, type: 2}
+  _musicEventReference: {fileID: 11400000, guid: 6b331c73102fb764297dbe061f14634b, type: 2}
 --- !u!4 &45376616
 Transform:
   m_ObjectHideFlags: 0

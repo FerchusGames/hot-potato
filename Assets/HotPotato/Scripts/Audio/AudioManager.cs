@@ -2,10 +2,12 @@
 using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
+using HotPotato.Utilities;
+using Sirenix.OdinInspector;
 
 namespace HotPotato.Audio
 {
-    public class AudioManager : MonoBehaviour
+    public class AudioManager : Singleton<AudioManager>
     {
         [Header("Volume")]
         [Range(0, 1)]
@@ -17,70 +19,68 @@ namespace HotPotato.Audio
         [Range(0, 1)]
         public float SFXVolume = 1;
 
-        private Bus masterBus;
-        private Bus musicBus;
-        private Bus ambienceBus;
-        private Bus sfxBus;
+        [Required]
+        [SerializeField] private  EventReferenceSO _ambienceEventReference;
+        
+        [Required]
+        [SerializeField] private EventReferenceSO _musicEventReference;
+        
+        private Bus _masterBus;
+        private Bus _musicBus;
+        private Bus _ambienceBus;
+        private Bus _sfxBus;
 
-        private List<EventInstance> eventInstances;
-        private List<StudioEventEmitter> eventEmitters;
+        private List<EventInstance> _eventInstances;
+        private List<StudioEventEmitter> _eventEmitters;
 
-        private EventInstance ambienceEventInstance;
-        private EventInstance musicEventInstance;
-
-        public static AudioManager instance { get; private set; }
-
+        private EventInstance _ambienceEventInstance;
+        private EventInstance _musicEventInstance;
+        
         private void Awake()
         {
-            if (instance != null)
-            {
-                Debug.LogError("Found more than one Audio Manager in the scene.");
-            }
-            instance = this;
+            _eventInstances = new List<EventInstance>();
+            _eventEmitters = new List<StudioEventEmitter>();
 
-            eventInstances = new List<EventInstance>();
-            eventEmitters = new List<StudioEventEmitter>();
-
-            masterBus = RuntimeManager.GetBus("bus:/");
-            musicBus = RuntimeManager.GetBus("bus:/Music");
-            ambienceBus = RuntimeManager.GetBus("bus:/Ambience");
-            sfxBus = RuntimeManager.GetBus("bus:/SFX");
+            _masterBus = RuntimeManager.GetBus("bus:/");
+            _musicBus = RuntimeManager.GetBus("bus:/Music");
+            _ambienceBus = RuntimeManager.GetBus("bus:/Ambience");
+            _sfxBus = RuntimeManager.GetBus("bus:/SFX");
         }
 
         private void Start()
         {
-            InitializeAmbience(FMODEvents.instance.ambience);
-            InitializeMusic(FMODEvents.instance.music);
+            InitializeAmbience(_ambienceEventReference.EventReference);
+            InitializeMusic(_musicEventReference.EventReference);
         }
 
         private void Update()
         {
-            masterBus.setVolume(masterVolume);
-            musicBus.setVolume(musicVolume);
-            ambienceBus.setVolume(ambienceVolume);
-            sfxBus.setVolume(SFXVolume);
+            _masterBus.setVolume(masterVolume);
+            _musicBus.setVolume(musicVolume);
+            _ambienceBus.setVolume(ambienceVolume);
+            _sfxBus.setVolume(SFXVolume);
         }
 
         private void InitializeAmbience(EventReference ambienceEventReference)
         {
-            ambienceEventInstance = CreateInstance(ambienceEventReference);
-            ambienceEventInstance.start();
+            _ambienceEventInstance = CreateInstance(ambienceEventReference);
+            _ambienceEventInstance.start();
         }
 
         private void InitializeMusic(EventReference musicEventReference)
         {
-            musicEventInstance = CreateInstance(musicEventReference);
-            musicEventInstance.start();
+            _musicEventInstance = CreateInstance(musicEventReference);
+            _musicEventInstance.start();
         }
 
         public void SetAmbienceParameter(string parameterName, float parameterValue)
         {
-            ambienceEventInstance.setParameterByName(parameterName, parameterValue);
+            _ambienceEventInstance.setParameterByName(parameterName, parameterValue);
         }
 
         public void SetMusicTrack(MusicTrack track)
         {
-            musicEventInstance.setParameterByName("track", (float) track);
+            _musicEventInstance.setParameterByName("track", (float) track);
         }
 
         public void PlayOneShot(EventReference sound, Vector3 worldPos)
@@ -91,28 +91,27 @@ namespace HotPotato.Audio
         public EventInstance CreateInstance(EventReference eventReference)
         {
             EventInstance eventInstance = RuntimeManager.CreateInstance(eventReference);
-            eventInstances.Add(eventInstance);
+            _eventInstances.Add(eventInstance);
             return eventInstance;
         }
 
-        public StudioEventEmitter InitializeEventEmitter(EventReference eventReference, GameObject emitterGameObject)
+        public StudioEventEmitter InitializeEventEmitter(EventReference eventReference, StudioEventEmitter studioEventEmitter)
         {
-            StudioEventEmitter emitter = emitterGameObject.GetComponent<StudioEventEmitter>();
-            emitter.EventReference = eventReference;
-            eventEmitters.Add(emitter);
-            return emitter;
+            studioEventEmitter.EventReference = eventReference;
+            _eventEmitters.Add(studioEventEmitter);
+            return studioEventEmitter;
         }
 
         private void CleanUp()
         {
             // stop and release any created instances
-            foreach (EventInstance eventInstance in eventInstances)
+            foreach (EventInstance eventInstance in _eventInstances)
             {
                 eventInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
                 eventInstance.release();
             }
             // stop all of the event emitters, because if we don't they may hang around in other scenes
-            foreach (StudioEventEmitter emitter in eventEmitters)
+            foreach (StudioEventEmitter emitter in _eventEmitters)
             {
                 emitter.Stop();
             }
