@@ -1006,6 +1006,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: -3.363
       objectReference: {fileID: 0}
+    - target: {fileID: 2070255800739524325, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: '_bombModulePrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 9196809649704679603, guid: 16ec7ec975abfa843999300968c03c49, type: 3}
+    - target: {fileID: 2070255800739524325, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: '_bombModulePrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 9196809649704679603, guid: 1dcd05134e4efe747ad5b8e5b833603c, type: 3}
+    - target: {fileID: 2070255800739524325, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: '_bombModulePrefabs.Array.data[2]'
+      value: 
+      objectReference: {fileID: 9196809649704679603, guid: 55b3776c0cec89e4a8b76728a042bcd2, type: 3}
+    - target: {fileID: 2070255800739524325, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: '_bombModulePrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 9196809649704679603, guid: d5327563fa1679d43aa5d19dbb492496, type: 3}
+    - target: {fileID: 2070255800739524325, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: '_bombModulePrefabs.Array.data[4]'
+      value: 
+      objectReference: {fileID: 9196809649704679603, guid: c768115cbf63d544c9deef0d250f0fe6, type: 3}
     - target: {fileID: 2372464674854020881, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
       propertyPath: <SceneId>k__BackingField
       value: 3568790011

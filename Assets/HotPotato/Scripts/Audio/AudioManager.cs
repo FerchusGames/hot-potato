@@ -20,7 +20,7 @@ namespace HotPotato.Audio
         public float sfxVolume = 1;
 
         [Required]
-        [SerializeField] private  EventReferenceSO _ambienceEventReference;
+        [SerializeField] private EventReferenceSO _ambienceEventReference;
         
         [Required]
         [SerializeField] private EventReferenceSO _musicEventReference;
