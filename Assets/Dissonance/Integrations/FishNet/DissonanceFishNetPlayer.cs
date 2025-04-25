@@ -51,8 +51,6 @@ namespace Dissonance.Integrations.FishNet
         {
             base.OnOwnershipClient(prevOwner);
 
-            Debug.Log("Hi");
-
             if (prevOwner == null || !IsOwner) return;
             
             DissonanceFishNetComms fishNetComms = DissonanceFishNetComms.Instance;
@@ -108,7 +106,7 @@ namespace Dissonance.Integrations.FishNet
 
         private IEnumerator ManageTrackingStateCoroutine(bool track)
         {
-            while (string.IsNullOrEmpty(PlayerId)) // The code will sit here with the latest boolean sent to it and only continue once tghe value it needs is null.
+            while (string.IsNullOrEmpty(PlayerId)) // The code will sit here with the latest boolean sent to it and only continue once the value it needs is null.
                 yield return null;
             
             // Check if you should change tracking state
