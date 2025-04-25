@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Dissonance.Integrations.FishNet.Utils;
 using FishNet.Connection;
 using FishNet.Object;
@@ -19,6 +20,7 @@ namespace Dissonance.Integrations.FishNet
         // Captured DissonanceComms instance
         public DissonanceComms Comms { get; private set; }
         
+        Coroutine getPlayerTrackingBuffer; // Need a reference to the coroutine to stop it if needed
         
         public string PlayerId => _syncedPlayerName.Value;
         public Vector3 Position => trackingTransform.position;
@@ -35,6 +37,7 @@ namespace Dissonance.Integrations.FishNet
 
         private void OnEnable()
         {
+            Debug.Log($"DissonanceFishNetPlayer: {PlayerId}");
             ManageTrackingState(true);
         }
         
@@ -93,20 +96,32 @@ namespace Dissonance.Integrations.FishNet
         {
             if(!IsOwner) SetPlayerName(updatedName);
         }
-
+        
         private void ManageTrackingState(bool track)
         {
+            if (getPlayerTrackingBuffer != null) // If the coroutine is currently running, stop it. It can't work anyway because if it's running then the value the code needs is null, so it has no purpose.
+                StopCoroutine(getPlayerTrackingBuffer);
+            getPlayerTrackingBuffer = StartCoroutine(ManageTrackingStateCoroutine(track)); // start the coroutine with the latest boolean we want to send it.
+        }
+
+        private IEnumerator ManageTrackingStateCoroutine(bool track)
+        {
+            while (string.IsNullOrEmpty(PlayerId)) // The code will sit here with the latest boolean sent to it and only continue once the value it needs is null.
+                yield return null;
+            
             // Check if you should change tracking state
-            if (IsTracking == track) return;
-            if (DissonanceFishNetComms.Instance == null) return;
-            if (track && !DissonanceFishNetComms.Instance.IsInitialized) return;
+            if (IsTracking == track) yield break;
+            if (DissonanceFishNetComms.Instance == null) yield break;
+            if (track && !DissonanceFishNetComms.Instance.IsInitialized) yield break;
 
             // And update it
             DissonanceComms comms = DissonanceFishNetComms.Instance.Comms;
             if (track) comms.TrackPlayerPosition(this);
             else comms.StopTracking(this);
-
             IsTracking = track;
+
+            Debug.Log("<color=green>Successfully assigned player tracking</color>");
+            getPlayerTrackingBuffer = null;
         }
     }
 }
