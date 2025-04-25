@@ -44,7 +44,6 @@ MonoBehaviour:
     - DissonanceVoip
     - DissonanceVoip.FishNet
     - Domain_Reload
-    - EnoxSoftware.DlibFaceLandmarkDetector
     - Febucci.Attributes.Runtime
     - Febucci.TextAnimator.Demo.Runtime
     - Febucci.TextAnimator.Runtime

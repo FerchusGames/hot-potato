@@ -3,14 +3,14 @@ using System.IO.Compression;
 using System.Text;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using UnityEngine;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using TMPro;
+using UnityEngine;
 using UnityEngine.Rendering;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
-namespace TvFaceNoise.Scripts
+namespace HotPotato.FaceCam
 {
     public class WebCamToSymbol : NetworkBehaviour
     {
