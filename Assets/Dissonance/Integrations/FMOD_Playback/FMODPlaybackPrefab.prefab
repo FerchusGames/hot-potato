@@ -47,5 +47,5 @@ MonoBehaviour:
   MinDistance: 5
   MaxDistance: 25
   RolloffMode: 8388608
-  OutputBusID: 
+  OutputBusID: '{05a3d0bc-43c4-42da-b158-50e30318eeb6}'
   _disablePositionalAudio: 0

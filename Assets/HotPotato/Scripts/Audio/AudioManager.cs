@@ -18,6 +18,8 @@ namespace HotPotato.Audio
         public float ambienceVolume = 1;
         [Range(0, 1)]
         public float sfxVolume = 1;
+        [Range(0, 1)]
+        public float commsVolume = 1;
 
         [Required]
         [SerializeField] private EventReferenceSO _ambienceEventReference;
@@ -29,6 +31,7 @@ namespace HotPotato.Audio
         private Bus _musicBus;
         private Bus _ambienceBus;
         private Bus _sfxBus;
+        private Bus _commsBus;
 
         private List<EventInstance> _eventInstances;
         private List<StudioEventEmitter> _eventEmitters;
@@ -47,6 +50,7 @@ namespace HotPotato.Audio
             _musicBus = RuntimeManager.GetBus("bus:/Music");
             _ambienceBus = RuntimeManager.GetBus("bus:/Ambience");
             _sfxBus = RuntimeManager.GetBus("bus:/SFX");
+            _commsBus = RuntimeManager.GetBus("bus:/Comms");
         }
 
         private void Start()
@@ -61,6 +65,7 @@ namespace HotPotato.Audio
             _musicBus.setVolume(musicVolume);
             _ambienceBus.setVolume(ambienceVolume);
             _sfxBus.setVolume(sfxVolume);
+            _commsBus.setVolume(commsVolume);
         }
 
         private void InitializeAmbience(EventReference ambienceEventReference)
