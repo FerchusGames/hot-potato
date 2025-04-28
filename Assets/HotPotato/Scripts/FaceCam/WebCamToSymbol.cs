@@ -84,7 +84,7 @@ namespace HotPotato.FaceCam
             
             _asciiText.Value = Compress(asciiText);
             
-            Debug.Log($"asciiText.Length: {asciiText.Length}, compressedAscii.Length: {_asciiText.Value.Length}");
+            //Debug.Log($"asciiText.Length: {asciiText.Length}, compressedAscii.Length: {_asciiText.Value.Length}");
         }
 
         private void OnAsciiTextChanged(byte[] value, byte[] newValue, bool asServer)
