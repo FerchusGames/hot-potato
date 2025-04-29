@@ -4,4 +4,9 @@
     {
         public string CameraName;
     }
+    
+    public struct MicrophoneSelectedEvent : IEvent
+    {
+        public string MicrophoneName;
+    }
 }
