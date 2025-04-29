@@ -95,7 +95,7 @@ MonoBehaviour:
     m_Value: {x: 1, y: 1, z: 1, w: -0.075921915}
   gamma:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 1, z: 1, w: 0.021559436}
+    m_Value: {x: 1, y: 1, z: 1, w: 0.33190426}
   gain:
     m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 1, w: 0.26729998}
@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1f83681ef12547498b362aa7adec64e, type: 3}
   m_Name: Ripples
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   mode:
     m_OverrideState: 1
     m_Value: 0
