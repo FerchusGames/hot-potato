@@ -1,4 +1,5 @@
 using System;
+using HotPotato.UI.Settings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,25 +26,50 @@ namespace HotPotato.FaceCam
         private WebCamTexture _webCamTexture;
         public event Action OnWebCamUpdated;
         
+        private EventBinding<CameraSelectedEvent> _cameraSelectedEventBinding;
+        
         private float _timer = 0f;
         
         void Start()
         {
             InitializeWebCam();
+            
+            _cameraSelectedEventBinding = new EventBinding<CameraSelectedEvent>(ChangeCamera);
+            EventBus<CameraSelectedEvent>.Register(_cameraSelectedEventBinding);
+        }
+        
+        private void OnDestroy()
+        {
+            if (_webCamTexture != null && _webCamTexture.isPlaying)
+                _webCamTexture.Stop();
+            
+            EventBus<CameraSelectedEvent>.Deregister(_cameraSelectedEventBinding);
         }
         
         private void InitializeWebCam()
         {
-            WebCamDevice[] devices = WebCamTexture.devices;
+            string cameraName;
             
-            if (devices.Length == 0)
+            if (ES3.KeyExists("SelectedCameraName"))
             {
-                Debug.LogError("No webcam devices found!");
-                return;
+                cameraName = ES3.Load<string>("SelectedCameraName");
+                Debug.Log($"Loaded camera name: {cameraName}");
+            }
+            else
+            {
+                WebCamDevice[] devices = WebCamTexture.devices;
+                
+                if (devices.Length == 0)
+                {
+                    Debug.LogError("No webcam devices found!");
+                    return;
+                }
+                
+                cameraName = devices[0].name;
             }
             
             // Create and start the webcam texture using the first available device.
-            _webCamTexture = new WebCamTexture(devices[4].name, _requestedWidth, _requestedHeight, _requestedFPS);
+            _webCamTexture = new WebCamTexture(cameraName, _requestedWidth, _requestedHeight, _requestedFPS);
             _webCamTexture.Play();
             
             // Assign the webcam texture directly to the RawImage.
@@ -53,6 +79,17 @@ namespace HotPotato.FaceCam
             _displayImage.rectTransform.localEulerAngles = new Vector3(0, 0, -_webCamTexture.videoRotationAngle);
             
             // Apply the initial UV cropping.
+            UpdateRawImageUVRect();
+        }
+        
+        private void ChangeCamera(CameraSelectedEvent cameraSelectedEvent)
+        {
+            _webCamTexture.Stop();
+            _webCamTexture.deviceName = cameraSelectedEvent.CameraName;
+            _webCamTexture.Play();
+            
+            _displayImage.rectTransform.localEulerAngles = new Vector3(0, 0, -_webCamTexture.videoRotationAngle);
+    
             UpdateRawImageUVRect();
         }
 
@@ -82,12 +119,6 @@ namespace HotPotato.FaceCam
             
             // Set the uvRect to display only the desired portion of the webcam texture.
             _displayImage.uvRect = new Rect(uvX, uvY, uvWidth, uvHeight);
-        }
-
-        private void OnDestroy()
-        {
-            if (_webCamTexture != null && _webCamTexture.isPlaying)
-                _webCamTexture.Stop();
         }
     }
 }

@@ -2,7 +2,6 @@
 using TMPro;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
-using System;
 
 namespace HotPotato.UI.Settings
 {
@@ -12,8 +11,6 @@ namespace HotPotato.UI.Settings
         [SerializeField] private TMP_Dropdown _cameraDropdown;
         
         private const string SaveKey = "SelectedCameraName";
-        
-        public event Action<int> OnCameraSelectionChanged;
 
         private readonly List<string> _cameraNameList = new List<string>();
 
@@ -54,7 +51,10 @@ namespace HotPotato.UI.Settings
             
             ES3.Save(SaveKey, cameraName);
             Debug.Log($"Camera '{cameraName}' selected and saved.");
-            OnCameraSelectionChanged?.Invoke(index);
+            EventBus<CameraSelectedEvent>.Raise(new CameraSelectedEvent
+            {
+                CameraName = cameraName,
+            });
         }
         
         private void LoadSavedCamera()
