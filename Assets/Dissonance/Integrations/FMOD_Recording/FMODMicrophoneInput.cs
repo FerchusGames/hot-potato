@@ -50,6 +50,12 @@ namespace Dissonance.Integrations.FMOD_Recording
             StopCapture();
 
             // Choose an input device, if we can't find one we can't record audio.
+            
+            if (ES3.KeyExists("SelectedMicrophoneName"))
+            {
+                name = ES3.Load<string>("SelectedMicrophoneName");
+            }
+            
             var deviceID = ChooseAudioDevice(name, out _deviceName);
             if (deviceID == null)
                 return null;
