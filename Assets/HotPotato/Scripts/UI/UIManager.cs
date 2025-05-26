@@ -150,6 +150,11 @@ namespace HotPotato.UI
                     ).GetComponent<ClueFieldUI>();
                 
                 _clueFieldUIList.Add(clueFieldUI);
+                EventBus<ClientClueFieldInstantiatedEvent>.Raise(new ClientClueFieldInstantiatedEvent
+                {
+                    ClueType = clueType,
+                    Clue = clue,
+                });
                 clueFieldUI.Initialize(clueType, clue);
             }
         }

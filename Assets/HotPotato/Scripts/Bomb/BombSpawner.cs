@@ -66,8 +66,19 @@ namespace HotPotato.Bomb
             {
                 SettingsList = _settingsList
             });
+            
+            ModulesSettingsListCreated(_settingsList);
         }
 
+        [ObserversRpc]
+        private void ModulesSettingsListCreated(List<BombModuleSettings> settingsList)
+        {
+            EventBus<ModulesSettingsListCreatedEvent>.Raise(new ModulesSettingsListCreatedEvent
+            {
+                SettingsList = settingsList
+            });
+        }
+        
         private void SpawnAndConfigureModule(int column, int row)
         {
             int moduleTypeIndex = GetRandomModulePropertyIndex();
