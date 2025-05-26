@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 [System.Serializable]
 public class Modulo {
@@ -75,10 +76,10 @@ public class DatabaseUploader : MonoBehaviour {
 
     private void OnModulesSettingsListCreated(ModulesSettingsListCreatedEvent modulesSettingsListCreatedEvent)
     {
-        Modulo currentModulo = new Modulo();
-        
         foreach (var setting in modulesSettingsListCreatedEvent.SettingsList)
         {
+            Modulo currentModulo = new Modulo();
+            
             currentModulo.color = setting.ColorIndex + 1; 
             currentModulo.numero = setting.NumberIndex + 1;
             currentModulo.tipo = setting.ModuleTypeIndex + 1;
@@ -107,14 +108,14 @@ public class DatabaseUploader : MonoBehaviour {
         roundData.fecha = DateTime.Now.ToString("yyyy-MM-dd");
         roundData.modulos = _modulos;
         roundData.pistas = _pistas;
-
+        
         UploadRound(roundData);
     }
     
     private void UploadRound(RoundData data)
     {
-        ClearData();
         StartCoroutine(UploadDataCoroutine(data));
+        ClearData();
     }
 
     private void ClearData()
@@ -125,7 +126,7 @@ public class DatabaseUploader : MonoBehaviour {
     }
 
     IEnumerator UploadDataCoroutine(RoundData data) {
-        string json = JsonUtility.ToJson(data);
+        string json = JsonConvert.SerializeObject(data);
         Debug.Log("Sending JSON: " + json);
         UnityWebRequest request = new UnityWebRequest(uploadUrl, "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
