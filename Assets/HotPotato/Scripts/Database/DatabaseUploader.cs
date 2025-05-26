@@ -33,9 +33,12 @@ public class DatabaseUploader : MonoBehaviour {
 
     private EventBinding<ClientClueFieldInstantiatedEvent> _clientClueFieldInstantiatedEventBinding;
     private EventBinding<ModulesSettingsListCreatedEvent> _modulesSettingsListCreatedEventBinding;
+    private EventBinding<LoseRoundEvent> _loseRoundEventBinding;
+    private EventBinding<WinRoundEvent> _winRoundEventBinding;
     
     private List<Modulo> _modulos = new List<Modulo>();
     private List<Pista> _pistas = new List<Pista>();
+    private int _resultado = 0;
     
     private void Start()
     {
@@ -44,12 +47,20 @@ public class DatabaseUploader : MonoBehaviour {
         
         _modulesSettingsListCreatedEventBinding = new EventBinding<ModulesSettingsListCreatedEvent>(OnModulesSettingsListCreated);
         EventBus<ModulesSettingsListCreatedEvent>.Register(_modulesSettingsListCreatedEventBinding);
+        
+        _loseRoundEventBinding = new EventBinding<LoseRoundEvent>(OnLoseRound);
+        EventBus<LoseRoundEvent>.Register(_loseRoundEventBinding);
+        
+        _winRoundEventBinding = new EventBinding<WinRoundEvent>(OnWinRound);
+        EventBus<WinRoundEvent>.Register(_winRoundEventBinding);
     }
 
     private void OnDestroy()
     {
         EventBus<ClientClueFieldInstantiatedEvent>.Deregister(_clientClueFieldInstantiatedEventBinding);
         EventBus<ModulesSettingsListCreatedEvent>.Deregister(_modulesSettingsListCreatedEventBinding);
+        EventBus<LoseRoundEvent>.Deregister(_loseRoundEventBinding);
+        EventBus<WinRoundEvent>.Deregister(_winRoundEventBinding);
     }
 
     private void OnClientClueFieldInstantiated(ClientClueFieldInstantiatedEvent clientClueFieldInstantiatedEvent)
@@ -77,13 +88,45 @@ public class DatabaseUploader : MonoBehaviour {
             _modulos.Add(currentModulo);
         }
     }
+
+    private void OnLoseRound(LoseRoundEvent loseRoundEvent)
+    {
+        _resultado = 1;
+        CreateAndUploadRoundData();
+    }
+
+    private void OnWinRound(WinRoundEvent winRoundEvent)
+    {
+        _resultado = 2;
+        CreateAndUploadRoundData();
+    }
     
-    public void UploadRound(RoundData data) {
+    private void CreateAndUploadRoundData() {
+        RoundData roundData = new RoundData();
+        roundData.resultado = _resultado;
+        roundData.fecha = DateTime.Now.ToString("yyyy-MM-dd");
+        roundData.modulos = _modulos;
+        roundData.pistas = _pistas;
+
+        UploadRound(roundData);
+    }
+    
+    private void UploadRound(RoundData data)
+    {
+        ClearData();
         StartCoroutine(UploadDataCoroutine(data));
+    }
+
+    private void ClearData()
+    {
+        _modulos.Clear();
+        _pistas.Clear();
+        _resultado = 0;
     }
 
     IEnumerator UploadDataCoroutine(RoundData data) {
         string json = JsonUtility.ToJson(data);
+        Debug.Log("Sending JSON: " + json);
         UnityWebRequest request = new UnityWebRequest(uploadUrl, "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
