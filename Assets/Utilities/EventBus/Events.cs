@@ -3,6 +3,7 @@ using HotPotato.AbilitySystem;
 using HotPotato.Bomb;
 using HotPotato.Clues;
 using HotPotato.Player;
+using HotPotato.UI;
 using UnityEngine;
 
 public interface IEvent { }
@@ -23,6 +24,11 @@ public struct GeneratedClueDataEvent : IEvent
 {
     public ClueData ClueData;
 }
+public struct ClientClueFieldInstantiatedEvent : IEvent
+{
+    public BombClueType ClueType;
+    public KeyValuePair<int, int> Clue;
+}
 public struct RoundStartedEvent : IEvent { }
 public struct RoundEndedEvent : IEvent { }
 public struct MatchResetEvent : IEvent { }
@@ -31,7 +37,10 @@ public struct ModulesSpawnedEvent : IEvent
 {
     public List<BombModuleSettings> SettingsList;
 }
-
+public struct ModulesSettingsListCreatedEvent : IEvent
+{
+    public List<BombModuleSettings> SettingsList;
+}
 public struct ModuleClickedEvent : IEvent
 {
     public BombModule Module;
