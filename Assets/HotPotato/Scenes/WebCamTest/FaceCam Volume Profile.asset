@@ -28,7 +28,7 @@ MonoBehaviour:
   maintainAspectRatio:
     m_OverrideState: 0
     m_Value: 1
-  shader: {fileID: 0}
+  shader: {fileID: 4800000, guid: 174a3ec3133aefa4f891d0b2bba1bea1, type: 3}
 --- !u!114 &-6474834789119589298
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -76,7 +76,7 @@ MonoBehaviour:
   amount:
     m_OverrideState: 1
     m_Value: 1
-  shader: {fileID: 0}
+  shader: {fileID: 4800000, guid: 2270ba0b69c63bc459598cad50f09a1d, type: 3}
 --- !u!114 &-6165586633800855479
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -150,7 +150,7 @@ MonoBehaviour:
   height:
     m_OverrideState: 0
     m_Value: 1
-  shader: {fileID: 0}
+  shader: {fileID: 4800000, guid: cc32764044bcef746970dca5bb25a328, type: 3}
 --- !u!114 &5383096309751250913
 MonoBehaviour:
   m_ObjectHideFlags: 3
