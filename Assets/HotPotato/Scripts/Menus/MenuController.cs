@@ -33,6 +33,9 @@ namespace HotPotato.Menus
         [BoxGroup("Lobby"), Required]
         [SerializeField] private GameObject _startGameButton;
         
+        [BoxGroup("Lobby"), Required]
+        [SerializeField] private TextMeshProUGUI _playerCountText;
+        
         private Dictionary<UserData, LobbyUserPanel> _lobbyUserPanels = new();
         
         private void Awake()
@@ -45,6 +48,7 @@ namespace HotPotato.Menus
         {
             ClearUserPanels();
             
+            UpdatePlayerCount();
             UpdateStartGameButtonVisibility();
             lobbyData.Name = UserData.Me.Name + "'s Lobby";
             _lobbyTitle.text = lobbyData.Name;
@@ -57,6 +61,7 @@ namespace HotPotato.Menus
         {
             ClearUserPanels();
             
+            UpdatePlayerCount();
             _lobbyTitle.text = lobbyData.Name;
             OpenLobbyMenu();
 
@@ -68,12 +73,14 @@ namespace HotPotato.Menus
         
         public void OnUserJoined(UserData userData)
         {
+            UpdatePlayerCount();
             UpdateStartGameButtonVisibility();
             SetupUserPanel(userData);
         }
 
         public void OnUserLeft(UserLobbyLeaveData userLobbyLeaveData)
         {
+            UpdatePlayerCount();
             UpdateStartGameButtonVisibility();
             DestroyUserPanel(userLobbyLeaveData);
         }
@@ -136,6 +143,11 @@ namespace HotPotato.Menus
             bool hasEnoughPlayers = _lobbyManager.MemberCount >= 2;
     
             _startGameButton.SetActive(isHost && hasEnoughPlayers);
+        }
+
+        private void UpdatePlayerCount()
+        {
+            _playerCountText.text = _lobbyManager.MemberCount + "/" + _lobbyManager.MaxMembers;
         }
     }
 }
