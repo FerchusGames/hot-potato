@@ -987,6 +987,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2070255800739524325, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _trapAmount
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 2180282467328661110, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
       propertyPath: _conveyorBeltNetworkTransform
       value: 
@@ -5499,6 +5503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 150984d81e853d14bab88793e115b2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uploadUrl: https://rociochavezml.com/insert_round.php
 --- !u!4 &2102661547
 Transform:
   m_ObjectHideFlags: 0
