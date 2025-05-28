@@ -1,4 +1,6 @@
-﻿using Sirenix.OdinInspector;
+﻿#if UNITY_EDITOR
+
+using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -40,3 +42,5 @@ namespace Utilities.Odin
         }
     }
 }
+
+#endif
