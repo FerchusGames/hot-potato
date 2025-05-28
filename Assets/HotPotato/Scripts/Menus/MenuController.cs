@@ -62,6 +62,7 @@ namespace HotPotato.Menus
             ClearUserPanels();
             
             UpdatePlayerCount();
+            UpdateStartGameButtonVisibility();
             _lobbyTitle.text = lobbyData.Name;
             OpenLobbyMenu();
 
