@@ -116,9 +116,9 @@ namespace HotPotato.Menus
         
         private void ClearUserPanels()
         {
-            foreach (GameObject child in _lobbyUserPanelHolder)
+            foreach (Transform child in _lobbyUserPanelHolder)
             {
-               Destroy(child);
+               Destroy(child.gameObject);
             }
             
             _lobbyUserPanels.Clear();
