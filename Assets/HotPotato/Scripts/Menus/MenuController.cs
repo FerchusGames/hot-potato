@@ -45,7 +45,7 @@ namespace HotPotato.Menus
         {
             ClearUserPanels();
             
-            _startGameButton.SetActive(true);
+            UpdateStartGameButtonVisibility();
             lobbyData.Name = UserData.Me.Name + "'s Lobby";
             _lobbyTitle.text = lobbyData.Name;
             OpenLobbyMenu();
@@ -57,7 +57,6 @@ namespace HotPotato.Menus
         {
             ClearUserPanels();
             
-            _startGameButton.SetActive(false);
             _lobbyTitle.text = lobbyData.Name;
             OpenLobbyMenu();
 
@@ -69,11 +68,13 @@ namespace HotPotato.Menus
         
         public void OnUserJoined(UserData userData)
         {
+            UpdateStartGameButtonVisibility();
             SetupUserPanel(userData);
         }
 
         public void OnUserLeft(UserLobbyLeaveData userLobbyLeaveData)
         {
+            UpdateStartGameButtonVisibility();
             DestroyUserPanel(userLobbyLeaveData);
         }
 
@@ -127,6 +128,14 @@ namespace HotPotato.Menus
             }
             
             _lobbyUserPanels.Clear();
+        }
+        
+        private void UpdateStartGameButtonVisibility()
+        {
+            bool isHost = _lobbyManager.HasLobby && _lobbyManager.IsPlayerOwner;
+            bool hasEnoughPlayers = _lobbyManager.MemberCount >= 2;
+    
+            _startGameButton.SetActive(isHost && hasEnoughPlayers);
         }
     }
 }
