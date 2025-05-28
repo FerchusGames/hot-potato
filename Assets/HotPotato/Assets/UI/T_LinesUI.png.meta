@@ -163,7 +163,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: T_LinesUI_3
+      name: T_LongLine1
       rect:
         serializedVersion: 2
         x: 31
@@ -185,7 +185,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: T_LinesUI_4
+      name: T_LongLine2
       rect:
         serializedVersion: 2
         x: 30
@@ -207,7 +207,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: T_LinesUI_5
+      name: T_HandleGrey
       rect:
         serializedVersion: 2
         x: 26
@@ -229,7 +229,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: T_LinesUI_6
+      name: T_HandleWhite
       rect:
         serializedVersion: 2
         x: 108
@@ -352,16 +352,16 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      T_HandleGrey: -380581587
+      T_HandleWhite: 1703343724
       T_LinesUI_0: -184883510
       T_LinesUI_1: -1462812686
       T_LinesUI_10: -644898819
       T_LinesUI_2: -1821030704
-      T_LinesUI_3: 489928764
-      T_LinesUI_4: -332251321
-      T_LinesUI_5: -380581587
-      T_LinesUI_6: 1703343724
       T_LinesUI_8: 1753110122
       T_LinesUI_9: 1835028167
+      T_LongLine1: 489928764
+      T_LongLine2: -332251321
       T_Underline: -1595153051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0

@@ -7,20 +7,17 @@ using Sirenix.OdinInspector;
 
 namespace HotPotato.Audio
 {
+    public enum AudioBus
+    {
+        Master,
+        Music,
+        Ambience,
+        SFX,
+        Comms
+    }
+    
     public class AudioManager : Singleton<AudioManager>
     {
-        [Header("Volume")]
-        [Range(0, 1)]
-        public float masterVolume = 1;
-        [Range(0, 1)]
-        public float musicVolume = 1;
-        [Range(0, 1)]
-        public float ambienceVolume = 1;
-        [Range(0, 1)]
-        public float sfxVolume = 1;
-        [Range(0, 1)]
-        public float commsVolume = 1;
-
         [Required]
         [SerializeField] private EventReferenceSO _ambienceEventReference;
         
@@ -59,27 +56,44 @@ namespace HotPotato.Audio
             InitializeMusic(_musicEventReference.EventReference);
         }
 
-        private void Update()
-        {
-            _masterBus.setVolume(masterVolume);
-            _musicBus.setVolume(musicVolume);
-            _ambienceBus.setVolume(ambienceVolume);
-            _sfxBus.setVolume(sfxVolume);
-            _commsBus.setVolume(commsVolume);
-        }
-
         private void InitializeAmbience(EventReference ambienceEventReference)
         {
+            if (ambienceEventReference.IsNull) return;
+            
             _ambienceEventInstance = CreateInstance(ambienceEventReference);
             _ambienceEventInstance.start();
         }
 
         private void InitializeMusic(EventReference musicEventReference)
         {
+            if (musicEventReference.IsNull) return;
+            
             _musicEventInstance = CreateInstance(musicEventReference);
             _musicEventInstance.start();
         }
 
+        public void SetBusVolume(AudioBus bus, float volume)
+        {
+            switch (bus)
+            {
+                case AudioBus.Master:
+                    _masterBus.setVolume(volume);
+                    break;
+                case AudioBus.Music:
+                    _musicBus.setVolume(volume);
+                    break;
+                case AudioBus.Ambience:
+                    _ambienceBus.setVolume(volume);
+                    break;
+                case AudioBus.SFX:
+                    _sfxBus.setVolume(volume);
+                    break;
+                case AudioBus.Comms:
+                    _commsBus.setVolume(volume);
+                    break;
+            }
+        }
+        
         public void SetAmbienceParameter(string parameterName, float parameterValue)
         {
             _ambienceEventInstance.setParameterByName(parameterName, parameterValue);
