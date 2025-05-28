@@ -36,6 +36,9 @@ namespace HotPotato.Menus
         [BoxGroup("Lobby"), Required]
         [SerializeField] private TextMeshProUGUI _playerCountText;
         
+        [BoxGroup("Options"), Required]
+        [SerializeField] private GameObject _optionsMenu;
+        
         private Dictionary<UserData, LobbyUserPanel> _lobbyUserPanels = new();
         
         private void Awake()
@@ -97,7 +100,13 @@ namespace HotPotato.Menus
             _mainMenu.SetActive(true);
         }
         
-        private void OpenLobbyMenu()
+        public void OpenOptionsMenu()
+        {
+            CloseScreens();
+            _optionsMenu.SetActive(true);
+        }
+        
+        public void OpenLobbyMenu()
         {
             CloseScreens();
             _lobbyMenu.SetActive(true);
@@ -105,6 +114,7 @@ namespace HotPotato.Menus
 
         private void CloseScreens()
         {
+            _optionsMenu.SetActive(false);
             _lobbyMenu.SetActive(false);
             _mainMenu.SetActive(false);
         }
