@@ -30,6 +30,9 @@ namespace HotPotato.Menus
         [BoxGroup("Lobby"), Required]
         [SerializeField] private Transform _lobbyUserPanelHolder;
 
+        [BoxGroup("Lobby"), Required]
+        [SerializeField] private GameObject _startGameButton;
+        
         private Dictionary<UserData, LobbyUserPanel> _lobbyUserPanels = new();
         
         private void Awake()
@@ -42,6 +45,7 @@ namespace HotPotato.Menus
         {
             ClearUserPanels();
             
+            _startGameButton.SetActive(true);
             lobbyData.Name = UserData.Me.Name + "'s Lobby";
             _lobbyTitle.text = lobbyData.Name;
             OpenLobbyMenu();
@@ -53,6 +57,7 @@ namespace HotPotato.Menus
         {
             ClearUserPanels();
             
+            _startGameButton.SetActive(false);
             _lobbyTitle.text = lobbyData.Name;
             OpenLobbyMenu();
 

@@ -635,9 +635,7 @@ GameObject:
   - component: {fileID: 494727698}
   - component: {fileID: 494727697}
   - component: {fileID: 494727696}
-  - component: {fileID: 494727700}
   - component: {fileID: 494727699}
-  - component: {fileID: 494727701}
   m_Layer: 5
   m_Name: btn_StartGame
   m_TagString: Untagged
@@ -759,73 +757,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13336eeff7454828a1b0c813c9941dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sceneToLoadName: BombTest
+  _sceneToLoadName: MainGame
   _button: {fileID: 494727696}
---- !u!114 &494727700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 494727694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9623514e78942df8a68ea3daae03e92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 494727701}
-  _networkObjectCache: {fileID: 0}
---- !u!114 &494727701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 494727694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <IsNested>k__BackingField: 0
-  <ComponentIndex>k__BackingField: 0
-  <PredictedSpawn>k__BackingField: {fileID: 0}
-  <PredictedOwner>k__BackingField: {fileID: 0}
-  NetworkBehaviours: []
-  InitializedParentNetworkBehaviour: {fileID: 0}
-  InitializedNestedNetworkObjects: []
-  RuntimeParentNetworkBehaviour: {fileID: 0}
-  RuntimeChildNetworkBehaviours: []
-  _isNetworked: 1
-  _isSpawnable: 0
-  _isGlobal: 0
-  _initializeOrder: 0
-  _preventDespawnOnDisconnect: 0
-  _defaultDespawnType: 0
-  NetworkObserver: {fileID: 0}
-  _enablePrediction: 0
-  _predictionType: 0
-  _graphicalObject: {fileID: 0}
-  _detachGraphicalObject: 0
-  _enableStateForwarding: 1
-  _networkTransform: {fileID: 0}
-  _ownerInterpolation: 1
-  _ownerSmoothedProperties: 255
-  _adaptiveInterpolation: 3
-  _spectatorSmoothedProperties: 255
-  _spectatorInterpolation: 2
-  _enableTeleport: 0
-  _teleportThreshold: 1
-  <PrefabId>k__BackingField: 65535
-  <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 0
-  <SceneId>k__BackingField: 4269797343
-  SerializedTransformProperties:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    Scale: {x: 0, y: 0, z: 0}
-    IsValid: 0
 --- !u!1 &813852981
 GameObject:
   m_ObjectHideFlags: 0
@@ -1084,6 +1017,7 @@ MonoBehaviour:
   _lobbyManager: {fileID: 12458988}
   _lobbyUserPanelPrefab: {fileID: 3978891076063150099, guid: 2ae0ad14daf436c40b9798a7c77844c0, type: 3}
   _lobbyUserPanelHolder: {fileID: 1919931196}
+  _startGameButton: {fileID: 494727694}
 --- !u!1 &965296308
 GameObject:
   m_ObjectHideFlags: 0
@@ -1278,7 +1212,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6940239210108254373, guid: b2be2a5723822674d8d3b498ce2b3dd4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -776.2
       objectReference: {fileID: 0}
     - target: {fileID: 6940239210108254373, guid: b2be2a5723822674d8d3b498ce2b3dd4, type: 3}
       propertyPath: m_AnchoredPosition.y
