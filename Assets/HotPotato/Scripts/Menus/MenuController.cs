@@ -42,6 +42,9 @@ namespace HotPotato.Menus
         [BoxGroup("Credits"), Required]
         [SerializeField] private GameObject _creditsMenu;
         
+        [BoxGroup("Tutorial"), Required]
+        [SerializeField] private GameObject _tutorialMenu;
+        
         private Dictionary<UserData, LobbyUserPanel> _lobbyUserPanels = new();
         
         private void Awake()
@@ -120,9 +123,16 @@ namespace HotPotato.Menus
             CloseScreens();
             _creditsMenu.SetActive(true);
         }
+        
+        public void OpenTutorialMenu()
+        {
+            CloseScreens();
+            _tutorialMenu.SetActive(true);
+        }
 
         private void CloseScreens()
         {
+            _tutorialMenu.SetActive(false);
             _creditsMenu.SetActive(false);
             _optionsMenu.SetActive(false);
             _lobbyMenu.SetActive(false);
