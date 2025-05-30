@@ -2829,6 +2829,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2180282467328661110, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _ease
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2180282467328661110, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
       propertyPath: _conveyorBeltNetworkTransform
       value: 
       objectReference: {fileID: 4234887213002655759}
@@ -4578,7 +4582,7 @@ PrefabInstance:
     - target: {fileID: -6193157501974498027, guid: 3407f118b8e66c344a92b473edd215d5, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 8368722655750445499, guid: 3407f118b8e66c344a92b473edd215d5, type: 3}
+      objectReference: {fileID: 2100000, guid: 61d115572749cdd44bc97de1e5141a73, type: 2}
     - target: {fileID: -4907217088640249361, guid: 3407f118b8e66c344a92b473edd215d5, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -13675,8 +13679,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2043957747}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.13052596, y: -0, z: -0, w: 0.99144495}
-  m_LocalPosition: {x: -0.00000023916346, y: 1.22, z: -2.05}
+  m_LocalRotation: {x: 0.09068231, y: 0, z: 0, w: 0.9958799}
+  m_LocalPosition: {x: 0, y: 1.016, z: -1.973}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
