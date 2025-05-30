@@ -1291,6 +1291,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bomb
       objectReference: {fileID: 0}
+    - target: {fileID: 5206737241577397464, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5206737241577397464, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5693768737297876056, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
