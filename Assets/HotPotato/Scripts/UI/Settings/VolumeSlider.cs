@@ -1,4 +1,5 @@
-﻿using HotPotato.Audio;
+﻿using System;
+using HotPotato.Audio;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,11 @@ namespace HotPotato.UI.Settings
         private void Awake()
         {
             _slider = GetComponent<Slider>();
+        }
+
+        private void Start()
+        {
+            _slider.value = AudioManager.Instance.GetBusVolume(_audioBus);
             _slider.onValueChanged.AddListener(OnVolumeChanged);
         }
 
