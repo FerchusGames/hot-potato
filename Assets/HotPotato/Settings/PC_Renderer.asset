@@ -153,6 +153,23 @@ MonoBehaviour:
     executionOrder: 0
     alwaysEnable: 0
     cameraTypes: 5
+--- !u!114 &-1745356670678285307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4bdb6dd14f6f00478b0543e3f8446e7, type: 3}
+  m_Name: '[SCPE] ColorizeRenderer'
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    executionOrder: 0
+    alwaysEnable: 0
+    cameraTypes: 5
 --- !u!114 &-518418110224665887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,6 +270,8 @@ MonoBehaviour:
   - {fileID: -2344459483788353072}
   - {fileID: -3461218898600349454}
   - {fileID: -439773897550574317}
+  - {fileID: 1647440344545421765}
+  - {fileID: -1745356670678285307}
   m_RendererFeatureMap: ad6b866f10d7b46ccb0fbcae1382124c93d4dd6c76b5d902
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
@@ -353,6 +372,24 @@ MonoBehaviour:
     executionOrder: 0
     alwaysEnable: 0
     cameraTypes: 5
+--- !u!114 &1647440344545421765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f58c0e0fb1b4c7549b2b50948300b0e5, type: 3}
+  m_Name: '[SCPE] FogRenderer'
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    executionOrder: 0
+    alwaysEnable: 0
+    cameraTypes: 5
+    skipTransparents: 1
 --- !u!114 &2457064006025080563
 MonoBehaviour:
   m_ObjectHideFlags: 0

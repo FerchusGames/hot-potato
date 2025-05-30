@@ -18,7 +18,7 @@ MonoBehaviour:
     m_Value: 0
   levels:
     m_OverrideState: 1
-    m_Value: 28
+    m_Value: 27
   hue:
     m_OverrideState: 0
     m_Value: 256
