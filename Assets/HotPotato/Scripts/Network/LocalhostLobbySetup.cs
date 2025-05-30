@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+
+using System;
 using FishNet.Object;
 using FishNet.Transporting.Tugboat;
 using Sirenix.OdinInspector;
@@ -33,3 +35,5 @@ namespace HotPotato.Network
         }
     }
 }
+
+#endif

@@ -30,6 +30,21 @@ namespace HotPotato.Menus
         [BoxGroup("Lobby"), Required]
         [SerializeField] private Transform _lobbyUserPanelHolder;
 
+        [BoxGroup("Lobby"), Required]
+        [SerializeField] private GameObject _startGameButton;
+        
+        [BoxGroup("Lobby"), Required]
+        [SerializeField] private TextMeshProUGUI _playerCountText;
+        
+        [BoxGroup("Options"), Required]
+        [SerializeField] private GameObject _optionsMenu;
+        
+        [BoxGroup("Credits"), Required]
+        [SerializeField] private GameObject _creditsMenu;
+        
+        [BoxGroup("Tutorial"), Required]
+        [SerializeField] private GameObject _tutorialMenu;
+        
         private Dictionary<UserData, LobbyUserPanel> _lobbyUserPanels = new();
         
         private void Awake()
@@ -42,6 +57,8 @@ namespace HotPotato.Menus
         {
             ClearUserPanels();
             
+            UpdatePlayerCount();
+            UpdateStartGameButtonVisibility();
             lobbyData.Name = UserData.Me.Name + "'s Lobby";
             _lobbyTitle.text = lobbyData.Name;
             OpenLobbyMenu();
@@ -53,6 +70,8 @@ namespace HotPotato.Menus
         {
             ClearUserPanels();
             
+            UpdatePlayerCount();
+            UpdateStartGameButtonVisibility();
             _lobbyTitle.text = lobbyData.Name;
             OpenLobbyMenu();
 
@@ -64,11 +83,15 @@ namespace HotPotato.Menus
         
         public void OnUserJoined(UserData userData)
         {
+            UpdatePlayerCount();
+            UpdateStartGameButtonVisibility();
             SetupUserPanel(userData);
         }
 
         public void OnUserLeft(UserLobbyLeaveData userLobbyLeaveData)
         {
+            UpdatePlayerCount();
+            UpdateStartGameButtonVisibility();
             DestroyUserPanel(userLobbyLeaveData);
         }
 
@@ -83,14 +106,35 @@ namespace HotPotato.Menus
             _mainMenu.SetActive(true);
         }
         
-        private void OpenLobbyMenu()
+        public void OpenOptionsMenu()
+        {
+            CloseScreens();
+            _optionsMenu.SetActive(true);
+        }
+        
+        public void OpenLobbyMenu()
         {
             CloseScreens();
             _lobbyMenu.SetActive(true);
         }
+        
+        public void OpenCreditsMenu()
+        {
+            CloseScreens();
+            _creditsMenu.SetActive(true);
+        }
+        
+        public void OpenTutorialMenu()
+        {
+            CloseScreens();
+            _tutorialMenu.SetActive(true);
+        }
 
         private void CloseScreens()
         {
+            _tutorialMenu.SetActive(false);
+            _creditsMenu.SetActive(false);
+            _optionsMenu.SetActive(false);
             _lobbyMenu.SetActive(false);
             _mainMenu.SetActive(false);
         }
@@ -116,12 +160,25 @@ namespace HotPotato.Menus
         
         private void ClearUserPanels()
         {
-            foreach (GameObject child in _lobbyUserPanelHolder)
+            foreach (Transform child in _lobbyUserPanelHolder)
             {
-               Destroy(child);
+               Destroy(child.gameObject);
             }
             
             _lobbyUserPanels.Clear();
+        }
+        
+        private void UpdateStartGameButtonVisibility()
+        {
+            bool isHost = _lobbyManager.HasLobby && _lobbyManager.IsPlayerOwner;
+            bool hasEnoughPlayers = _lobbyManager.MemberCount >= 2;
+    
+            _startGameButton.SetActive(isHost && hasEnoughPlayers);
+        }
+
+        private void UpdatePlayerCount()
+        {
+            _playerCountText.text = _lobbyManager.MemberCount + "/" + _lobbyManager.MaxMembers;
         }
     }
 }

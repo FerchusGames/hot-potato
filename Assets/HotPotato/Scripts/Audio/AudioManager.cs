@@ -7,26 +7,21 @@ using Sirenix.OdinInspector;
 
 namespace HotPotato.Audio
 {
+    public enum AudioBus
+    {
+        Master,
+        Music,
+        Ambience,
+        SFX,
+        Comms
+    }
+
     public class AudioManager : Singleton<AudioManager>
     {
-        [Header("Volume")]
-        [Range(0, 1)]
-        public float masterVolume = 1;
-        [Range(0, 1)]
-        public float musicVolume = 1;
-        [Range(0, 1)]
-        public float ambienceVolume = 1;
-        [Range(0, 1)]
-        public float sfxVolume = 1;
-        [Range(0, 1)]
-        public float commsVolume = 1;
+        [Required] [SerializeField] private EventReferenceSO _ambienceEventReference;
 
-        [Required]
-        [SerializeField] private EventReferenceSO _ambienceEventReference;
-        
-        [Required]
-        [SerializeField] private EventReferenceSO _musicEventReference;
-        
+        [Required] [SerializeField] private EventReferenceSO _musicEventReference;
+
         private Bus _masterBus;
         private Bus _musicBus;
         private Bus _ambienceBus;
@@ -42,7 +37,7 @@ namespace HotPotato.Audio
         protected override void Awake()
         {
             base.Awake();
-            
+
             _eventInstances = new List<EventInstance>();
             _eventEmitters = new List<StudioEventEmitter>();
 
@@ -59,25 +54,71 @@ namespace HotPotato.Audio
             InitializeMusic(_musicEventReference.EventReference);
         }
 
-        private void Update()
-        {
-            _masterBus.setVolume(masterVolume);
-            _musicBus.setVolume(musicVolume);
-            _ambienceBus.setVolume(ambienceVolume);
-            _sfxBus.setVolume(sfxVolume);
-            _commsBus.setVolume(commsVolume);
-        }
-
         private void InitializeAmbience(EventReference ambienceEventReference)
         {
+            if (ambienceEventReference.IsNull) return;
+
             _ambienceEventInstance = CreateInstance(ambienceEventReference);
             _ambienceEventInstance.start();
         }
 
         private void InitializeMusic(EventReference musicEventReference)
         {
+            if (musicEventReference.IsNull) return;
+
             _musicEventInstance = CreateInstance(musicEventReference);
             _musicEventInstance.start();
+        }
+
+        public void SetBusVolume(AudioBus bus, float volume)
+        {
+            switch (bus)
+            {
+                case AudioBus.Master:
+                    _masterBus.setVolume(volume);
+                    break;
+                case AudioBus.Music:
+                    _musicBus.setVolume(volume);
+                    break;
+                case AudioBus.Ambience:
+                    _ambienceBus.setVolume(volume);
+                    break;
+                case AudioBus.SFX:
+                    _sfxBus.setVolume(volume);
+                    break;
+                case AudioBus.Comms:
+                    _commsBus.setVolume(volume);
+                    break;
+            }
+        }
+
+        public float GetBusVolume(AudioBus bus)
+        {
+            float volume;
+            
+            switch (bus)
+            {
+                case AudioBus.Master:
+                    _masterBus.getVolume(out volume);
+                    break;
+                case AudioBus.Music:
+                    _musicBus.getVolume(out volume);
+                    break;
+                case AudioBus.Ambience:
+                    _ambienceBus.getVolume(out volume);
+                    break;
+                case AudioBus.SFX:
+                    _sfxBus.getVolume(out volume);
+                    break;
+                case AudioBus.Comms:
+                    _commsBus.getVolume(out volume);
+                    break;
+                default:
+                    volume = 1f;
+                    break;
+            }
+            
+            return volume;
         }
 
         public void SetAmbienceParameter(string parameterName, float parameterValue)

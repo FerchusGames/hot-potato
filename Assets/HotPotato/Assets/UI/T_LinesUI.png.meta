@@ -95,12 +95,254 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: T_LinesUI_0
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 677
+        width: 281
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8b9fa8cb08e67b4a957a8960c139ad9
+      internalID: -184883510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_LinesUI_1
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 675
+        width: 282
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fcf63570f74bff4583b6451416a358f
+      internalID: -1462812686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_LinesUI_2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 673
+        width: 259
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1aa28d22741742d4482e0c54ef2b3c98
+      internalID: -1821030704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_LongLine1
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 606
+        width: 977
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e95dee7a7f7201c498d6bc1489ba2c4b
+      internalID: 489928764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_LongLine2
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 538
+        width: 976
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cd972ae84cef3b4a8afd6cfdbe10d18
+      internalID: -332251321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_HandleGrey
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 458
+        width: 31
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35b43a64fc468ec43ac300fe2dbbbd9e
+      internalID: -380581587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_HandleWhite
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 456
+        width: 31
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2aed21ffa11efc4d8954fc98b624f11
+      internalID: 1703343724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_Underline
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 465
+        width: 178
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc2122f393a456e40b255146f3f0d722
+      internalID: -1595153051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_LinesUI_8
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 465
+        width: 315
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58c51930a4348a3459c92f2f8b68f693
+      internalID: 1753110122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_LinesUI_9
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 400
+        width: 299
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18e4362eab07c0b4da9c14389e852687
+      internalID: 1835028167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: T_LinesUI_10
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 335
+        width: 359
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 447dafefedc425e4e885c8ed1c0e4ca0
+      internalID: -644898819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 2ec42453d7ffcdb40b9c44aee31e20e2
     internalID: 0
     vertices: []
     indices: 
@@ -109,7 +351,18 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      T_HandleGrey: -380581587
+      T_HandleWhite: 1703343724
+      T_LinesUI_0: -184883510
+      T_LinesUI_1: -1462812686
+      T_LinesUI_10: -644898819
+      T_LinesUI_2: -1821030704
+      T_LinesUI_8: 1753110122
+      T_LinesUI_9: 1835028167
+      T_LongLine1: 489928764
+      T_LongLine2: -332251321
+      T_Underline: -1595153051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

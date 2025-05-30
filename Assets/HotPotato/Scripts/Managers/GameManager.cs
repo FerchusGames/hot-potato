@@ -75,7 +75,7 @@ namespace HotPotato.Managers
         [Server]
         private void SetCurrentRoundModuleSettings(ModulesSpawnedEvent modulesSpawnedEvent)
         {
-            var clueData = new ClueData(modulesSpawnedEvent.SettingsList, false);
+            var clueData = new ClueData(modulesSpawnedEvent.SettingsList, true);
             
             EventBus<GeneratedClueDataEvent>.Raise(new GeneratedClueDataEvent
             {
