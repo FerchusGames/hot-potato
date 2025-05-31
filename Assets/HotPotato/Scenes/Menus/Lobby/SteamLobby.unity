@@ -1393,8 +1393,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isPersistent: 0
-  _ambienceEventReference: {fileID: 11400000, guid: 6b331c73102fb764297dbe061f14634b, type: 2}
-  _musicEventReference: {fileID: 11400000, guid: 329ba3ee796e95b4ab953fc40073dc74, type: 2}
+  _ambienceEventReference: {fileID: 11400000, guid: 19bb9685f365b20419ae7c16c1ce7e27, type: 2}
+  _musicEventReference: {fileID: 11400000, guid: bd46620b4a52a40429b5736f86a71f32, type: 2}
 --- !u!4 &324310194
 Transform:
   m_ObjectHideFlags: 0

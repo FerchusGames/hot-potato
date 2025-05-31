@@ -2,13 +2,13 @@
 <objects serializationModel="Studio.02.03.00">
 	<object class="Event" id="{dd921f2d-e714-43bd-8957-84b023a942c9}">
 		<property name="name">
-			<value>Music</value>
+			<value>GameplayMusic</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
 		</property>
 		<relationship name="folder">
-			<destination>{73108f91-033c-40db-ae39-19286edc8e50}</destination>
+			<destination>{68222a95-4d27-4f57-a7a2-2edabbabb222}</destination>
 		</relationship>
 		<relationship name="mixer">
 			<destination>{31d66792-9b8d-4187-90f7-b0714efe8dc4}</destination>
@@ -121,6 +121,9 @@
 		<property name="isCutoff">
 			<value>true</value>
 		</property>
+		<property name="start">
+			<value>2</value>
+		</property>
 		<relationship name="event">
 			<destination>{3bc964ad-e518-4fde-a933-4ebe14372da4}</destination>
 		</relationship>
@@ -128,9 +131,6 @@
 	<object class="EventSound" id="{44cdefb8-c2db-4406-8173-3cdeaf045bd4}">
 		<property name="isCutoff">
 			<value>true</value>
-		</property>
-		<property name="start">
-			<value>2</value>
 		</property>
 		<relationship name="modulators">
 			<destination>{1be91abf-d2b4-429d-a977-077d1fcf7043}</destination>

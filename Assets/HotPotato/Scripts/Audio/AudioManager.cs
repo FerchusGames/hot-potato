@@ -19,7 +19,6 @@ namespace HotPotato.Audio
     public class AudioManager : Singleton<AudioManager>
     {
         [Required] [SerializeField] private EventReferenceSO _ambienceEventReference;
-
         [Required] [SerializeField] private EventReferenceSO _musicEventReference;
 
         private Bus _masterBus;

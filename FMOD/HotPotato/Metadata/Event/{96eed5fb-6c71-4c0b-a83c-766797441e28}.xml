@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.03.00">
 	<object class="Event" id="{96eed5fb-6c71-4c0b-a83c-766797441e28}">
 		<property name="name">
-			<value>Gameplay</value>
+			<value>Track1</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -54,7 +54,7 @@
 	<object class="MarkerTrack" id="{b9c3e4a4-2df6-4930-b647-f01fd9c7ad58}" />
 	<object class="GroupTrack" id="{ce592612-0f1e-488f-86f7-34b0c8fa1d5c}">
 		<relationship name="modules">
-			<destination>{8762a24e-f708-4b8c-99d2-d65628d9d5f5}</destination>
+			<destination>{4f3c81f8-518e-47c0-b1fd-8f19f243fa2e}</destination>
 		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{9166aacf-f621-471c-bbfa-8928db75dfad}</destination>
@@ -62,16 +62,13 @@
 	</object>
 	<object class="Timeline" id="{d36d8658-21b5-4f0c-a477-f99a70f9e418}">
 		<relationship name="modules">
-			<destination>{8762a24e-f708-4b8c-99d2-d65628d9d5f5}</destination>
+			<destination>{4f3c81f8-518e-47c0-b1fd-8f19f243fa2e}</destination>
 		</relationship>
 		<relationship name="markers">
 			<destination>{ba6e802e-b61a-4685-aa73-6d3cb0f716a0}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{f4284d91-7c56-40bf-adb5-f856953d08c5}">
-		<property name="pitch">
-			<value>24</value>
-		</property>
 		<relationship name="effectChain">
 			<destination>{77ee76b8-0b40-415e-b6f2-1df5a491fde4}</destination>
 		</relationship>
@@ -88,12 +85,12 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{464ff6b2-63cb-4c11-8c57-3cec3517ca13}" />
-	<object class="SingleSound" id="{8762a24e-f708-4b8c-99d2-d65628d9d5f5}">
+	<object class="SingleSound" id="{4f3c81f8-518e-47c0-b1fd-8f19f243fa2e}">
 		<property name="length">
-			<value>7.9921541950113379</value>
+			<value>94.206666666666663</value>
 		</property>
 		<relationship name="audioFile">
-			<destination>{b47089ba-40bc-43d9-9b19-869cd1710ddb}</destination>
+			<destination>{2cd397d2-4afd-4cb8-88ba-c6e33a9fa801}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{9166aacf-f621-471c-bbfa-8928db75dfad}">
@@ -115,7 +112,7 @@
 			<value>0</value>
 		</property>
 		<property name="length">
-			<value>7.9921541950113397</value>
+			<value>93.600000000000009</value>
 		</property>
 		<relationship name="timeline">
 			<destination>{d36d8658-21b5-4f0c-a477-f99a70f9e418}</destination>
