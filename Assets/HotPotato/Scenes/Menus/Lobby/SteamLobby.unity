@@ -1238,10 +1238,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2045682456}
     m_Modifications:
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 2032893100}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 4178102002716386285, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_text
       value: '3. MODULES
@@ -1260,6 +1292,14 @@ PrefabInstance:
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 1921312491}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
     - target: {fileID: 7224766650376915584, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2957,10 +2997,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2045682456}
     m_Modifications:
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 1892636620}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 4178102002716386285, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_text
       value: '2. THE BOMB
@@ -2979,6 +3051,14 @@ PrefabInstance:
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 295105541}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
     - target: {fileID: 7224766650376915584, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3858,9 +3938,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dd260ec3cda4094aaa4d1971f263883, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hoverSoundEventReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
+  _clickSoundEventReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
   _underlineImage: {fileID: 1538416489}
   _isUnderlined: 1
-  _shouldPlayClickSound: 1
 --- !u!1001 &1525097114
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4422,6 +4503,26 @@ PrefabInstance:
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 2051698820}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 4178102002716386285, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_text
       value: '7. YOU''RE ALL READY!
@@ -5657,10 +5758,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2045682456}
     m_Modifications:
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 295105541}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 4178102002716386285, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_text
       value: '4. CLUE SYSTEM
@@ -5680,6 +5813,14 @@ PrefabInstance:
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 2144968330}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
     - target: {fileID: 7224766650376915584, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6037,10 +6178,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2045682456}
     m_Modifications:
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 2144968330}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 4178102002716386285, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_text
       value: '6. HOW TO WIN
@@ -6062,6 +6235,14 @@ PrefabInstance:
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 1705351045}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
     - target: {fileID: 7224766650376915584, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6284,10 +6465,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2045682456}
     m_Modifications:
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 1921312491}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 2037230011632916143, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 3197533550362304815, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 4178102002716386285, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_text
       value: '5. YOUR TURN
@@ -6319,6 +6532,14 @@ PrefabInstance:
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 2051698820}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
     - target: {fileID: 7224766650376915584, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6656,6 +6877,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2045682456}
     m_Modifications:
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 905567696900619161, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
     - target: {fileID: 4178102002716386285, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_text
       value: '1. WELCOME TO HOT POTATO!
@@ -6678,6 +6911,14 @@ PrefabInstance:
       propertyPath: _targetMenu
       value: 
       objectReference: {fileID: 2032893100}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _clickSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 057d64a9ef04c674492fd0cb3c3c0cf8, type: 2}
+    - target: {fileID: 6603414014176177386, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
+      propertyPath: _hoverSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 9dc05a60e9217dd468dc18fe89c55cd9, type: 2}
     - target: {fileID: 7224766650376915584, guid: e5c36fd6ab1d6254f8917625c9521dd9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
