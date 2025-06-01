@@ -19,9 +19,9 @@
 			<value>3</value>
 		</property>
 		<property name="enumerationLabels">
-			<value>Silence</value>
-			<value>MainMenu</value>
-			<value>Gameplay</value>
+			<value>Track1</value>
+			<value>Track2</value>
+			<value>Track3</value>
 		</property>
 		<property name="initialValue">
 			<value>0</value>

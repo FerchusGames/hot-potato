@@ -1,5 +1,6 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using HotPotato.Audio;
 using HotPotato.GameFlow.TurnStateMachine;
 using TMPro;
 using UnityEngine;
@@ -11,7 +12,8 @@ namespace HotPotato.Bomb.CenterScreen
         [SerializeField] private int _initialTime = 20;
 
         [SerializeField] private TextMeshProUGUI _text;
-    
+        [SerializeField] private EventReferenceSO _tickingSoundEventReference;
+        
         private readonly SyncTimer _timer = new();
         private readonly SyncVar<bool> _isRunning = new(true);
         
@@ -19,6 +21,7 @@ namespace HotPotato.Bomb.CenterScreen
         private EventBinding<BombTickingEnterStateEvent> _enterStateEventBinding;
         private EventBinding<BombTickingExitStateEvent> _exitStateEventBinding;
         
+        private int _previousTime = 0;
         private bool _timerExpired = false;
     
         public override void OnStartServer()
@@ -54,13 +57,19 @@ namespace HotPotato.Bomb.CenterScreen
         private void UpdateTimer()
         {
             _timer.Update();
-    
+            
             if (IsClientStarted)
             {
-                var shownTime = Mathf.CeilToInt(_timer.Remaining).ToString();
-                _text.text = shownTime;
+                var shownTime = Mathf.CeilToInt(_timer.Remaining);
+                _text.text = shownTime.ToString();
+
+                if (shownTime < _previousTime)
+                {
+                    AudioManager.Instance.PlayOneShot(_tickingSoundEventReference.EventReference, transform.position);
+                }
             }
         
+            _previousTime = Mathf.CeilToInt(_timer.Remaining);
             CheckTimer();
         }
 
@@ -81,6 +90,13 @@ namespace HotPotato.Bomb.CenterScreen
             _timerExpired = false;
             _timer.StartTimer(_initialTime);
             SetVisibilityObserversRpc(true);
+            ResetTimerClientRpc();
+        }
+        
+        [ObserversRpc]
+        private void ResetTimerClientRpc()
+        {
+            AudioManager.Instance.PlayOneShot(_tickingSoundEventReference.EventReference, transform.position);
         }
     
         [Server]

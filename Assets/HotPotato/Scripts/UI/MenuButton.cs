@@ -17,12 +17,13 @@ namespace HotPotato.UI
 
         protected TextMeshProUGUI _text;
         protected Color _originalColor;
+
+        [SerializeField] private EventReferenceSO _hoverSoundEventReference;
+        [SerializeField] private EventReferenceSO _clickSoundEventReference;
         
         [SerializeField] private Image _underlineImage;
 
         [SerializeField] private bool _isUnderlined = true;
-        
-        [SerializeField] private bool _shouldPlayClickSound = true;
         
         protected virtual void Awake()
         {
@@ -32,7 +33,7 @@ namespace HotPotato.UI
             _text = GetComponentInChildren<TextMeshProUGUI>();
             _originalColor = _text.color;
             
-            if (_shouldPlayClickSound) _button.onClick.AddListener(PlayClickSound);
+            _button.onClick.AddListener(PlayClickSound);
         }
 
         protected virtual void OnDisable()
@@ -65,6 +66,8 @@ namespace HotPotato.UI
             {
                 _underlineImage.enabled = true;
             }
+            
+            PlaySelectedSound();
         }
 
         public virtual void OnDeselect(BaseEventData eventData)
@@ -96,14 +99,20 @@ namespace HotPotato.UI
             _text.color = _originalColor;
         }
         
-        protected virtual void PlayClickSound()
+        private void PlayClickSound()
         {
-            // Play a click sound when the button is clicked
+            if (_clickSoundEventReference != null)
+            {
+                AudioManager.Instance.PlayOneShot(_clickSoundEventReference.EventReference, transform.position);
+            }
         }
         
         private void PlaySelectedSound()
         {
-            // Play a sound when the button is selected
+            if (_hoverSoundEventReference != null)
+            {
+                AudioManager.Instance.PlayOneShot(_hoverSoundEventReference.EventReference, transform.position);
+            }
         }
     }   
 }

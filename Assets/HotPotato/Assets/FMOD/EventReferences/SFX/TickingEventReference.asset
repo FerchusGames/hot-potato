@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65979294910044d6b68aa83886e99063, type: 3}
-  m_Name: MusicEventReference
+  m_Name: TickingEventReference
   m_EditorClassIdentifier: 
   <EventReference>k__BackingField:
     Guid:
-      Data1: -577626323
-      Data2: 1136518932
-      Data3: -1333504119
-      Data4: -918378205
-    Path: event:/FMOD Samples/Music
+      Data1: 1430990491
+      Data2: 1329874045
+      Data3: 290367907
+      Data4: -1726486491
+    Path: event:/FMOD Samples/SFX/Tick

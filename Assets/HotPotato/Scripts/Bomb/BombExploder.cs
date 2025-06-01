@@ -1,4 +1,5 @@
 ﻿using FishNet.Object;
+using HotPotato.Audio;
 using HotPotato.GameFlow.TurnStateMachine;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -12,6 +13,9 @@ namespace HotPotato.Bomb
         [Required]
         [SerializeField] private ParticleSystem _explodeParticles;
 
+        [Required]
+        [SerializeField] private EventReferenceSO _explodeSoundEventReference;
+        
         public override void OnStartServer()
         {
             _explodedEventBinding = new EventBinding<ModuleExplodedExitStateEvent>(Explode);
@@ -33,6 +37,7 @@ namespace HotPotato.Bomb
         private void ExplodeClientRpc()
         {
             _explodeParticles.Play();
+            AudioManager.Instance.PlayOneShot(_explodeSoundEventReference.EventReference, transform.position);
         }
     }
 }
