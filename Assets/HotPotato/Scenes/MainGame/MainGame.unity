@@ -10212,6 +10212,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5954312122343557396, guid: 1888ceb2d7f2a94498b6e593ab8d5b0f, type: 3}
+      propertyPath: _tickingSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: c819c2ab6bfa33545921417bb030f298, type: 2}
     - target: {fileID: 5966435908232110368, guid: 1888ceb2d7f2a94498b6e593ab8d5b0f, type: 3}
       propertyPath: <SceneId>k__BackingField
       value: 2007996283
