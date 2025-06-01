@@ -11,7 +11,7 @@ namespace HotPotato.Bomb.CenterScreen
         [SerializeField] private int _initialTime = 20;
 
         [SerializeField] private TextMeshProUGUI _text;
-    
+        
         private readonly SyncTimer _timer = new();
         private readonly SyncVar<bool> _isRunning = new(true);
         

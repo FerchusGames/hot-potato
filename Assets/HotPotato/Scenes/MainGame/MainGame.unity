@@ -2896,6 +2896,30 @@ PrefabInstance:
       propertyPath: <SceneId>k__BackingField
       value: 1451719163
       objectReference: {fileID: 0}
+    - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _explodeSoundEvent.Path
+      value: event:/Explosion
+      objectReference: {fileID: 0}
+    - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _explodeSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: d4064693a4bd50748b42c02e670d4a1d, type: 2}
+    - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _explodeSoundEvent.Guid.Data1
+      value: -1340010338
+      objectReference: {fileID: 0}
+    - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _explodeSoundEvent.Guid.Data2
+      value: 1305345324
+      objectReference: {fileID: 0}
+    - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _explodeSoundEvent.Guid.Data3
+      value: 858921394
+      objectReference: {fileID: 0}
+    - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _explodeSoundEvent.Guid.Data4
+      value: -1171328310
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
