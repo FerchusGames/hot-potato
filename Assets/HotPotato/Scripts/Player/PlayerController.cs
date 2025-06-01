@@ -15,7 +15,10 @@ namespace HotPotato.Player
         
         [Required]
         [SerializeField] private AbilityController _abilityControllerObject;
-
+        
+        [SerializeField] private int _rendererLayer;
+        [SerializeField] private GameObject _rendererParent;
+        
         private IAbilityController AbilityController => _abilityControllerObject as IAbilityController;
         
         public override void OnStartServer()
@@ -34,8 +37,19 @@ namespace HotPotato.Player
             {
                 PlayerObject = gameObject,
             });
+            
+            SetLayerRecursively(_rendererParent, _rendererLayer);
         }
 
+        private void SetLayerRecursively(GameObject obj, int layer)
+        {
+            obj.layer = layer;
+            foreach (Transform child in obj.transform)
+            {
+                SetLayerRecursively(child.gameObject, layer);
+            }
+        }
+        
         [Server]
         public void RequestToMoveBomb()
         {
