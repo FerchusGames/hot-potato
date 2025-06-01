@@ -15,6 +15,12 @@ namespace HotPotato.UI
         {
             _fieldNameText.text = GetFieldName(clueType, clue.Key);
             _fieldCountText.text = GetFieldCount(clue);
+            
+            RectTransform rectTransform = GetComponent<RectTransform>();
+            Vector3 localPos = rectTransform.localPosition;
+            rectTransform.localPosition = new Vector3(localPos.x, localPos.y, 0f);
+            
+            rectTransform.localEulerAngles = Vector3.zero;
         }
         
         private string GetFieldName(BombClueType clueType, int index)
