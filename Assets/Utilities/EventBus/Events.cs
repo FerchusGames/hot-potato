@@ -81,6 +81,7 @@ public struct MoveBombToPlayerEvent : IEvent
 }
 public struct BombHasReachedPlayerEvent : IEvent { }
 
+public struct BombExplodedClientEvent : IEvent { }
 
 public struct AbilityPlayingEvent : IEvent
 {
