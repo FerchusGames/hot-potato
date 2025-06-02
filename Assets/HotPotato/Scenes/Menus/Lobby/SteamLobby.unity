@@ -6114,7 +6114,7 @@ PrefabInstance:
 
         <size=32>Each round
         ends when only one player is left standing. A new round will start until
-        a player wins 3 rounds, which will make them the match winner.</size>
+        a player wins 2 rounds, which will make them the match winner.</size>
 
 
 '
