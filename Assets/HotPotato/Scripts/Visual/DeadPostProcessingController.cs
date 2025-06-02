@@ -38,11 +38,9 @@ namespace HotPotato.Visual
 
         private void EnableVolume()
         {
-            _blindingImage.alpha = 1f;
-            
             _blindingImageSequence?.Kill();
             _blindingImageSequence = DOTween.Sequence();
-            _blindingImageSequence.AppendCallback(() => _blindingImage.alpha = 1f);
+            _blindingImageSequence.Append(_blindingImage.DOFade(1f, _fadeInDuration).SetEase(_fadeInEase));
             _blindingImageSequence.AppendCallback(() => _postProcessingVolume.enabled = true);
             _blindingImageSequence.AppendInterval(_holdDuration);
             _blindingImageSequence.Append(_blindingImage.DOFade(0f, _fadeOutDuration).SetEase(_fadeOutEase));
@@ -61,7 +59,6 @@ namespace HotPotato.Visual
             _blindingImageSequence = DOTween.Sequence();
             _blindingImageSequence.Append(_blindingImage.DOFade(1f, _fadeInDuration).SetEase(_fadeInEase));
             _blindingImageSequence.AppendCallback(() => _postProcessingVolume.enabled = false);
-            _blindingImageSequence.AppendInterval(_holdDuration);
             _blindingImageSequence.Append(_blindingImage.DOFade(0f, _fadeOutDuration).SetEase(_fadeOutEase));
         }
     }
