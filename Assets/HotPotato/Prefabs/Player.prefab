@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 1285970819735708760}
   - component: {fileID: 2386174960037725344}
   - component: {fileID: 934893962115968240}
+  - component: {fileID: 2465507489517911578}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -260,6 +261,22 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 5966435908232110368}
   _networkObjectCache: {fileID: 5966435908232110368}
   trackingTransform: {fileID: 2953052149538927975}
+--- !u!114 &2465507489517911578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883970706459938549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82bcee63a2b44555b75ab6d1dc7df18a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 5966435908232110368}
+  _networkObjectCache: {fileID: 0}
+  _faceMeshRenderer: {fileID: 8215302690711207412}
 --- !u!1 &2191116661396762301
 GameObject:
   m_ObjectHideFlags: 0
@@ -769,5 +786,10 @@ PrefabInstance:
 --- !u!4 &7948664946040474613 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1807f938c6341bd419699cf3b75f9204, type: 3}
+  m_PrefabInstance: {fileID: 7621759468944682014}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8215302690711207412 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7221676347913137686, guid: 1807f938c6341bd419699cf3b75f9204, type: 3}
   m_PrefabInstance: {fileID: 7621759468944682014}
   m_PrefabAsset: {fileID: 0}
