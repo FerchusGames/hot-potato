@@ -48,7 +48,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 7043010423837672401}
   _networkObjectCache: {fileID: 7043010423837672401}
-  _roundsToWin: 3
+  _roundsToWin: 2
 --- !u!114 &7043010423837672401
 MonoBehaviour:
   m_ObjectHideFlags: 0
