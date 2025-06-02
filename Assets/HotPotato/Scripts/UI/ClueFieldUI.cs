@@ -13,8 +13,9 @@ namespace HotPotato.UI
 
         public void Initialize(BombClueType clueType, KeyValuePair<int, int> clue)
         {
-            _fieldNameText.text = GetFieldName(clueType, clue.Key);
-            _fieldCountText.text = GetFieldCount(clue);
+            _fieldNameText.text = GetFieldName(clueType, clue.Key) + ":";
+
+        _fieldCountText.text = GetFieldCount(clue);
             
             RectTransform rectTransform = GetComponent<RectTransform>();
             Vector3 localPos = rectTransform.localPosition;

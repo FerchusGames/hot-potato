@@ -13,6 +13,9 @@ namespace HotPotato.UI
         
         [Required]
         [SerializeField] private TextMeshProUGUI _resultText;
+        
+        [SerializeField] private Color _winColor = Color.black;
+        [SerializeField] private Color _loseColor = Color.black;
 
         private EventBinding<WinMatchEvent> _winMatchEventBinding;
         private EventBinding<LoseMatchEvent> _loseMatchEventBinding;
@@ -33,14 +36,14 @@ namespace HotPotato.UI
         private void ShowWinResult(WinMatchEvent winMatchEvent)
         {
             gameObject.SetActive(true);
-            _background.color = Color.yellow;
+            _background.color = _winColor;
             _resultText.text = "You've won the match!";
         }
         
         private void ShowLoseResult()
         {
             gameObject.SetActive(true);
-            _background.color = Color.red;
+            _background.color = _loseColor;
             _resultText.text = "You've lost the match!";
         }
 
