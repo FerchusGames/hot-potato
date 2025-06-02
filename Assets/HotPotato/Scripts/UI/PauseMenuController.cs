@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FishNet;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace HotPotato.UI
@@ -22,6 +23,8 @@ namespace HotPotato.UI
 
         public void QuitMatch()
         {
+            InstanceFinder.ServerManager.StopConnection(true);
+            InstanceFinder.ClientManager.StopConnection();
             SceneManager.LoadScene(0);
         }
     }

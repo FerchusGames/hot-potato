@@ -48,6 +48,7 @@ public struct ModuleClickedEvent : IEvent
 
 public struct ModuleInteractedEvent : IEvent
 {
+    public BombModule Module;
     public BombModuleSettings Settings;
 }
 public struct LoseRoundEvent : IEvent { }

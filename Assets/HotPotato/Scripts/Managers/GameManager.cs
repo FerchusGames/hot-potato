@@ -64,12 +64,11 @@ namespace HotPotato.Managers
             
             var moduleInteractedEvent = new ModuleInteractedEvent
             {
+                Module = module,
                 Settings = module.GetSettings()
             };
 
             EventBus<ModuleInteractedEvent>.Raise(moduleInteractedEvent);
-            
-            module.Despawn();
         }
 
         [Server]

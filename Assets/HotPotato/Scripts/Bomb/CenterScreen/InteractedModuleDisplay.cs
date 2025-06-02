@@ -9,14 +9,10 @@ namespace HotPotato.Bomb.CenterScreen
 {
     public class InteractedModuleDisplay : NetworkBehaviour
     {
-        [Required]
-        [SerializeField] private CanvasGroup _canvasGroup;
+        private EventBinding<ModuleInteractedEvent> _enterStateEventBinding;
+        private EventBinding<ModuleInteractedExitStateEvent> _exitStateEventBinding;
         
-        [Required]
-        [SerializeField] private TextMeshProUGUI _text;
-
-        EventBinding<ModuleInteractedEnterStateEvent> _enterStateEventBinding;
-        EventBinding<ModuleInteractedExitStateEvent> _exitStateEventBinding;
+        private BombModule _interactedModule;
         
         public override void OnStartServer()
         {
@@ -30,40 +26,34 @@ namespace HotPotato.Bomb.CenterScreen
 
         private void RegisterServerEvents()
         {
-            _enterStateEventBinding = new EventBinding<ModuleInteractedEnterStateEvent>(DisplayModule);
-            EventBus<ModuleInteractedEnterStateEvent>.Register(_enterStateEventBinding);
+            _enterStateEventBinding = new EventBinding<ModuleInteractedEvent>(DisplayModule);
+            EventBus<ModuleInteractedEvent>.Register(_enterStateEventBinding);
             
-            _exitStateEventBinding = new EventBinding<ModuleInteractedExitStateEvent>(HideModuleObserversRpc);
+            _exitStateEventBinding = new EventBinding<ModuleInteractedExitStateEvent>(HideModule);
             EventBus<ModuleInteractedExitStateEvent>.Register(_exitStateEventBinding);
         }
         
         private void DeregisterServerEvents()
         {
-            EventBus<ModuleInteractedEnterStateEvent>.Deregister(_enterStateEventBinding);
+            EventBus<ModuleInteractedEvent>.Deregister(_enterStateEventBinding);
             EventBus<ModuleInteractedExitStateEvent>.Deregister(_exitStateEventBinding);
         }
         
         [Server]
-        private void DisplayModule(ModuleInteractedEnterStateEvent enterStateEvent)
+        private void DisplayModule(ModuleInteractedEvent enterStateEvent)
         {
-            var textToShow = string.Join("\n", enterStateEvent.Settings.GetType()
-                .GetFields()
-                .Select(field => $"{field.Name}: {field.GetValue(enterStateEvent.Settings)}"));
+            _interactedModule = enterStateEvent.Module;
             
-            DisplayModuleObserversRpc(textToShow);
+            _interactedModule.transform.position = transform.position;
+            _interactedModule.transform.rotation = transform.rotation;
+            _interactedModule.transform.localScale = transform.localScale;
         }
         
-        [ObserversRpc]
-        private void DisplayModuleObserversRpc(string textToShow)
-        {
-            _text.text = textToShow;
-            _canvasGroup.alpha = 1f;
-        }
 
-        [ObserversRpc]
-        private void HideModuleObserversRpc()
+        [Server]
+        private void HideModule()
         {
-            _canvasGroup.alpha = 0f;
+            _interactedModule.Despawn();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using HotPotato.Bomb;
+using UnityEngine;
 
 namespace HotPotato.GameFlow.TurnStateMachine
 {
@@ -12,6 +13,7 @@ namespace HotPotato.GameFlow.TurnStateMachine
     
     public struct ModuleInteractedEnterStateEvent : IEvent
     {
+        public GameObject ModuleObject;
         public BombModuleSettings Settings;
     }
     public struct ModuleInteractedExitStateEvent : IEvent { }
