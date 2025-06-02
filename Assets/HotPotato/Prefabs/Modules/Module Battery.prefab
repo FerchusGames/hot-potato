@@ -18,7 +18,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0bd90d6b86f6d0c4caaae10a1ab69ba8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0
+      value: 0.00577
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0bd90d6b86f6d0c4caaae10a1ab69ba8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -48,6 +48,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -2004776822554898336, guid: 0bd90d6b86f6d0c4caaae10a1ab69ba8, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: -1294284738371021749, guid: 72ee4ab1fd20c96479f0ea190210a5f4, type: 3}
+    - target: {fileID: -2004776822554898336, guid: 0bd90d6b86f6d0c4caaae10a1ab69ba8, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6170d9d19151ea04aa9e6df78179e665, type: 2}
+    - target: {fileID: -2004776822554898336, guid: 0bd90d6b86f6d0c4caaae10a1ab69ba8, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6170d9d19151ea04aa9e6df78179e665, type: 2}
     - target: {fileID: 919132149155446097, guid: 0bd90d6b86f6d0c4caaae10a1ab69ba8, type: 3}
       propertyPath: m_Name
       value: SM_Battery_Socket
@@ -75,6 +87,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1137827868157086137, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3398463571560985821, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
       propertyPath: m_Name
       value: Module Battery
@@ -82,6 +98,18 @@ PrefabInstance:
     - target: {fileID: 5252841534733289147, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
       propertyPath: <AssetPathHash>k__BackingField
       value: 3892551441205695834
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563024488259323877, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_text
+      value: Battery
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563024488259323877, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_fontSize
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563024488259323877, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6802142995681955726, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
       propertyPath: _meshRenderer
@@ -162,7 +190,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a84b4a84bdc51fb469a7acaf16cdc486, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.00316
+      value: 0.0089300005
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a84b4a84bdc51fb469a7acaf16cdc486, type: 3}
       propertyPath: m_LocalRotation.w
@@ -192,6 +220,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: a84b4a84bdc51fb469a7acaf16cdc486, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: -7387179508022774620, guid: a84b4a84bdc51fb469a7acaf16cdc486, type: 3}
     - target: {fileID: 919132149155446097, guid: a84b4a84bdc51fb469a7acaf16cdc486, type: 3}
       propertyPath: m_Name
       value: SM_Battery
