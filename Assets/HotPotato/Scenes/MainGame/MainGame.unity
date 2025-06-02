@@ -3005,6 +3005,10 @@ PrefabInstance:
       value: event:/Explosion
       objectReference: {fileID: 0}
     - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _defuseSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: e64dedb3186c5ae4da0852a5759f37e2, type: 2}
+    - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
       propertyPath: _explodeSoundEventReference
       value: 
       objectReference: {fileID: 11400000, guid: d4064693a4bd50748b42c02e670d4a1d, type: 2}
