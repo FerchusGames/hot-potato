@@ -2826,7 +2826,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2070255800739524325, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
       propertyPath: _trapAmount
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2180282467328661110, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
       propertyPath: _ease
