@@ -26,18 +26,18 @@ namespace HotPotato.UI
 
         private void UpdateWinRoundCount(WinRoundEvent winRoundEvent)
         {
-            _text.text = winRoundEvent.WinCount.ToString();
+            _text.text = "Wins: " + winRoundEvent.WinCount.ToString();
         }
         
         private void UpdateWinRoundCount(WinMatchEvent winMatchEvent)
         {
-            _text.text = winMatchEvent.WinCount.ToString();
+            _text.text = "Wins: " + winMatchEvent.WinCount.ToString();
         }
-        
+
         private void ResetWinRoundCount()
         {
-            _text.text = "0";
-        }
+            _text.text = "Wins: " + "0";
+    }
         
         private void RegisterEvents()
         {
