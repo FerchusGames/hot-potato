@@ -135,6 +135,7 @@ MonoBehaviour:
   - {fileID: 1285970819735708760}
   - {fileID: 2386174960037725344}
   - {fileID: 934893962115968240}
+  - {fileID: 2465507489517911578}
   - {fileID: 8205258448540242810}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
@@ -230,6 +231,8 @@ MonoBehaviour:
   _abilityControllerObject: {fileID: 2386174960037725344}
   _rendererLayer: 8
   _rendererParent: {fileID: 7855006852729952269}
+  _swaySpeed: 2
+  _swayAmount: 0.00015
 --- !u!114 &2386174960037725344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,9 +276,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82bcee63a2b44555b75ab6d1dc7df18a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
+  _componentIndexCache: 4
   _addedNetworkObject: {fileID: 5966435908232110368}
-  _networkObjectCache: {fileID: 0}
+  _networkObjectCache: {fileID: 5966435908232110368}
   _faceMeshRenderer: {fileID: 8215302690711207412}
 --- !u!1 &2191116661396762301
 GameObject:
@@ -539,7 +542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca57e1c36204a2f9f9996c061b463a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 5966435908232110368}
   _networkObjectCache: {fileID: 5966435908232110368}
   _onTurnCamera: {fileID: 13738546431516302}

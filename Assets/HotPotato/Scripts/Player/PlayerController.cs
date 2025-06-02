@@ -1,9 +1,12 @@
-﻿using FishNet.Object;
+﻿using System;
+using DG.Tweening;
+using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using HotPotato.AbilitySystem;
 using Sirenix.OdinInspector;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace HotPotato.Player
 {
@@ -19,6 +22,10 @@ namespace HotPotato.Player
         [SerializeField] private int _rendererLayer;
         [SerializeField] private GameObject _rendererParent;
         
+        [SerializeField] private float _swaySpeed;
+        [SerializeField] private float _swayAmount;
+        private float _timeOffset;
+        
         private IAbilityController AbilityController => _abilityControllerObject as IAbilityController;
         
         public override void OnStartServer()
@@ -31,6 +38,8 @@ namespace HotPotato.Player
 
         public override void OnStartClient()
         {
+            StartSwaying();
+            
             if (!IsOwner) return;
             
             EventBus<OwnedPlayerSpawnedEvent>.Raise(new OwnedPlayerSpawnedEvent
@@ -151,6 +160,19 @@ namespace HotPotato.Player
             }
             
             EventBus<LoseMatchEvent>.Raise(new LoseMatchEvent());
+        }
+
+        private void StartSwaying()
+        {
+            _timeOffset = Random.Range(0f, 2f * Mathf.PI);
+        }
+
+        private void Update()
+        {
+            float sway = Mathf.Sin((Time.time * _swaySpeed) + _timeOffset) * _swayAmount;
+            Vector3 newPosition = _rendererParent.transform.localPosition;
+            newPosition.x += sway - (sway * Time.deltaTime);
+            _rendererParent.transform.localPosition = newPosition;
         }
     }
 }
