@@ -16,6 +16,34 @@ PrefabInstance:
       propertyPath: <AssetPathHash>k__BackingField
       value: 18316439970318293998
       objectReference: {fileID: 0}
+    - target: {fileID: 6280664673843289677, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280664673843289677, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.00225
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280664673843289677, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280664673843289677, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00367
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280664673843289677, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00852
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280664673843289677, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563024488259323877, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
+      propertyPath: m_text
+      value: Cable
+      objectReference: {fileID: 0}
     - target: {fileID: 8424574911901220682, guid: 84c3536be772f814c8cda357e9c28c05, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
