@@ -10,7 +10,8 @@ namespace HotPotato.Player
         {
             NotOnTurn,
             OnTurn,
-            Dead
+            Dead,
+            Winner
         }
         
         [SerializeField] private MeshRenderer _faceMeshRenderer;
@@ -20,8 +21,9 @@ namespace HotPotato.Player
         private EventBinding<LoseRoundEvent> _loseRoundEventBinding;
         private EventBinding<RoundStartedEvent> _roundStartedEventBinding;
         private EventBinding<TurnOwnerChangedEvent> _turnOwnerChangedEventBinding;
+        private EventBinding<WinRoundEvent> _winRoundEventBinding;
         
-        private bool _hasLost = false;
+        private bool _notPlaying = false;
         
         public override void OnStartClient()
         {
@@ -47,6 +49,9 @@ namespace HotPotato.Player
             
             _loseRoundEventBinding = new EventBinding<LoseRoundEvent>(HandleLoseRoundEvent);
             EventBus<LoseRoundEvent>.Register(_loseRoundEventBinding);
+            
+            _winRoundEventBinding = new EventBinding<WinRoundEvent>(HandleWinRoundEvent);
+            EventBus<WinRoundEvent>.Register(_winRoundEventBinding);
         }
 
         private void DeregisterEvents()
@@ -54,18 +59,19 @@ namespace HotPotato.Player
             EventBus<RoundStartedEvent>.Deregister(_roundStartedEventBinding);
             EventBus<TurnOwnerChangedEvent>.Deregister(_turnOwnerChangedEventBinding);
             EventBus<LoseRoundEvent>.Deregister(_loseRoundEventBinding);
+            EventBus<WinRoundEvent>.Deregister(_winRoundEventBinding);
         }
         
         private void HandleRoundStartedEvent(RoundStartedEvent obj)
         {
-            _hasLost = false;
+            _notPlaying = false;
             
             SetCurrentFaceServerRPC(PlayerFace.NotOnTurn);
         }
         
         private void HandleTurnOwnerChangedEvent(TurnOwnerChangedEvent obj)
         {
-            if (_hasLost) return;
+            if (_notPlaying) return;
             
             PlayerFace currentFace = obj.IsMyTurn ? PlayerFace.OnTurn : PlayerFace.NotOnTurn;
             
@@ -74,10 +80,16 @@ namespace HotPotato.Player
         
         private void HandleLoseRoundEvent(LoseRoundEvent obj)
         {
-            _hasLost = true;
+            _notPlaying = true;
             SetCurrentFaceServerRPC(PlayerFace.Dead);
         }
 
+        private void HandleWinRoundEvent(WinRoundEvent obj)
+        {
+            _notPlaying = true;
+            SetCurrentFaceServerRPC(PlayerFace.Winner);
+        }
+        
         [ServerRpc(RequireOwnership = false)]
         private void SetCurrentFaceServerRPC(PlayerFace face)
         {
