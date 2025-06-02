@@ -8,7 +8,7 @@ namespace HotPotato.Bomb
 {
     public class BombExploder : NetworkBehaviour
     {
-        EventBinding<ModuleExplodedExitStateEvent> _explodedEventBinding;
+        private EventBinding<ModuleExplodedExitStateEvent> _explodedEventBinding;
         
         [Required]
         [SerializeField] private ParticleSystem _explodeParticles;
@@ -36,6 +36,7 @@ namespace HotPotato.Bomb
         [ObserversRpc]
         private void ExplodeClientRpc()
         {
+            EventBus<BombExplodedClientEvent>.Raise(new BombExplodedClientEvent());
             _explodeParticles.Play();
             AudioManager.Instance.PlayOneShot(_explodeSoundEventReference.EventReference, transform.position);
         }
