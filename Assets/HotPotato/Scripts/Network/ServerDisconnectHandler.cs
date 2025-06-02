@@ -36,18 +36,16 @@ namespace HotPotato.Network
             if (serverManager != null)
                 serverManager.OnRemoteConnectionState -= OnRemoteClientConnectionState;
         }
-
-        // Called locally when *this* client disconnects from server
+        
         private void OnClientConnectionState(ClientConnectionStateArgs args)
         {
             if (args.ConnectionState == LocalConnectionState.Stopped)
             {
                 Debug.Log("Local client disconnected. Loading disconnect scene.");
-                UnityEngine.SceneManagement.SceneManager.LoadScene(_disconnectSceneName);
+                Disconnect();
             }
         }
-
-        // Called on the server when a remote client disconnects
+        
         private void OnRemoteClientConnectionState(NetworkConnection conn, RemoteConnectionStateArgs args)
         {
             if (args.ConnectionState == RemoteConnectionState.Stopped)
@@ -68,6 +66,14 @@ namespace HotPotato.Network
         private void SendClientsToDisconnectScene()
         {
             Debug.Log("Received disconnect scene RPC. Loading...");
+            
+            Disconnect();
+        }
+
+        private void Disconnect()
+        {
+            InstanceFinder.ServerManager.StopConnection(true);
+            InstanceFinder.ClientManager.StopConnection();
             UnityEngine.SceneManagement.SceneManager.LoadScene(_disconnectSceneName);
         }
     }
