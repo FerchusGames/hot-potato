@@ -89,7 +89,7 @@ MonoBehaviour:
   amount:
     m_OverrideState: 1
     m_Value: 0.15
-  shader: {fileID: 0}
+  shader: {fileID: 4800000, guid: 2270ba0b69c63bc459598cad50f09a1d, type: 3}
 --- !u!114 &1919697346801958601
 MonoBehaviour:
   m_ObjectHideFlags: 3
