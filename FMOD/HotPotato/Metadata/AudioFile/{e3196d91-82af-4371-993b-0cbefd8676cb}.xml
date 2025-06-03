@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{e3196d91-82af-4371-993b-0cbefd8676cb}">
+		<property name="assetPath">
+			<value>Potato-Bomb-Track-3.mp3</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>92.207999999999998</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{c61c9aa8-a69e-4b61-881f-7e38fc9f4006}</destination>
+		</relationship>
+	</object>
+</objects>

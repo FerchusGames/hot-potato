@@ -162,6 +162,7 @@ GameObject:
   m_Component:
   - component: {fileID: 45376616}
   - component: {fileID: 45376615}
+  - component: {fileID: 45376617}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -199,6 +200,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &45376617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45376614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79618a9ff74745dc808b1423f817c1a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &52824908
 GameObject:
   m_ObjectHideFlags: 0
@@ -2991,6 +3004,10 @@ PrefabInstance:
       propertyPath: _explodeSoundEvent.Path
       value: event:/Explosion
       objectReference: {fileID: 0}
+    - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
+      propertyPath: _defuseSoundEventReference
+      value: 
+      objectReference: {fileID: 11400000, guid: e64dedb3186c5ae4da0852a5759f37e2, type: 2}
     - target: {fileID: 8365083883262856594, guid: e18dfcf0f6963bf4989453c30e33caa7, type: 3}
       propertyPath: _explodeSoundEventReference
       value: 
