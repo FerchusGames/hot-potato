@@ -36,9 +36,9 @@ namespace HotPotato.UI
                         case 0:
                             return "Red";
                         case 1:
-                            return "Green";
-                        case 2:
                             return "Blue";
+                        case 2:
+                            return "Green";
                         case 3:
                             return "Yellow";
                         case 4:

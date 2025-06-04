@@ -72,8 +72,8 @@ namespace HotPotato.Network
 
         private void Disconnect()
         {
-            InstanceFinder.ServerManager.StopConnection(true);
             InstanceFinder.ClientManager.StopConnection();
+            InstanceFinder.ServerManager.StopConnection(true);
             UnityEngine.SceneManagement.SceneManager.LoadScene(_disconnectSceneName);
         }
     }
