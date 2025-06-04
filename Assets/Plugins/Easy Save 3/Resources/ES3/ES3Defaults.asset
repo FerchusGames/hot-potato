@@ -39,6 +39,9 @@ MonoBehaviour:
     - Assembly-CSharp-firstpass
     - Autodesk.Fbx
     - Autodesk.Fbx.BuildTestAssets
+    - Character.Controllers
+    - Character.Models
+    - Character.Views
     - DissonanceFMOD_Playback
     - DissonanceFMOD_Recording
     - DissonanceVoip
@@ -70,6 +73,7 @@ MonoBehaviour:
     - UniTask.DOTween
     - UniTask.Linq
     - UniTask.TextMeshPro
+    - Utils
     - VContainer
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
