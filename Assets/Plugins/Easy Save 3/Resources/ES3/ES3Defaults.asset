@@ -64,6 +64,7 @@ MonoBehaviour:
     - sc.posteffects.runtime
     - SingularityGroup.HotReload.Runtime
     - SingularityGroup.HotReload.Runtime.Public
+    - Sirenix.OdinInspector.Modules.Unity.Addressables
     - UniTask
     - UniTask.Addressables
     - UniTask.DOTween
