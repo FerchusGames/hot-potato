@@ -15,6 +15,7 @@ namespace Character.Models
         public CharacterData(StyleNameData styleName, string color)
         {
             this.styleName = styleName;
+            this.color = color;
         }
         
         public string Color => color;

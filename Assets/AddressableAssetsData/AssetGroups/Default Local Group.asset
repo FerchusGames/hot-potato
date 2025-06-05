@@ -15,8 +15,36 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: bc06010b7b2f92542b332f837251766d
   m_SerializeEntries:
+  - m_GUID: 3ddf62f3f25966a41a72fe0e67513566
+    m_Address: Assets/HotPotato/BundleAssets/Assets/HotPotato/BundleAssets/Halloween25/MenuCharacter
+      Variant.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - hwn25Player
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 464b0bc04459c7240aed56f67461a52d
+    m_Address: Assets/HotPotato/BundleAssets/Assets/HotPotato/BundleAssets/Assets/HotPotato/BundleAssets/Characters
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67ece0cd86f38cd49b761332f2fc66a8
+    m_Address: Assets/HotPotato/BundleAssets/Assets/HotPotato/BundleAssets/Halloween25
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7a213893e6dab89418064dcd1a73010d
     m_Address: Assets/HotPotato/BundleAssets
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a4521cc1807b544d8692b833d67cad6
+    m_Address: Assets/HotPotato/BundleAssets/Assets/HotPotato/BundleAssets/Assets/HotPotato/BundleAssets/Characters/MenuCharacter.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - basePlayer
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d23ee7de52f81b34a9c8f3be8f4a7ead
+    m_Address: Assets/HotPotato/BundleAssets/Assets/HotPotato/BundleAssets
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

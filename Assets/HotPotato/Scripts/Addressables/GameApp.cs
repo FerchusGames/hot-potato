@@ -3,6 +3,7 @@ using Character.Controllers;
 using Character.Models;
 using Character.Views;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 using Utils.AddressableLoader;
 using Utils.DataAPI;
 
@@ -61,7 +62,7 @@ public class GameApp : IGameApp
             query = getCharacterDataWitHighestStylePriority,
             variables = null
         };
-
+        
         var characterData = await GraphqlUtils.GetModel<CharacterData>(fullQueryCharacterData, 
             "CharacterDataWitHighestStylePriority", 
             gameToken.Token);

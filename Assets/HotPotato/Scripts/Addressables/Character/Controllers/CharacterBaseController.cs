@@ -19,6 +19,7 @@ namespace Character.Controllers
             this.characterData = characterData;
             
             transform = characterView.Transform;
+            
             characterView.Color = characterData.Color;
             
             cancellationTokenRegistration = gameToken.Register(Dispose);
